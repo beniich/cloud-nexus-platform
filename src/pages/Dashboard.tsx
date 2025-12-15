@@ -48,7 +48,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
   // Safe default to 'client' if user is somehow null despite protection
   const currentRole = user?.role || 'client';
-  const [activeSection, setActiveSection] = useState<Section>('overview');
+  const defaultSection: Section = currentRole === 'admin' ? 'users' : 'overview';
+  const [activeSection, setActiveSection] = useState<Section>(defaultSection);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const menuItems = {

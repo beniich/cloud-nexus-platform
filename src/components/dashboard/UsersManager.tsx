@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -17,31 +17,43 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Search, Filter, Shield, Briefcase, User as UserIcon, MoreHorizontal, Percent } from 'lucide-react';
+import { Search, Filter, Shield, Briefcase, User as UserIcon, MoreHorizontal, Percent, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCommission, useUpdateCommission } from '@/hooks/useCommission';
 
 // Mock Data for Users
-// In a real app, this would come from a UserService
 interface UserData {
     id: string;
     name: string;
     email: string;
     role: 'client' | 'seller' | 'admin';
     status: 'active' | 'inactive';
-    commissionRate?: number; // Only for sellers (percentage)
     joinedAt: string;
 }
 
 const initialUsers: UserData[] = [
-    { id: '1', name: 'Alice Martin', email: 'alice@example.com', role: 'seller', status: 'active', commissionRate: 15, joinedAt: '2023-10-15' },
+    { id: '1', name: 'Alice Martin', email: 'alice@example.com', role: 'seller', status: 'active', joinedAt: '2023-10-15' },
     { id: '2', name: 'Bob Dupont', email: 'bob@client.com', role: 'client', status: 'active', joinedAt: '2023-11-02' },
-    { id: '3', name: 'Charlie Tech', email: 'charlie@seller.com', role: 'seller', status: 'active', commissionRate: 12, joinedAt: '2023-12-01' },
+    { id: '3', name: 'Charlie Tech', email: 'charlie@seller.com', role: 'seller', status: 'active', joinedAt: '2023-12-01' },
     { id: '4', name: 'Admin User', email: 'admin@cloudnexus.com', role: 'admin', status: 'active', joinedAt: '2023-01-01' },
     { id: '5', name: 'Sophie Leroy', email: 'sophie@client.com', role: 'client', status: 'inactive', joinedAt: '2023-11-20' },
 ];
+
+const CommissionCell = ({ userId }: { userId: string }) => {
+    const { data, isLoading } = useCommission(userId);
+
+    if (isLoading) return <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />;
+
+    return (
+        <span className="font-bold text-destructive">
+            {data ? (data.rate * 100).toFixed(0) : '-'}%
+        </span>
+    );
+};
 
 export default function UsersManager() {
     const [users, setUsers] = useState<UserData[]>(initialUsers);
@@ -52,6 +64,8 @@ export default function UsersManager() {
     const [editingCommission, setEditingCommission] = useState<{ id: string, rate: number } | null>(null);
     const [isCommissionDialogOpen, setIsCommissionDialogOpen] = useState(false);
 
+    const updateCommission = useUpdateCommission();
+
     // Filter Logic
     const filteredUsers = users.filter(user => {
         const matchesSearch = user.name.toLowerCase().includes(search.toLowerCase()) || user.email.toLowerCase().includes(search.toLowerCase());
@@ -61,21 +75,26 @@ export default function UsersManager() {
 
     const handleOpenCommissionDialog = (user: UserData) => {
         if (user.role !== 'seller') return;
-        setEditingCommission({ id: user.id, rate: user.commissionRate || 15 });
+        setEditingCommission({ id: user.id, rate: 15 });
         setIsCommissionDialogOpen(true);
     };
 
     const handleSaveCommission = () => {
         if (!editingCommission) return;
 
-        setUsers(users.map(u =>
-            u.id === editingCommission.id
-                ? { ...u, commissionRate: editingCommission.rate }
-                : u
-        ));
-
-        toast.success(`Commission mise à jour à ${editingCommission.rate}%`);
-        setIsCommissionDialogOpen(false);
+        updateCommission.mutate({
+            sellerId: editingCommission.id,
+            rate: editingCommission.rate / 100, // Convert percentage to decimal
+            validFrom: new Date().toISOString()
+        }, {
+            onSuccess: () => {
+                toast.success(`Commission mise à jour à ${editingCommission.rate}%`);
+                setIsCommissionDialogOpen(false);
+            },
+            onError: () => {
+                toast.error("Erreur lors de la mise à jour de la commission.");
+            }
+        });
     };
 
     const getRoleBadge = (role: string) => {
@@ -161,7 +180,7 @@ export default function UsersManager() {
                                                     onClick={() => handleOpenCommissionDialog(user)}
                                                     title="Modifier la commission"
                                                 >
-                                                    <span className="font-bold text-destructive">{user.commissionRate}%</span>
+                                                    <CommissionCell userId={user.id} />
                                                     <Percent className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100" />
                                                 </div>
                                             ) : (
