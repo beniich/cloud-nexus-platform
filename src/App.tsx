@@ -68,6 +68,7 @@ const App = () => {
                     <Route path="/shop/:id" element={<ProductDetail />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/store/:slug" element={<Storefront />} />
 
                     {/* Legal Pages */}
                     <Route path="/privacy" element={<PrivacyPolicy />} />
