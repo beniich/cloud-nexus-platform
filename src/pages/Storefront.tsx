@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom';
 import { StoreHeader } from '@/components/storefront/StoreHeader';
 import { SocialGrid } from '@/components/storefront/SocialGrid';
-import { ProductCard } from '@/components/ProductCard';
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
+import ProductCard from '@/components/ProductCard';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 // Mock Data for Demo (Simulating Backend Response)
 const MOCK_VENDOR_DB: Record<string, any> = {
@@ -61,7 +61,7 @@ export default function Storefront() {
                     <h2 className="text-2xl font-bold mb-6">Catalogue</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {vendor.products.map((product: any) => (
-                            <ProductCard key={product.id} product={product} />
+                            <ProductCard key={product.id} {...product} />
                         ))}
                     </div>
                 </div>

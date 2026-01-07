@@ -16,11 +16,20 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import Storefront from "./pages/Storefront";
 import { PrivacyPolicy, TermsOfService, Security } from "./pages/Legal";
 import { HelmetProvider } from 'react-helmet-async';
 import { initGA, logPageView } from '@/lib/analytics';
 import { useEffect } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import CloudLayout from "@/app/cloud/layouts/CloudLayout";
+import CloudDashboard from "@/app/cloud/pages/CloudDashboard";
+import Droplets from "@/app/cloud/pages/Droplets";
+import Domains from "@/app/cloud/pages/Domains";
+import Databases from "@/app/cloud/pages/Databases";
+import CloudBilling from "@/app/cloud/pages/Billing";
+import Team from "@/app/cloud/pages/Team";
+import CloudSettings from "@/app/cloud/pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +99,21 @@ const App = () => {
                         <Cart />
                       </ProtectedRoute>
                     } />
+
+                    {/* Cloud Infrastructure Routes */}
+                    <Route path="/cloud" element={
+                      <ProtectedRoute allowedRoles={['admin', 'owner', 'seller']}>
+                        <CloudLayout />
+                      </ProtectedRoute>
+                    }>
+                      <Route index element={<CloudDashboard />} />
+                      <Route path="droplets" element={<Droplets />} />
+                      <Route path="domains" element={<Domains />} />
+                      <Route path="databases" element={<Databases />} />
+                      <Route path="billing" element={<CloudBilling />} />
+                      <Route path="team" element={<Team />} />
+                      <Route path="settings" element={<CloudSettings />} />
+                    </Route>
 
                     {/* Catch-all */}
                     <Route path="*" element={<NotFound />} />

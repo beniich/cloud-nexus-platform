@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("client") // client, seller, admin, owner
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
+  
+  createdDroplets Droplet[]
+  invitations     Invitation[]
+}
+
+model Team {
+  id          String   @id @default(uuid())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  droplets    Droplet[]
+  domains     Domain[]
+  invoices    Invoice[]
+  invitations Invitation[]
+}
+
+model Droplet {
+  id          String   @id @default(uuid())
+  name        String
+  region      String
+  size        String
+  image       String
+  status      String   // starting, running, stopped, rebooting
+  ipAddress   String
+  monthlyCost Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [id])
+
+  metrics     DropletMetric[]
+}
+
+model DropletMetric {
+  id          String   @id @default(uuid())
+  cpuUsage    Float
+  ramUsage    Float
+  diskUsage   Float
+  networkIn   Float
+  networkOut  Float
+  timestamp   DateTime @default(now())
+
+  dropletId   String
+  droplet     Droplet  @relation(fields: [dropletId], references: [id], onDelete: Cascade)
+}
+
+model Domain {
+  id        String   @id @default(uuid())
+  name      String
+  status    String   // active, pending
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id])
+  
+  records   DNSRecord[]
+}
+
+model DNSRecord {
+  id        String   @id @default(uuid())
+  type      String   // A, CNAME, MX, TXT, etc.
+  name      String
+  value     String
+  ttl       Int      @default(3600)
+
+  domainId  String
+  domain    Domain   @relation(fields: [domainId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id              String   @id @default(uuid())
+  amount          Float
+  status          String   // paid, open, past_due
+  stripeInvoiceId String?
+  createdAt       DateTime @default(now())
+
+  teamId          String
+  team            Team     @relation(fields: [teamId], references: [id])
+}
+
+model Invitation {
+  id        String   @id @default(uuid())
+  email     String
+  role      String
+  token     String   @unique
+  acceptedAt DateTime?
+  createdAt DateTime @default(now())
+
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id])
+  invitedBy String
+  inviter   User     @relation(fields: [invitedBy], references: [id])
+}

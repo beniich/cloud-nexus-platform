@@ -11,12 +11,12 @@ interface Stat {
   label: string;
   value: string;
   change: string;
-  icon: any;
+  icon: React.ElementType;
 }
 
 interface DashboardOverviewProps {
   stats: Stat[];
-  role: 'client' | 'seller' | 'admin';
+  role: 'client' | 'seller' | 'admin' | 'owner';
 }
 
 export default function DashboardOverview({ stats: initialStats, role }: DashboardOverviewProps) {

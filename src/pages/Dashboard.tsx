@@ -41,7 +41,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { cn } from '@/lib/utils';
 import UsersManager from '@/components/dashboard/UsersManager';
 
-type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'executive';
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'executive' | 'cloud_console';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -78,6 +78,17 @@ export default function Dashboard() {
       { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
       { icon: Package, label: 'Produits', section: 'products' as Section },
       { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
+      { icon: Cloud, label: 'Cloud Console', section: 'cloud_console' as Section },
+      { icon: Settings, label: 'Configuration', section: 'config' as Section },
+    ],
+    owner: [ // Owner has same as admin + cloud
+      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
+      { icon: Lightbulb, label: 'Vision Stratégique', section: 'executive' as Section },
+      { icon: FileText, label: 'Gestion Factures', section: 'invoices' as Section },
+      { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
+      { icon: Package, label: 'Produits', section: 'products' as Section },
+      { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
+      { icon: Cloud, label: 'Cloud Console', section: 'cloud_console' as Section },
       { icon: Settings, label: 'Configuration', section: 'config' as Section },
     ],
   };
@@ -96,6 +107,12 @@ export default function Dashboard() {
       { label: 'Note moyenne', value: '4.8/5', change: '156 avis', icon: Users },
     ],
     admin: [
+      { label: 'Utilisateurs totaux', value: '1.234', change: '+45 ce mois', icon: Users },
+      { label: 'Ventes totales', value: '89.500€', change: '+18%', icon: TrendingUp },
+      { label: 'Produits', value: '156', change: '12 en attente', icon: Package },
+      { label: 'Uptime', value: '99.9%', change: 'Excellent', icon: Cloud },
+    ],
+    owner: [
       { label: 'Utilisateurs totaux', value: '1.234', change: '+45 ce mois', icon: Users },
       { label: 'Ventes totales', value: '89.500€', change: '+18%', icon: TrendingUp },
       { label: 'Produits', value: '156', change: '12 en attente', icon: Package },
@@ -180,22 +197,39 @@ export default function Dashboard() {
           )}
         >
           <nav className="space-y-2">
-            {menuItems[currentRole].map((item, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveSection(item.section)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative",
-                  activeSection === item.section
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'
-                )}
-                title={isSidebarCollapsed ? item.label : undefined}
-              >
-                <item.icon className={cn("w-5 h-5 flex-shrink-0", isSidebarCollapsed ? "mx-auto" : "")} />
-                {!isSidebarCollapsed && <span className="font-medium whitespace-nowrap overflow-hidden transition-all">{item.label}</span>}
-              </button>
-            ))}
+            {menuItems[currentRole].map((item, i) => {
+              if (item.section === 'cloud_console') {
+                return (
+                  <Link
+                    key={i}
+                    to="/cloud"
+                    className={cn(
+                      "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative hover:bg-accent hover:text-accent-foreground text-blue-500 font-semibold"
+                    )}
+                    title={isSidebarCollapsed ? item.label : undefined}
+                  >
+                    <item.icon className={cn("w-5 h-5 flex-shrink-0", isSidebarCollapsed ? "mx-auto" : "")} />
+                    {!isSidebarCollapsed && <span className="whitespace-nowrap overflow-hidden transition-all">{item.label}</span>}
+                  </Link>
+                );
+              }
+              return (
+                <button
+                  key={i}
+                  onClick={() => setActiveSection(item.section)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative",
+                    activeSection === item.section
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'
+                  )}
+                  title={isSidebarCollapsed ? item.label : undefined}
+                >
+                  <item.icon className={cn("w-5 h-5 flex-shrink-0", isSidebarCollapsed ? "mx-auto" : "")} />
+                  {!isSidebarCollapsed && <span className="font-medium whitespace-nowrap overflow-hidden transition-all">{item.label}</span>}
+                </button>
+              );
+            })}
           </nav>
 
           {!isSidebarCollapsed && (
