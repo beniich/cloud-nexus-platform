@@ -22,7 +22,7 @@ export default function Footer() {
               }}
               className="flex items-center gap-2 group cursor-pointer select-none"
             >
-              <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
+              <img src="/logo.png" alt="Logo" className="w-10 h-10 group-hover:opacity-80 transition-opacity" />
               <span className="font-display font-bold text-xl">Cloud Industrie</span>
             </div>
             <p className="text-sm text-muted-foreground">

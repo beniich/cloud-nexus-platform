@@ -1,73 +1,111 @@
-# Welcome to your Lovable project
+# Cloud Nexus Platform
 
-## Project info
+A modern cloud infrastructure management platform built with React, TypeScript, and Vite.
 
-**URL**: https://lovable.dev/projects/a62a1a67-f38d-49a2-922e-641532f7ab77
+## Features
 
-## How can I edit this code?
+- **Cloud Dashboard**: Manage droplets, domains, databases, and more
+- **User Management**: Role-based access control (admin, owner, seller, client)
+- **Real-time Monitoring**: WebSocket-based live metrics
+- **Queue System**: Background job processing with Bull
+- **Caching**: Redis-powered performance optimization
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+### Frontend
+- React 18 + TypeScript
+- Vite for blazing fast builds
+- TailwindCSS + shadcn/ui components
+- React Query for data fetching
+- Socket.io client for real-time updates
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a62a1a67-f38d-49a2-922e-641532f7ab77) and start prompting.
+### Backend
+- Express.js REST API
+- Prisma ORM with PostgreSQL
+- Redis for caching and sessions
+- Bull for job queues
+- Socket.io for WebSockets
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
+- Node.js 18+
+- PostgreSQL 15+
+- Redis 7+
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+```bash
+# Clone the repository
+git clone https://github.com/mildadiagorossi-arch/cloud-nexus-platform.git
+cd cloud-nexus-platform
 
-Follow these steps:
+# Install dependencies
+npm install
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your configuration
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Run Prisma migrations
+npx prisma migrate dev
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Local Development
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The frontend runs on `http://localhost:8080` by default.
 
-**Use GitHub Codespaces**
+For full functionality, you'll also need to run:
+- PostgreSQL database
+- Redis server
+- Backend API server (optional for development)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Docker Development
 
-## What technologies are used for this project?
+```bash
+# Start PostgreSQL and Redis
+docker-compose up -d postgres redis
 
-This project is built with:
+# Run migrations
+npx prisma migrate dev
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Start frontend
+npm run dev
+```
 
-## How can I deploy this project?
+## Project Structure
 
-Simply open [Lovable](https://lovable.dev/projects/a62a1a67-f38d-49a2-922e-641532f7ab77) and click on Share -> Publish.
+```
+cloud-nexus-platform/
+├── backend/           # Backend services
+│   ├── redis.js      # Redis cache manager
+│   ├── queue.js      # Bull queue processors
+│   └── server.js     # Express API server
+├── prisma/           # Database schema
+├── src/              # Frontend React app
+│   ├── app/cloud/   # Cloud dashboard module
+│   ├── components/  # Reusable components
+│   ├── contexts/    # React contexts
+│   ├── hooks/       # Custom hooks
+│   └── pages/       # Route pages
+└── public/          # Static assets
+```
 
-## Can I connect a custom domain to my Lovable project?
+## Available Scripts
 
-Yes, you can!
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npx prisma studio` - Open Prisma Studio
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Deployment
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+See [production_guide.md](./production_guide.md) for detailed deployment instructions.
+
+## License
+
+MIT

@@ -24,7 +24,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
+            <img src="/logo.png" alt="Logo" className="w-10 h-10 group-hover:opacity-80 transition-opacity" />
             <span className="font-display font-bold text-xl">Cloud Industrie</span>
           </Link>
 
