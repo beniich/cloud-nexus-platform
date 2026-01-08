@@ -30,8 +30,8 @@ import Databases from "@/app/cloud/pages/Databases";
 import CloudBilling from "@/app/cloud/pages/Billing";
 import Team from "@/app/cloud/pages/Team";
 import CloudSettings from "@/app/cloud/pages/Settings";
-import LivePulseLayout from "@/app/live-pulse/layouts/LivePulseLayout";
-import LivePulseDashboard from "@/app/live-pulse/pages/LivePulseDashboard";
+import LivePulseLayout from "@/components/livepulse/LivePulseLayout";
+import LivePulseDashboard from "@/app/routes/livepulse/LivePulseDashboard";
 
 const queryClient = new QueryClient();
 
