@@ -30,6 +30,8 @@ import Databases from "@/app/cloud/pages/Databases";
 import CloudBilling from "@/app/cloud/pages/Billing";
 import Team from "@/app/cloud/pages/Team";
 import CloudSettings from "@/app/cloud/pages/Settings";
+import LivePulseLayout from "@/app/live-pulse/layouts/LivePulseLayout";
+import LivePulseDashboard from "@/app/live-pulse/pages/LivePulseDashboard";
 
 const queryClient = new QueryClient();
 
@@ -113,6 +115,16 @@ const App = () => {
                       <Route path="billing" element={<CloudBilling />} />
                       <Route path="team" element={<Team />} />
                       <Route path="settings" element={<CloudSettings />} />
+                    </Route>
+
+                    {/* Live Pulse Routes */}
+                    <Route path="/live-pulse" element={
+                      <ProtectedRoute allowedRoles={['admin', 'owner', 'seller']}>
+                        <LivePulseLayout />
+                      </ProtectedRoute>
+                    }>
+                      <Route index element={<LivePulseDashboard />} />
+                      <Route path="*" element={<LivePulseDashboard />} />
                     </Route>
 
                     {/* Catch-all */}
