@@ -33,6 +33,7 @@ import Team from "@/app/cloud/pages/Team";
 import CloudSettings from "@/app/cloud/pages/Settings";
 import LivePulseLayout from "@/components/livepulse/LivePulseLayout";
 import LivePulseDashboard from "@/app/routes/livepulse/LivePulseDashboard";
+import { LivePulseProvider } from "@/contexts/LivePulseContext";
 
 const queryClient = new QueryClient();
 
@@ -67,66 +68,68 @@ const App = () => {
           <ProductProvider>
             <CartProvider>
               <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <AnalyticsTracker />
-                  <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<Index />} />
-                    <Route path="/services" element={<Services />} />
-                    <Route path="/services/:id" element={<ServiceDetail />} />
-                    <Route path="/shop" element={<Shop />} />
-                    <Route path="/shop/:id" element={<ProductDetail />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/store/:slug" element={<Storefront />} />
+                <LivePulseProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <AnalyticsTracker />
+                    <Routes>
+                      {/* Public Routes */}
+                      <Route path="/" element={<Index />} />
+                      <Route path="/services" element={<Services />} />
+                      <Route path="/services/:id" element={<ServiceDetail />} />
+                      <Route path="/shop" element={<Shop />} />
+                      <Route path="/shop/:id" element={<ProductDetail />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/store/:slug" element={<Storefront />} />
 
-                    {/* Legal Pages */}
-                    <Route path="/privacy" element={<PrivacyPolicy />} />
-                    <Route path="/terms" element={<TermsOfService />} />
-                    <Route path="/security" element={<Security />} />
+                      {/* Legal Pages */}
+                      <Route path="/privacy" element={<PrivacyPolicy />} />
+                      <Route path="/terms" element={<TermsOfService />} />
+                      <Route path="/security" element={<Security />} />
 
-                    {/* Hidden/Special Access */}
-                    <Route path="/vrd" element={<Navigate to="/login?role=seller" replace />} />
-                    <Route path="/adm-secure" element={<Navigate to="/login?role=admin" replace />} />
+                      {/* Hidden/Special Access */}
+                      <Route path="/vrd" element={<Navigate to="/login?role=seller" replace />} />
+                      <Route path="/adm-secure" element={<Navigate to="/login?role=admin" replace />} />
 
-                    {/* OAuth Callback */}
-                    <Route path="/auth/callback" element={<AuthCallback />} />
+                      {/* OAuth Callback */}
+                      <Route path="/auth/callback" element={<AuthCallback />} />
 
-                    {/* Protected Routes */}
-                    <Route path="/dashboard" element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/cart" element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <Cart />
-                      </ProtectedRoute>
-                    } />
+                      {/* Protected Routes */}
+                      <Route path="/dashboard" element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/cart" element={
+                        <ProtectedRoute allowedRoles={['client']}>
+                          <Cart />
+                        </ProtectedRoute>
+                      } />
 
-                    {/* Cloud Infrastructure Routes */}
-                    <Route path="/cloud" element={
-                      <ProtectedRoute>
-                        <CloudDashboard />
-                      </ProtectedRoute>
-                    } />
+                      {/* Cloud Infrastructure Routes */}
+                      <Route path="/cloud" element={
+                        <ProtectedRoute>
+                          <CloudDashboard />
+                        </ProtectedRoute>
+                      } />
 
-                    {/* Live Pulse Routes */}
-                    <Route path="/live-pulse" element={
-                      <ProtectedRoute allowedRoles={['admin', 'owner', 'seller']}>
-                        <LivePulseLayout />
-                      </ProtectedRoute>
-                    }>
-                      <Route index element={<LivePulseDashboard />} />
-                      <Route path="*" element={<LivePulseDashboard />} />
-                    </Route>
+                      {/* Live Pulse Routes */}
+                      <Route path="/live-pulse" element={
+                        <ProtectedRoute allowedRoles={['admin', 'owner', 'seller', 'client']}>
+                          <LivePulseLayout />
+                        </ProtectedRoute>
+                      }>
+                        <Route index element={<LivePulseDashboard />} />
+                        <Route path="*" element={<LivePulseDashboard />} />
+                      </Route>
 
-                    {/* Catch-all */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
+                      {/* Catch-all */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </BrowserRouter>
+                </LivePulseProvider>
               </TooltipProvider>
             </CartProvider>
           </ProductProvider>
