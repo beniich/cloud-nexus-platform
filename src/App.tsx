@@ -6,36 +6,42 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import { ProductProvider } from "@/contexts/ProductContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Index from "./pages/Index";
-import Services from "./pages/Services";
-import ServiceDetail from "./pages/ServiceDetail";
-import Shop from "./pages/Shop";
-import ProductDetail from "./pages/ProductDetail";
-import Cart from "./pages/Cart";
-import Login from "./features/auth/routes/Login";
-import AuthCallback from "./features/auth/routes/AuthCallback";
-import Dashboard from "./pages/Dashboard";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
-import Storefront from "./pages/Storefront";
-import { PrivacyPolicy, TermsOfService, Security } from "./pages/Legal";
 import { HelmetProvider } from 'react-helmet-async';
 import { initGA, logPageView } from '@/lib/analytics';
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import CloudLayout from "@/app/cloud/layouts/CloudLayout";
-import CloudDashboard from "./features/cloud/routes/CloudDashboard";
-import Droplets from "@/app/cloud/pages/Droplets";
-import Domains from "@/app/cloud/pages/Domains";
-import Databases from "@/app/cloud/pages/Databases";
-import CloudBilling from "@/app/cloud/pages/Billing";
-import Team from "@/app/cloud/pages/Team";
-import CloudSettings from "@/app/cloud/pages/Settings";
-import LivePulseLayout from "@/components/livepulse/LivePulseLayout";
-import LivePulseDashboard from "@/app/routes/livepulse/LivePulseDashboard";
 import { LivePulseProvider } from "@/contexts/LivePulseContext";
-import HeadlessCMS from "./features/cms/HeadlessCMS";
-import ServiceRequestForm from "./features/service-request/ServiceRequestForm";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
+// Eager loaded components (needed for initial render)
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
+import Login from "./features/auth/routes/Login";
+import AuthCallback from "./features/auth/routes/AuthCallback";
+
+// Lazy loaded components (code-split for better performance)
+const Services = lazy(() => import("./pages/Services"));
+const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
+const Shop = lazy(() => import("./pages/Shop"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Storefront = lazy(() => import("./pages/Storefront"));
+const PrivacyPolicy = lazy(() => import("./pages/Legal").then(m => ({ default: m.PrivacyPolicy })));
+const TermsOfService = lazy(() => import("./pages/Legal").then(m => ({ default: m.TermsOfService })));
+const Security = lazy(() => import("./pages/Legal").then(m => ({ default: m.Security })));
+
+// Cloud Infrastructure
+const CloudDashboard = lazy(() => import("./features/cloud/routes/CloudDashboard"));
+
+// Live Pulse
+const LivePulseLayout = lazy(() => import("@/components/livepulse/LivePulseLayout"));
+const LivePulseDashboard = lazy(() => import("@/app/routes/livepulse/LivePulseDashboard"));
+
+// CMS and Service Request
+const HeadlessCMS = lazy(() => import("./features/cms/HeadlessCMS"));
+const ServiceRequestForm = lazy(() => import("./features/service-request/ServiceRequestForm"));
 
 const queryClient = new QueryClient();
 
@@ -75,64 +81,66 @@ const App = () => {
                   <Sonner />
                   <BrowserRouter>
                     <AnalyticsTracker />
-                    <Routes>
-                      {/* Public Routes */}
-                      <Route path="/" element={<Index />} />
-                      <Route path="/services" element={<Services />} />
-                      <Route path="/services/:id" element={<ServiceDetail />} />
-                      <Route path="/shop" element={<Shop />} />
-                      <Route path="/shop/:id" element={<ProductDetail />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/store/:slug" element={<Storefront />} />
+                    <Suspense fallback={<LoadingSpinner size="lg" text="Chargement..." fullScreen />}>
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<Index />} />
+                        <Route path="/services" element={<Services />} />
+                        <Route path="/services/:id" element={<ServiceDetail />} />
+                        <Route path="/shop" element={<Shop />} />
+                        <Route path="/shop/:id" element={<ProductDetail />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/store/:slug" element={<Storefront />} />
 
-                      {/* Legal Pages */}
-                      <Route path="/privacy" element={<PrivacyPolicy />} />
-                      <Route path="/terms" element={<TermsOfService />} />
-                      <Route path="/security" element={<Security />} />
+                        {/* Legal Pages */}
+                        <Route path="/privacy" element={<PrivacyPolicy />} />
+                        <Route path="/terms" element={<TermsOfService />} />
+                        <Route path="/security" element={<Security />} />
 
-                      {/* Hidden/Special Access */}
-                      <Route path="/vrd" element={<Navigate to="/login?role=seller" replace />} />
-                      <Route path="/adm-secure" element={<Navigate to="/login?role=admin" replace />} />
+                        {/* Hidden/Special Access */}
+                        <Route path="/vrd" element={<Navigate to="/login?role=seller" replace />} />
+                        <Route path="/adm-secure" element={<Navigate to="/login?role=admin" replace />} />
 
-                      {/* OAuth Callback */}
-                      <Route path="/auth/callback" element={<AuthCallback />} />
+                        {/* OAuth Callback */}
+                        <Route path="/auth/callback" element={<AuthCallback />} />
 
-                      {/* Protected Routes */}
-                      <Route path="/dashboard" element={
-                        <ProtectedRoute>
-                          <Dashboard />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/cart" element={
-                        <ProtectedRoute allowedRoles={['client']}>
-                          <Cart />
-                        </ProtectedRoute>
-                      } />
+                        {/* Protected Routes */}
+                        <Route path="/dashboard" element={
+                          <ProtectedRoute>
+                            <Dashboard />
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/cart" element={
+                          <ProtectedRoute allowedRoles={['client']}>
+                            <Cart />
+                          </ProtectedRoute>
+                        } />
 
-                      {/* Cloud Infrastructure Routes */}
-                      <Route path="/cloud" element={
-                        <ProtectedRoute>
-                          <CloudDashboard />
-                        </ProtectedRoute>
-                      } />
+                        {/* Cloud Infrastructure Routes */}
+                        <Route path="/cloud" element={
+                          <ProtectedRoute>
+                            <CloudDashboard />
+                          </ProtectedRoute>
+                        } />
 
-                      {/* Live Pulse Routes */}
-                      <Route path="/live-pulse" element={
-                        <ProtectedRoute allowedRoles={['admin', 'owner', 'seller', 'client']}>
-                          <LivePulseLayout />
-                        </ProtectedRoute>
-                      }>
-                        <Route index element={<LivePulseDashboard />} />
-                        <Route path="*" element={<LivePulseDashboard />} />
-                      </Route>
+                        {/* Live Pulse Routes */}
+                        <Route path="/live-pulse" element={
+                          <ProtectedRoute allowedRoles={['admin', 'owner', 'seller', 'client']}>
+                            <LivePulseLayout />
+                          </ProtectedRoute>
+                        }>
+                          <Route index element={<LivePulseDashboard />} />
+                          <Route path="*" element={<LivePulseDashboard />} />
+                        </Route>
 
-                      <Route path="/cms" element={<HeadlessCMS />} />
-                      <Route path="/request-service" element={<ServiceRequestForm />} />
+                        <Route path="/cms" element={<HeadlessCMS />} />
+                        <Route path="/request-service" element={<ServiceRequestForm />} />
 
-                      {/* Catch-all */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
+                        {/* Catch-all */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
                   </BrowserRouter>
                 </LivePulseProvider>
               </TooltipProvider>
