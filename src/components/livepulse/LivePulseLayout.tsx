@@ -39,6 +39,9 @@ interface LivePulseLayoutProps {
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/livepulse' },
+  { icon: Globe, label: 'Global Map', id: 'map', path: '/livepulse/map' }, // Added Global Map
+  { icon: FileText, label: 'CMS Headless', id: 'cms', path: '/cms' }, // Added CMS Headless
+  { icon: Server, label: 'Commander Service', id: 'services', path: '/request-service' }, // Added Commander Service
   { icon: Radio, label: 'Signaux', path: '/livepulse/signals' },
   { icon: Lightbulb, label: 'Insights', path: '/livepulse/insights' },
   { icon: Target, label: 'Actions', path: '/livepulse/actions' },
@@ -156,15 +159,24 @@ export default function LivePulseLayout({ children, onNewSignal }: LivePulseLayo
           <nav className="p-4 space-y-1">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path ||
-                (item.path !== '/livepulse' && location.pathname.startsWith(item.path));
+                (item.path !== '/livepulse' && location.pathname.startsWith(item.path)) ||
+                (item.id && activeTab === item.id); // Added condition for activeTab
 
               return (
                 <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setSidebarOpen(false)}
+                  key={item.path} // Retained original key
+                  to={item.path || '#'} // Fallback to '#' if path is not defined
+                  onClick={(e) => {
+                    if (item.path) {
+                      navigate(item.path);
+                    } else if (item.id) {
+                      setActiveTab(item.id);
+                    }
+                    setSidebarOpen(false);
+                    e.preventDefault(); // Prevent default Link behavior if using custom navigation
+                  }}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium",
+                    "w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group text-sm font-medium", // Combined new and old class names
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"

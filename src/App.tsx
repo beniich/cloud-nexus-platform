@@ -34,6 +34,8 @@ import CloudSettings from "@/app/cloud/pages/Settings";
 import LivePulseLayout from "@/components/livepulse/LivePulseLayout";
 import LivePulseDashboard from "@/app/routes/livepulse/LivePulseDashboard";
 import { LivePulseProvider } from "@/contexts/LivePulseContext";
+import HeadlessCMS from "./features/cms/HeadlessCMS";
+import ServiceRequestForm from "./features/service-request/ServiceRequestForm";
 
 const queryClient = new QueryClient();
 
@@ -124,6 +126,9 @@ const App = () => {
                         <Route index element={<LivePulseDashboard />} />
                         <Route path="*" element={<LivePulseDashboard />} />
                       </Route>
+
+                      <Route path="/cms" element={<HeadlessCMS />} />
+                      <Route path="/request-service" element={<ServiceRequestForm />} />
 
                       {/* Catch-all */}
                       <Route path="*" element={<NotFound />} />
