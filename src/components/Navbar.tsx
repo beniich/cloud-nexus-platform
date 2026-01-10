@@ -42,6 +42,12 @@ export default function Navbar() {
             <Link to="/cart" className="text-foreground hover:text-primary transition-colors">
               <ShoppingCart className="w-5 h-5" />
             </Link>
+            <Link to="/cms" className="text-foreground hover:text-primary transition-colors font-medium">
+              CMS / Hébergement
+            </Link>
+            <Link to="/request-service" className="text-foreground hover:text-primary transition-colors font-medium">
+              Offre Sur Mesure
+            </Link>
           </div>
 
           {/* CTA Buttons */}
@@ -115,6 +121,20 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               {t('common.cart')}
+            </Link>
+            <Link
+              to="/request-service"
+              className="block py-2 text-foreground hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Offre Sur Mesure
+            </Link>
+            <Link
+              to="/cms"
+              className="block py-2 text-foreground hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              CMS / Hébergement
             </Link>
             <div className="pt-4 space-y-2">
               {/* Mobile Lang Switcher - Simplified */}
