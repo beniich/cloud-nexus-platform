@@ -1,12 +1,18 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { PrismaClient } = require('@prisma/client');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import cors from 'cors';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import Stripe from 'stripe';
+import { PrismaClient } from '@prisma/client';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import session from 'express-session';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
 
 const prisma = new PrismaClient();
 const app = express();
@@ -14,6 +20,66 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: { origin: process.env.CLIENT_URL || 'http://localhost:3000' }
 });
+
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'keyboard cat',
+    resave: false,
+    saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport configuration
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await prisma.user.findUnique({ where: { id } });
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
+});
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback"
+},
+    async (accessToken, refreshToken, profile, done) => {
+        try {
+            // Check if user exists
+            let user = await prisma.user.findUnique({
+                where: { email: profile.emails[0].value }
+            });
+
+            if (!user) {
+                // Create new user
+                user = await prisma.user.create({
+                    data: {
+                        email: profile.emails[0].value,
+                        name: profile.displayName,
+                        password: '', // No password for Google users
+                        role: 'owner', // Default role
+                        team: {
+                            create: {
+                                name: `${profile.displayName}'s Team`
+                            }
+                        }
+                    }
+                });
+            }
+
+            return done(null, user);
+        } catch (error) {
+            return done(error, null);
+        }
+    }));
+
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const PORT = process.env.PORT || 4000;
@@ -54,6 +120,22 @@ const checkRole = (roles) => (req, res, next) => {
 };
 
 // ==================== AUTH ENDPOINTS ====================
+
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    async (req, res) => {
+        // Successful authentication
+        const token = jwt.sign({ userId: req.user.id }, JWT_SECRET, { expiresIn: '7d' });
+        // Redirect to frontend with token
+        const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+        res.redirect(`${clientUrl}/auth/callback?token=${token}`);
+    }
+);
+
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { email, password, name } = req.body;
