@@ -20,9 +20,7 @@ import type {
     TicketStats,
     CRMDashboard,
     PipelineStage,
-    Lead
-
-Response,
+    LeadResponse,
     ActivityResponse,
     TicketResponse,
     CommentResponse,

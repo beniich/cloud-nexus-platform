@@ -43,6 +43,9 @@ const LivePulseDashboard = lazy(() => import("@/app/routes/livepulse/LivePulseDa
 const HeadlessCMS = lazy(() => import("./features/cms/HeadlessCMS"));
 const ServiceRequestForm = lazy(() => import("./features/service-request/ServiceRequestForm"));
 
+// Hosting
+const HostingManagement = lazy(() => import("./features/hosting/routes/HostingManagement"));
+
 const queryClient = new QueryClient();
 
 // Analytics Tracker Component
@@ -135,6 +138,7 @@ const App = () => {
                         </Route>
 
                         <Route path="/cms" element={<HeadlessCMS />} />
+                        <Route path="/hosting" element={<HostingManagement />} />
                         <Route path="/request-service" element={<ServiceRequestForm />} />
 
                         {/* Catch-all */}

@@ -43,7 +43,10 @@ export default function Navbar() {
               <ShoppingCart className="w-5 h-5" />
             </Link>
             <Link to="/cms" className="text-foreground hover:text-primary transition-colors font-medium">
-              CMS / Hébergement
+              CMS
+            </Link>
+            <Link to="/hosting" className="text-foreground hover:text-primary transition-colors font-medium">
+              Hébergement
             </Link>
             <Link to="/request-service" className="text-foreground hover:text-primary transition-colors font-medium">
               Offre Sur Mesure
@@ -134,7 +137,14 @@ export default function Navbar() {
               className="block py-2 text-foreground hover:text-primary transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              CMS / Hébergement
+              CMS
+            </Link>
+            <Link
+              to="/hosting"
+              className="block py-2 text-foreground hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Hébergement
             </Link>
             <div className="pt-4 space-y-2">
               {/* Mobile Lang Switcher - Simplified */}
