@@ -14,7 +14,9 @@ import {
   Lightbulb,
   ChevronLeft,
   ChevronRight,
-  Menu
+  Menu,
+  Server,
+  Briefcase
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,7 +43,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { cn } from '@/lib/utils';
 import UsersManager from '@/components/dashboard/UsersManager';
 
-type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'executive' | 'cloud_console';
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'executive' | 'cloud_console' | 'hosting_crm' | 'crm_hustel';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -79,6 +81,8 @@ export default function Dashboard() {
       { icon: Package, label: 'Produits', section: 'products' as Section },
       { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
       { icon: Cloud, label: 'Cloud Console', section: 'cloud_console' as Section },
+      { icon: Server, label: 'CRM Hébergement', section: 'hosting_crm' as Section },
+      { icon: Briefcase, label: 'CRM Hustel', section: 'crm_hustel' as Section },
       { icon: Settings, label: 'Configuration', section: 'config' as Section },
     ],
     owner: [ // Owner has same as admin + cloud
@@ -89,6 +93,8 @@ export default function Dashboard() {
       { icon: Package, label: 'Produits', section: 'products' as Section },
       { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
       { icon: Cloud, label: 'Cloud Console', section: 'cloud_console' as Section },
+      { icon: Server, label: 'CRM Hébergement', section: 'hosting_crm' as Section },
+      { icon: Briefcase, label: 'CRM Hustel', section: 'crm_hustel' as Section },
       { icon: Settings, label: 'Configuration', section: 'config' as Section },
     ],
   };
@@ -172,6 +178,12 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-4">
+            <Link to="/shop">
+              <Button variant="default" size="sm" className="hidden sm:flex bg-emerald-600 hover:bg-emerald-700 text-white">
+                <ShoppingBag className="w-4 h-4 mr-2" />
+                Commander
+              </Button>
+            </Link>
             <ThemeToggle />
 
             <div className="flex items-center gap-2 mr-4 hidden sm:flex">
@@ -198,13 +210,19 @@ export default function Dashboard() {
         >
           <nav className="space-y-2">
             {menuItems[currentRole].map((item, i) => {
-              if (item.section === 'cloud_console') {
+              if (['cloud_console', 'hosting_crm', 'crm_hustel'].includes(item.section)) {
+                const linkMap: Record<string, string> = {
+                  'cloud_console': '/cloud',
+                  'hosting_crm': '/hosting',
+                  'crm_hustel': '/crm-hustel'
+                };
                 return (
                   <Link
                     key={i}
-                    to="/cloud"
+                    to={linkMap[item.section]}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative hover:bg-accent hover:text-accent-foreground text-blue-500 font-semibold"
+                      "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative hover:bg-accent hover:text-accent-foreground font-semibold",
+                      item.section === 'cloud_console' ? "text-blue-500" : "text-emerald-600"
                     )}
                     title={isSidebarCollapsed ? item.label : undefined}
                   >

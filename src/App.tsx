@@ -46,6 +46,9 @@ const ServiceRequestForm = lazy(() => import("./features/service-request/Service
 // Hosting
 const HostingManagement = lazy(() => import("./features/hosting/routes/HostingManagement"));
 
+// CRM Hustel
+const CrmDashboard = lazy(() => import("./features/crmhustel/routes/CrmDashboard"));
+
 const queryClient = new QueryClient();
 
 // Analytics Tracker Component
@@ -139,6 +142,7 @@ const App = () => {
 
                         <Route path="/cms" element={<HeadlessCMS />} />
                         <Route path="/hosting" element={<HostingManagement />} />
+                        <Route path="/crm-hustel" element={<CrmDashboard />} />
                         <Route path="/request-service" element={<ServiceRequestForm />} />
 
                         {/* Catch-all */}
