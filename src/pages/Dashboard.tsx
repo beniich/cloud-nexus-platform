@@ -1,31 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
-  ShoppingBag,
-  Users,
-  Settings,
-  Package,
-  TrendingUp,
-  FileText,
-  MessageSquare,
   LogOut,
   Cloud,
-  Lightbulb,
-  ChevronLeft,
-  ChevronRight,
   Menu,
-  Server,
-  Briefcase
+  ShoppingBag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import ProductsManager from '@/components/dashboard/ProductsManager';
 import SalesManager from '@/components/dashboard/SalesManager';
@@ -34,71 +15,31 @@ import MessagingView from '@/components/dashboard/MessagingView';
 import SettingsView from '@/components/dashboard/SettingsView';
 import ExecutiveDashboard from '@/components/dashboard/ExecutiveDashboard';
 import { useAuth } from '@/contexts/AuthContext';
-import { UserRole } from '@/types/auth';
 import SubscriptionManager from '@/components/dashboard/SubscriptionManager';
 import ChatWidget from '@/components/ChatWidget';
 import OrdersManager from '@/components/dashboard/OrdersManager';
 import InvoicesManager from '@/components/dashboard/InvoicesManager';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { cn } from '@/lib/utils';
 import UsersManager from '@/components/dashboard/UsersManager';
 
-type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'executive' | 'cloud_console' | 'hosting_crm' | 'crm_hustel';
+// Import de la nouvelle Sidebar dynamique
+import { Sidebar } from '@/components/layout/Sidebar/Sidebar';
+import { Package, TrendingUp, FileText, MessageSquare, Users } from 'lucide-react'; // Gardés pour les stats
+
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'executive';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  // Safe default to 'client' if user is somehow null despite protection
+
   const currentRole = user?.role || 'client';
+  // @ts-ignore - Simple cast for default section logic
   const defaultSection: Section = currentRole === 'admin' ? 'users' : 'overview';
-  const [activeSection, setActiveSection] = useState<Section>(defaultSection);
+
+  const [activeSection, setActiveSection] = useState<string>(defaultSection);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  const menuItems = {
-    client: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
-      { icon: ShoppingBag, label: 'Mes commandes', section: 'orders' as Section },
-      { icon: FileText, label: 'Mes factures', section: 'invoices' as Section },
-      { icon: Package, label: 'Services achetés', section: 'services' as Section },
-      { icon: MessageSquare, label: 'Support', section: 'support' as Section },
-      { icon: Settings, label: 'Paramètres', section: 'settings' as Section },
-    ],
-    seller: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
-      { icon: Lightbulb, label: 'Vision Exécutive', section: 'executive' as Section },
-      { icon: FileText, label: 'Factures', section: 'invoices' as Section },
-      { icon: Package, label: 'Mes produits', section: 'products' as Section },
-      { icon: ShoppingBag, label: 'Ventes', section: 'sales' as Section },
-      { icon: TrendingUp, label: 'Statistiques', section: 'stats' as Section },
-      { icon: MessageSquare, label: 'Messages', section: 'messages' as Section },
-      { icon: Settings, label: 'Paramètres', section: 'settings' as Section },
-    ],
-    admin: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
-      { icon: Lightbulb, label: 'Vision Stratégique', section: 'executive' as Section },
-      { icon: FileText, label: 'Gestion Factures', section: 'invoices' as Section },
-      { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
-      { icon: Package, label: 'Produits', section: 'products' as Section },
-      { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
-      { icon: Cloud, label: 'Cloud Console', section: 'cloud_console' as Section },
-      { icon: Server, label: 'CRM Hébergement', section: 'hosting_crm' as Section },
-      { icon: Briefcase, label: 'CRM Hustel', section: 'crm_hustel' as Section },
-      { icon: Settings, label: 'Configuration', section: 'config' as Section },
-    ],
-    owner: [ // Owner has same as admin + cloud
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
-      { icon: Lightbulb, label: 'Vision Stratégique', section: 'executive' as Section },
-      { icon: FileText, label: 'Gestion Factures', section: 'invoices' as Section },
-      { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
-      { icon: Package, label: 'Produits', section: 'products' as Section },
-      { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
-      { icon: Cloud, label: 'Cloud Console', section: 'cloud_console' as Section },
-      { icon: Server, label: 'CRM Hébergement', section: 'hosting_crm' as Section },
-      { icon: Briefcase, label: 'CRM Hustel', section: 'crm_hustel' as Section },
-      { icon: Settings, label: 'Configuration', section: 'config' as Section },
-    ],
-  };
-
+  // Stats configs (kept locally for overview component)
   const stats = {
     client: [
       { label: 'Commandes', value: '12', change: '+2 ce mois', icon: ShoppingBag },
@@ -129,6 +70,7 @@ export default function Dashboard() {
   const renderContent = () => {
     switch (activeSection) {
       case 'overview':
+        // @ts-ignore
         return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
       case 'orders':
         return <OrdersManager />;
@@ -154,6 +96,7 @@ export default function Dashboard() {
       case 'services': // Reusing 'services' section for subscriptions for clients
         return <SubscriptionManager />;
       default:
+        // @ts-ignore
         return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
     }
   };
@@ -201,78 +144,13 @@ export default function Dashboard() {
       </header>
 
       <div className="flex">
-        {/* Sidebar */}
-        <aside
-          className={cn(
-            "bg-background border-r border-border min-h-[calc(100vh-73px)] p-4 transition-all duration-300 ease-in-out dark:bg-slate-900 dark:border-slate-800 relative",
-            isSidebarCollapsed ? "w-20" : "w-64"
-          )}
-        >
-          <nav className="space-y-2">
-            {menuItems[currentRole].map((item, i) => {
-              if (['cloud_console', 'hosting_crm', 'crm_hustel'].includes(item.section)) {
-                const linkMap: Record<string, string> = {
-                  'cloud_console': '/cloud',
-                  'hosting_crm': '/hosting',
-                  'crm_hustel': '/crm-hustel'
-                };
-                return (
-                  <Link
-                    key={i}
-                    to={linkMap[item.section]}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative hover:bg-accent hover:text-accent-foreground font-semibold",
-                      item.section === 'cloud_console' ? "text-blue-500" : "text-emerald-600"
-                    )}
-                    title={isSidebarCollapsed ? item.label : undefined}
-                  >
-                    <item.icon className={cn("w-5 h-5 flex-shrink-0", isSidebarCollapsed ? "mx-auto" : "")} />
-                    {!isSidebarCollapsed && <span className="whitespace-nowrap overflow-hidden transition-all">{item.label}</span>}
-                  </Link>
-                );
-              }
-              return (
-                <button
-                  key={i}
-                  onClick={() => setActiveSection(item.section)}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative",
-                    activeSection === item.section
-                      ? 'bg-primary text-primary-foreground shadow-md'
-                      : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'
-                  )}
-                  title={isSidebarCollapsed ? item.label : undefined}
-                >
-                  <item.icon className={cn("w-5 h-5 flex-shrink-0", isSidebarCollapsed ? "mx-auto" : "")} />
-                  {!isSidebarCollapsed && <span className="font-medium whitespace-nowrap overflow-hidden transition-all">{item.label}</span>}
-                </button>
-              );
-            })}
-          </nav>
-
-          {!isSidebarCollapsed && (
-            <div className="mt-8 p-4 bg-muted/50 rounded-lg dark:bg-slate-800/50">
-              <p className="text-sm font-medium mb-2">Besoin d'aide ?</p>
-              <p className="text-xs text-muted-foreground mb-3">Consultez notre documentation.</p>
-              <Link to="/contact">
-                <Button variant="outline" size="sm" className="w-full text-xs">
-                  Support
-                </Button>
-              </Link>
-            </div>
-          )}
-
-          <div className={cn("absolute bottom-4 left-0 right-0 flex justify-center", isSidebarCollapsed ? "" : "justify-end px-4")}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-            </Button>
-          </div>
-        </aside>
+        {/* Nouvelle Sidebar Dynamique */}
+        <Sidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={setIsSidebarCollapsed}
+        />
 
         <main className="flex-1 p-4 sm:p-8 overflow-auto dark:bg-slate-950">
           <div className="max-w-7xl mx-auto">
