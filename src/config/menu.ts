@@ -1,324 +1,104 @@
-import { MenuConfig } from '@/types/menu';
+import { MenuConfig, MenuItem } from '@/types/menu';
 
-export const menuConfigFallback: MenuConfig = {
-    version: "1.0.0",
-    lastUpdated: "2026-01-11T16:00:00Z",
-    menus: {
-        client: [
-            {
-                id: "overview",
-                label: "Vue d'ensemble",
-                icon: "LayoutDashboard",
-                path: "/dashboard",
-                section: "overview",
-                roles: ["client"],
-                type: "internal"
-            },
-            {
-                id: "orders",
-                label: "Mes commandes",
-                icon: "ShoppingBag",
-                path: "/dashboard/orders",
-                section: "orders",
-                roles: ["client"],
-                type: "internal"
-            },
-            {
-                id: "invoices",
-                label: "Mes factures",
-                icon: "FileText",
-                path: "/dashboard/invoices",
-                section: "invoices",
-                roles: ["client"],
-                type: "internal"
-            },
-            {
-                id: "services",
-                label: "Services achetés",
-                icon: "Package",
-                path: "/dashboard/services",
-                section: "services",
-                roles: ["client"],
-                type: "internal"
-            },
-            {
-                id: "support",
-                label: "Support",
-                icon: "MessageSquare",
-                path: "/dashboard/support",
-                section: "support",
-                roles: ["client"],
-                type: "internal",
-                badge: 1
-            },
-            {
-                id: "settings",
-                label: "Paramètres",
-                icon: "Settings",
-                path: "/dashboard/settings",
-                section: "settings",
-                roles: ["client"],
-                type: "internal"
-            }
-        ],
-        seller: [
-            {
-                id: "overview",
-                label: "Vue d'ensemble",
-                icon: "LayoutDashboard",
-                path: "/dashboard",
-                section: "overview",
-                roles: ["seller"],
-                type: "internal"
-            },
-            {
-                id: "executive",
-                label: "Vision Exécutive",
-                icon: "Lightbulb",
-                path: "/dashboard/executive",
-                section: "executive",
-                roles: ["seller"],
-                type: "internal"
-            },
-            {
-                id: "invoices",
-                label: "Factures",
-                icon: "FileText",
-                path: "/dashboard/invoices",
-                section: "invoices",
-                roles: ["seller"],
-                type: "internal"
-            },
-            {
-                id: "products",
-                label: "Mes produits",
-                icon: "Package",
-                path: "/dashboard/products",
-                section: "products",
-                roles: ["seller"],
-                type: "internal"
-            },
-            {
-                id: "sales",
-                label: "Ventes",
-                icon: "ShoppingBag",
-                path: "/dashboard/sales",
-                section: "sales",
-                roles: ["seller"],
-                type: "internal"
-            },
-            {
-                id: "stats",
-                label: "Statistiques",
-                icon: "TrendingUp",
-                path: "/dashboard/stats",
-                section: "stats",
-                roles: ["seller"],
-                type: "internal"
-            },
-            {
-                id: "messages",
-                label: "Messages",
-                icon: "MessageSquare",
-                path: "/dashboard/messages",
-                section: "messages",
-                roles: ["seller"],
-                type: "internal"
-            },
-            {
-                id: "settings",
-                label: "Paramètres",
-                icon: "Settings",
-                path: "/dashboard/settings",
-                section: "settings",
-                roles: ["seller"],
-                type: "internal"
-            }
-        ],
-        admin: [
-            {
-                id: "overview",
-                label: "Vue d'ensemble",
-                icon: "LayoutDashboard",
-                path: "/dashboard",
-                section: "overview",
-                roles: ["admin"],
-                type: "internal"
-            },
-            {
-                id: "executive",
-                label: "Vision Stratégique",
-                icon: "Lightbulb",
-                path: "/dashboard/executive",
-                section: "executive",
-                roles: ["admin"],
-                type: "internal"
-            },
-            {
-                id: "invoices",
-                label: "Gestion Factures",
-                icon: "FileText",
-                path: "/dashboard/invoices",
-                section: "invoices",
-                roles: ["admin"],
-                type: "internal"
-            },
-            {
-                id: "users",
-                label: "Utilisateurs",
-                icon: "Users",
-                path: "/dashboard/users",
-                section: "users",
-                roles: ["admin"],
-                type: "internal"
-            },
-            {
-                id: "products",
-                label: "Produits",
-                icon: "Package",
-                path: "/dashboard/products",
-                section: "products",
-                roles: ["admin"],
-                type: "internal"
-            },
-            {
-                id: "analytics",
-                label: "Analytics",
-                icon: "TrendingUp",
-                path: "/dashboard/analytics",
-                section: "analytics",
-                roles: ["admin"],
-                type: "internal"
-            },
-            {
-                id: "cloud_console",
-                label: "Cloud Console",
-                icon: "Cloud",
-                path: "/cloud",
-                roles: ["admin"],
-                type: "external",
-                color: "text-blue-500"
-            },
-            {
-                id: "crm_hosting",
-                label: "CRM Hébergement",
-                icon: "Server",
-                path: "/hosting",
-                roles: ["admin"],
-                type: "external",
-                color: "text-emerald-600"
-            },
-            {
-                id: "crm_hustel",
-                label: "CRM Hustel",
-                icon: "Briefcase",
-                path: "/crm-hustel",
-                roles: ["admin"],
-                type: "external",
-                color: "text-emerald-600",
-                featureFlag: "crm_hustel_enabled"
-            },
-            {
-                id: "settings",
-                label: "Configuration",
-                icon: "Settings",
-                path: "/dashboard/settings",
-                section: "config",
-                roles: ["admin"],
-                type: "internal"
-            }
-        ],
-        owner: [ // Owner is same as admin
-            {
-                id: "overview",
-                label: "Vue d'ensemble",
-                icon: "LayoutDashboard",
-                path: "/dashboard",
-                section: "overview",
-                roles: ["owner"],
-                type: "internal"
-            },
-            {
-                id: "executive",
-                label: "Vision Stratégique",
-                icon: "Lightbulb",
-                path: "/dashboard/executive",
-                section: "executive",
-                roles: ["owner"],
-                type: "internal"
-            },
-            {
-                id: "invoices",
-                label: "Gestion Factures",
-                icon: "FileText",
-                path: "/dashboard/invoices",
-                section: "invoices",
-                roles: ["owner"],
-                type: "internal"
-            },
-            {
-                id: "users",
-                label: "Utilisateurs",
-                icon: "Users",
-                path: "/dashboard/users",
-                section: "users",
-                roles: ["owner"],
-                type: "internal"
-            },
-            {
-                id: "products",
-                label: "Produits",
-                icon: "Package",
-                path: "/dashboard/products",
-                section: "products",
-                roles: ["owner"],
-                type: "internal"
-            },
-            {
-                id: "analytics",
-                label: "Analytics",
-                icon: "TrendingUp",
-                path: "/dashboard/analytics",
-                section: "analytics",
-                roles: ["owner"],
-                type: "internal"
-            },
-            {
-                id: "cloud_console",
-                label: "Cloud Console",
-                icon: "Cloud",
-                path: "/cloud",
-                roles: ["owner"],
-                type: "external",
-                color: "text-blue-500"
-            },
-            {
-                id: "crm_hosting",
-                label: "CRM Hébergement",
-                icon: "Server",
-                path: "/hosting",
-                roles: ["owner"],
-                type: "external",
-                color: "text-emerald-600"
-            },
-            {
-                id: "crm_hustel",
-                label: "CRM Hustel",
-                icon: "Briefcase",
-                path: "/crm-hustel",
-                roles: ["owner"],
-                type: "external",
-                color: "text-emerald-600"
-            },
-            {
-                id: "settings",
-                label: "Configuration",
-                icon: "Settings",
-                path: "/dashboard/settings",
-                section: "config",
-                roles: ["owner"],
-                type: "internal"
-            }
+export const DEFAULT_MENU_CONFIG: MenuItem[] = [
+    {
+        id: 'dashboard',
+        label: 'Dashboard',
+        icon: 'LayoutDashboard',
+        path: '/dashboard',
+        roles: ['owner', 'admin', 'manager', 'user', 'client'], // Expanded roles for visibility
+        type: 'internal',
+        badge: undefined
+    },
+    {
+        id: 'cloud-spaces',
+        label: 'Cloud Spaces',
+        icon: 'Cloud',
+        path: '/cloud-spaces',
+        roles: ['owner', 'admin'],
+        type: 'internal',
+        badge: undefined,
+        children: [
+            { id: 'spaces-browser', label: 'Fichiers', path: '/cloud-spaces/browser', icon: 'Database', roles: ['owner', 'admin'], type: 'internal' },
+            { id: 'spaces-upload', label: 'Upload', path: '/cloud-spaces/upload', icon: 'Upload', roles: ['owner', 'admin'], type: 'internal' }
         ]
+    },
+    {
+        id: 'servers',
+        label: 'Serveurs',
+        icon: 'Server',
+        path: '/servers',
+        roles: ['owner', 'admin'],
+        type: 'internal',
+        badge: 3 // Handled as number in component
+    },
+    {
+        id: 'products',
+        label: 'Produits',
+        icon: 'Package',
+        path: '/products',
+        roles: ['owner', 'admin', 'manager'],
+        type: 'internal'
+    },
+    {
+        id: 'users',
+        label: 'Utilisateurs',
+        icon: 'Users',
+        path: '/users',
+        roles: ['owner', 'admin'],
+        type: 'internal'
+    },
+    {
+        id: 'analytics',
+        label: 'Analytics',
+        icon: 'TrendingUp',
+        path: '/analytics',
+        roles: ['owner', 'admin', 'manager'],
+        type: 'internal'
+    },
+    {
+        id: 'hosting-request',
+        label: 'Demande Hébergement',
+        icon: 'Server',
+        path: '/hosting-request',
+        roles: ['owner', 'admin', 'manager', 'user', 'client'],
+        type: 'internal'
+    },
+    {
+        id: 'crm',
+        label: 'CRM Hustel',
+        icon: 'Users',
+        path: '/crm',
+        roles: ['owner', 'admin', 'manager'],
+        type: 'internal',
+        children: [
+            { id: 'live-pulse', label: 'Live Pulse', path: '/crm/live-pulse', icon: 'Activity', roles: ['owner', 'admin'], type: 'internal' },
+            { id: 'tickets', label: 'Tickets Support', path: '/crm/tickets', icon: 'MessageSquare', roles: ['owner', 'admin'], type: 'internal' },
+            { id: 'pipeline', label: 'Pipeline Ventes', path: '/crm/pipeline', icon: 'BarChart2', roles: ['owner', 'admin'], type: 'internal' }
+        ]
+    },
+    {
+        id: 'settings',
+        label: 'Paramètres',
+        icon: 'Settings',
+        path: '/settings',
+        roles: ['owner', 'admin', 'manager', 'user'],
+        type: 'internal'
     }
+];
+
+export const STORAGE_KEYS = {
+    USER: 'app_user',
+    SIDEBAR: 'sidebar_state',
+    THEME: 'app_theme',
+    MENU_CONFIG: 'menu_config'
+};
+
+// Aligning with existing UserRole type
+export const ROLES = {
+    SUPER_ADMIN: 'owner',
+    ADMIN: 'admin',
+    MANAGER: 'seller', // Mapping manager to seller for compatibility
+    USER: 'client',
+    CLIENT: 'client'
 };

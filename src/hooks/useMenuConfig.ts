@@ -1,78 +1,35 @@
-
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { apiClient } from '@/lib/api/client';
-import { menuConfigFallback } from '@/config/menu';
-import { MenuItem, UserRole } from '@/types/menu';
+import { useLocalStorage } from './useLocalStorage';
+import { DEFAULT_MENU_CONFIG, STORAGE_KEYS } from '@/config/menu';
+import { MenuItem } from '@/types/menu';
 
-// Simple mock for Feature Flags until implemented
-const useFeatureFlags = () => {
-    return {
-        isEnabled: (flag: string) => true
-    };
-};
-
-interface UseMenuConfigReturn {
-    menu: MenuItem[];
-    loading: boolean;
-    error: Error | null;
-    refetch: () => Promise<void>;
-}
-
-export const useMenuConfig = (): UseMenuConfigReturn => {
+export const useMenuConfig = () => {
     const { user } = useAuth();
-    const { isEnabled } = useFeatureFlags();
-    const [rawMenu, setRawMenu] = useState<MenuItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
+    const [menuConfig, setMenuConfig] = useLocalStorage<MenuItem[]>(STORAGE_KEYS.MENU_CONFIG, DEFAULT_MENU_CONFIG);
+    const [filteredMenu, setFilteredMenu] = useState<MenuItem[]>([]);
 
-    // Fonction de chargement
-    const fetchMenu = async () => {
-        // If not logged in, wait or return empty
-        // if (!user) { setLoading(false); return; } 
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            // API call to backend
-            const response = await apiClient.get<{ menu: MenuItem[] }>('/menu-config', {
-                params: { role: user?.role || 'client' }
-            });
-            console.log('✅ Menu loaded from API:', response.data.menu);
-            setRawMenu(response.data.menu);
-
-        } catch (err) {
-            console.warn('⚠️ Failed to load menu from API, using fallback', err);
-            // Fallback
-            const userRole = user?.role as UserRole || 'client';
-            const fallbackMenu = menuConfigFallback.menus[userRole] || menuConfigFallback.menus.client;
-            setRawMenu(fallbackMenu);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Charger au montage et quand le rôle change
     useEffect(() => {
-        fetchMenu();
-    }, [user?.role]);
+        if (!user || !user.role) {
+            setFilteredMenu([]);
+            return;
+        }
 
-    // Filtrer le menu selon les feature flags
-    const filteredMenu = useMemo(() => {
-        return rawMenu.filter(item => {
-            // Si l'item a un feature flag, vérifier s'il est activé
-            if (item.featureFlag) {
-                return isEnabled(item.featureFlag);
-            }
-            return true;
-        });
-    }, [rawMenu, isEnabled]);
+        const filterItems = (items: MenuItem[]): MenuItem[] => {
+            return items.filter(item => {
+                const hasRole = !item.roles || item.roles.includes(user.role as any);
+                if (!hasRole) return false;
 
-    return {
-        menu: filteredMenu,
-        loading,
-        error,
-        refetch: fetchMenu
-    };
+                if (item.children) {
+                    item.children = filterItems(item.children); // Recursively filter children
+                }
+                return true;
+            });
+        };
+
+        const filtered = filterItems(JSON.parse(JSON.stringify(menuConfig))); // Deep copy to avoid mutating state directly during recursion
+        setFilteredMenu(filtered);
+    }, [menuConfig, user]);
+
+    return { menu: filteredMenu, setMenuConfig };
 };
