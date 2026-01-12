@@ -1,5 +1,4 @@
-
-export type UserRole = 'admin' | 'seller' | 'client' | 'owner';
+export type UserRole = 'client' | 'seller' | 'admin' | 'owner' | 'manager' | 'user';
 
 export interface User {
     id: string;
@@ -11,7 +10,7 @@ export interface User {
 
 export interface AuthContextType {
     user: User | null;
-    login: (email: string, role: UserRole) => Promise<void>;
-    logout: () => void;
+    login: (email: string, password?: string) => Promise<void>;
+    logout: () => Promise<void>;
     isLoading: boolean;
 }

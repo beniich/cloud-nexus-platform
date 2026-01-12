@@ -1,25 +1,21 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Cloud, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Cloud, ArrowRight, Github, Chrome, Lock, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { AuthService } from '../services/AuthService';
-import type { components } from '@/lib/api/schema';
-
-type LoginDto = components['schemas']['LoginDto'];
-type RegisterDto = components['schemas']['RegisterDto'];
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Login() {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
-    const [searchParams] = useSearchParams();
 
-    const [loginEmail, setLoginEmail] = useState('');
-    const [loginPassword, setLoginPassword] = useState('');
+    const [loginEmail, setLoginEmail] = useState('admin@hustel.com');
+    const [loginPassword, setLoginPassword] = useState('password123');
 
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
@@ -34,16 +30,12 @@ export default function Login() {
 
         setIsLoading(true);
         try {
-            const loginDto: LoginDto = {
-                email: loginEmail,
-                password: loginPassword,
-            };
-
-            await AuthService.login(loginDto);
-            toast.success('Connexion réussie !');
+            await login(loginEmail, loginPassword);
+            toast.success('Bon retour parmi nous !');
             navigate('/dashboard');
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Erreur lors de la connexion');
+        } catch (error: any) {
+            console.error('Login error:', error);
+            // toast.error is already handled in AuthContext but we could add more here
         } finally {
             setIsLoading(false);
         }
@@ -51,118 +43,135 @@ export default function Login() {
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!signupEmail || !signupPassword || !signupName) {
-            toast.error('Veuillez remplir tous les champs');
-            return;
-        }
+        toast.info("L'inscription est désactivée en mode démo. Utilisez les comptes prédéfinis.");
+    };
 
-        setIsLoading(true);
-        try {
-            const registerDto: RegisterDto = {
-                email: signupEmail,
-                password: signupPassword,
-                name: signupName,
-            };
-
-            await AuthService.register(registerDto);
-            toast.success('Inscription réussie !');
-            navigate('/dashboard');
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Erreur lors de l\'inscription');
-        } finally {
-            setIsLoading(false);
-        }
+    const socialLogin = (provider: string) => {
+        toast.info(`Connexion via ${provider} non configurée.`);
     };
 
     return (
-        <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
+            {/* Background elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+                <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full" />
+            </div>
+
+            <div className="w-full max-w-md z-10">
                 {/* Logo */}
-                <Link to="/" className="flex items-center justify-center gap-2 mb-8 group">
-                    <Cloud className="w-10 h-10 text-primary group-hover:text-accent transition-colors" />
-                    <span className="font-display font-bold text-2xl">Cloud Industrie</span>
+                <Link to="/" className="flex items-center justify-center gap-3 mb-10 group transition-transform hover:scale-105">
+                    <div className="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <Cloud className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="font-bold text-2xl tracking-tight text-slate-900 dark:text-white">Cloud Nexus</span>
+                        <span className="text-[10px] uppercase tracking-widest text-blue-600 font-bold">Platform Management</span>
+                    </div>
                 </Link>
 
                 <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="login">Connexion</TabsTrigger>
-                        <TabsTrigger value="signup">Inscription</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl mb-6">
+                        <TabsTrigger value="login" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">Connexion</TabsTrigger>
+                        <TabsTrigger value="signup" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">Inscription</TabsTrigger>
                     </TabsList>
 
                     {/* Login Tab */}
                     <TabsContent value="login">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Connexion</CardTitle>
+                        <Card className="border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="text-2xl">Bon retour</CardTitle>
                                 <CardDescription>
-                                    Accédez à votre compte Cloud Industrie
+                                    Accédez à votre infrastructure Cloud
                                 </CardDescription>
                             </CardHeader>
                             <form onSubmit={handleLogin}>
                                 <CardContent className="space-y-4">
-                                    {/* Google Sign-In Button */}
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        className="w-full"
-                                        onClick={() => {
-                                            window.location.href = 'http://localhost:3000/auth/google';
-                                        }}
-                                    >
-                                        <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-                                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                                        </svg>
-                                        Continuer avec Google
-                                    </Button>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="w-full h-11 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-medium"
+                                            onClick={() => socialLogin('Google')}
+                                        >
+                                            <Chrome className="w-4 h-4 mr-2 text-blue-500" />
+                                            Google
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="w-full h-11 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-medium"
+                                            onClick={() => socialLogin('GitHub')}
+                                        >
+                                            <Github className="w-4 h-4 mr-2" />
+                                            GitHub
+                                        </Button>
+                                    </div>
 
-                                    <div className="relative">
+                                    <div className="relative py-2">
                                         <div className="absolute inset-0 flex items-center">
-                                            <span className="w-full border-t" />
+                                            <span className="w-full border-t border-slate-200 dark:border-slate-800" />
                                         </div>
-                                        <div className="relative flex justify-center text-xs uppercase">
-                                            <span className="bg-background px-2 text-muted-foreground">
-                                                Ou
+                                        <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
+                                            <span className="bg-white dark:bg-slate-900 px-3 text-slate-400">
+                                                OU PAR EMAIL
                                             </span>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="login-email">Email</Label>
-                                        <Input
-                                            id="login-email"
-                                            type="email"
-                                            placeholder="vous@exemple.com"
-                                            value={loginEmail}
-                                            onChange={(e) => setLoginEmail(e.target.value)}
-                                            required
-                                        />
+                                        <Label htmlFor="login-email">Email professionnel</Label>
+                                        <div className="relative">
+                                            <Mail className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                                            <Input
+                                                id="login-email"
+                                                type="email"
+                                                className="pl-10 h-11 bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-700"
+                                                placeholder="nom@entreprise.com"
+                                                value={loginEmail}
+                                                onChange={(e) => setLoginEmail(e.target.value)}
+                                                required
+                                            />
+                                        </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="login-password">Mot de passe</Label>
-                                        <Input
-                                            id="login-password"
-                                            type="password"
-                                            placeholder="••••••••"
-                                            value={loginPassword}
-                                            onChange={(e) => setLoginPassword(e.target.value)}
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="text-right">
-                                        <Link to="/reset-password" className="text-sm text-primary hover:text-accent transition-colors">
-                                            Mot de passe oublié ?
-                                        </Link>
+                                        <div className="flex items-center justify-between">
+                                            <Label htmlFor="login-password">Mot de passe</Label>
+                                            <Link to="/reset-password" title="password123" className="text-xs font-semibold text-blue-600 hover:text-blue-500 transition-colors">
+                                                Oublié ?
+                                            </Link>
+                                        </div>
+                                        <div className="relative">
+                                            <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                                            <Input
+                                                id="login-password"
+                                                type="password"
+                                                className="pl-10 h-11 bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-700"
+                                                placeholder="••••••••"
+                                                value={loginPassword}
+                                                onChange={(e) => setLoginPassword(e.target.value)}
+                                                required
+                                            />
+                                        </div>
                                     </div>
                                 </CardContent>
-                                <CardFooter>
-                                    <Button type="submit" variant="accent" className="w-full" size="lg" disabled={isLoading}>
-                                        {isLoading ? 'Connexion...' : 'Se connecter'}
-                                        {!isLoading && <ArrowRight className="ml-2" />}
+                                <CardFooter className="flex flex-col gap-4">
+                                    <Button type="submit" className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] font-bold" disabled={isLoading}>
+                                        {isLoading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Authentification...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Se connecter
+                                                <ArrowRight className="ml-2 w-4 h-4" />
+                                            </>
+                                        )}
                                     </Button>
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl w-full text-[11px] text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800/50">
+                                        <span className="font-bold">Démo Rapide:</span> admin@hustel.com / password123
+                                    </div>
                                 </CardFooter>
                             </form>
                         </Card>
@@ -170,52 +179,23 @@ export default function Login() {
 
                     {/* Signup Tab */}
                     <TabsContent value="signup">
-                        <Card>
+                        <Card className="border-slate-200 dark:border-slate-800 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                             <CardHeader>
                                 <CardTitle>Créer un compte</CardTitle>
                                 <CardDescription>
-                                    Rejoignez Cloud Industrie dès aujourd'hui
+                                    Rejoignez la plateforme Cloud Nexus
                                 </CardDescription>
                             </CardHeader>
                             <form onSubmit={handleSignup}>
                                 <CardContent className="space-y-4">
-                                    {/* Google Sign-In Button (Signup) */}
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        className="w-full"
-                                        onClick={() => {
-                                            window.location.href = 'http://localhost:3000/auth/google';
-                                        }}
-                                    >
-                                        <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-                                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                                        </svg>
-                                        S'inscrire avec Google
-                                    </Button>
-
-                                    <div className="relative">
-                                        <div className="absolute inset-0 flex items-center">
-                                            <span className="w-full border-t" />
-                                        </div>
-                                        <div className="relative flex justify-center text-xs uppercase">
-                                            <span className="bg-background px-2 text-muted-foreground">
-                                                Ou
-                                            </span>
-                                        </div>
-                                    </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="signup-name">Nom complet</Label>
                                         <Input
                                             id="signup-name"
-                                            type="text"
-                                            placeholder="Jean Dupont"
+                                            placeholder="John Doe"
+                                            className="h-11 bg-slate-50 dark:bg-slate-800/50"
                                             value={signupName}
                                             onChange={(e) => setSignupName(e.target.value)}
-                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -223,10 +203,10 @@ export default function Login() {
                                         <Input
                                             id="signup-email"
                                             type="email"
-                                            placeholder="vous@exemple.com"
+                                            placeholder="votre@email.com"
+                                            className="h-11 bg-slate-50 dark:bg-slate-800/50"
                                             value={signupEmail}
                                             onChange={(e) => setSignupEmail(e.target.value)}
-                                            required
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -235,16 +215,16 @@ export default function Login() {
                                             id="signup-password"
                                             type="password"
                                             placeholder="••••••••"
+                                            className="h-11 bg-slate-50 dark:bg-slate-800/50"
                                             value={signupPassword}
                                             onChange={(e) => setSignupPassword(e.target.value)}
-                                            required
                                         />
                                     </div>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button type="submit" variant="accent" className="w-full" size="lg" disabled={isLoading}>
+                                    <Button type="submit" variant="accent" className="w-full h-12 font-bold" disabled>
                                         Créer mon compte
-                                        <ArrowRight className="ml-2" />
+                                        <ArrowRight className="ml-2 w-4 h-4" />
                                     </Button>
                                 </CardFooter>
                             </form>
@@ -252,9 +232,9 @@ export default function Login() {
                     </TabsContent>
                 </Tabs>
 
-                <p className="text-center text-sm text-muted-foreground mt-6">
-                    <Link to="/" className="text-primary hover:text-accent transition-colors">
-                        ← Retour à l'accueil
+                <p className="text-center text-sm text-slate-500 mt-8">
+                    <Link to="/" className="hover:text-blue-600 transition-colors inline-flex items-center gap-1 font-semibold">
+                        ← Retour au portail public
                     </Link>
                 </p>
             </div>

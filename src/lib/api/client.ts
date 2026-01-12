@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api'; // Ajuster selon l'env
+const API_URL = 'http://localhost:3002/api'; // Ajuster selon l'env
 
 interface RequestOptions extends RequestInit {
     params?: Record<string, string>;

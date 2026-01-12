@@ -1,4 +1,4 @@
-export type UserRole = 'client' | 'seller' | 'admin' | 'owner';
+export type UserRole = 'client' | 'seller' | 'admin' | 'owner' | 'manager' | 'user';
 
 export interface MenuItem {
     id: string;

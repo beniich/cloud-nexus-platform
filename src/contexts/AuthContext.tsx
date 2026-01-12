@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, UserRole, AuthContextType } from '../types/auth';
+import { User, AuthContextType } from '../types/auth';
 import { toast } from 'sonner';
+import { apiClient } from '../lib/api/client';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -9,38 +10,59 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Check local storage for existing session
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setIsLoading(false);
-    }, []);
-
-    const login = async (email: string, role: UserRole) => {
-        setIsLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        const mockUser: User = {
-            id: Math.random().toString(36).substr(2, 9),
-            name: email.split('@')[0],
-            email,
-            role,
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
+        // Verify session with server on mount
+        const verifySession = async () => {
+            try {
+                const { data } = await apiClient.get<{ user: User }>('/auth/me');
+                if (data.user) {
+                    setUser(data.user);
+                }
+            } catch (error) {
+                // If verification fails, clear local user
+                console.log('Session verification failed, logging out');
+                setUser(null);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
-        setUser(mockUser);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        toast.success(`Bienvenue, ${mockUser.name} !`);
-        setIsLoading(false);
+        verifySession();
+    }, []);
+
+    const login = async (email: string, password?: string) => {
+        setIsLoading(true);
+        try {
+            // Note: In types/auth.ts, login signature might need adjustment or casting
+            const { data } = await apiClient.post<{ user: User, token: string }>('/auth/login', {
+                email,
+                password: password || 'password123'
+            });
+
+            if (data.user) {
+                setUser(data.user);
+                // Save token for non-cookie support if backend returns it
+                if (data.token) localStorage.setItem('token', data.token);
+                toast.success(`Bienvenue, ${data.user.name} !`);
+            }
+        } catch (error: any) {
+            toast.error(error.message || 'Échec de la connexion');
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('user');
-        toast.info('Déconnexion réussie');
-        window.location.href = '/login';
+    const logout = async () => {
+        try {
+            await apiClient.post('/auth/logout', {});
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            setUser(null);
+            localStorage.removeItem('token');
+            toast.info('Déconnexion réussie');
+            window.location.href = '/login';
+        }
     };
 
     return (

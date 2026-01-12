@@ -29,11 +29,14 @@ const UsersManagement = lazy(() => import("./pages/Users"));
 const AnalyticsPage = lazy(() => import("./pages/Analytics"));
 const ProductsPage = lazy(() => import("./pages/Products"));
 const HostingRequestForm = lazy(() => import("./pages/HostingRequest"));
+const NotificationSystemDemo = lazy(() => import("./pages/NotificationSystemDemo").then(module => ({ default: module.default })));
+const CRMHustel = lazy(() => import("./pages/crm/CRMHustel"));
+const SupportTickets = lazy(() => import("./pages/crm/TicketSupportSystem"));
+const ProductManagement = lazy(() => import("./pages/ProductManagement"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 // CRM Sub-pages
 const LivePulseDashboard = lazy(() => import("./pages/crm/LivePulse"));
-const SupportTickets = lazy(() => import("./pages/crm/Support"));
 const SalesPipeline = lazy(() => import("./pages/crm/Pipeline"));
 
 // Legacy/Existing Pages
@@ -57,7 +60,7 @@ const queryClient = new QueryClient();
 // Analytics & Notifications
 const AppContent = () => {
   const location = useLocation();
-  const notifications = useNotifications();
+  const { notifications } = useNotifications();
 
   useEffect(() => {
     logPageView();
@@ -137,6 +140,10 @@ const App = () => {
                           <Route path="/crm/live-pulse" element={<LivePulseDashboard />} />
                           <Route path="/crm/tickets" element={<SupportTickets />} />
                           <Route path="/crm/pipeline" element={<SalesPipeline />} />
+                          <Route path="/crm/hustel" element={<CRMHustel />} />
+                          <Route path="/products-management" element={<ProductManagement />} />
+
+
                         </Route>
 
                         {/* Legacy Protected Routes (Separate Layout or No Layout) */}

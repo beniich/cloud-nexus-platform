@@ -65,6 +65,14 @@ export const DEFAULT_MENU_CONFIG: MenuItem[] = [
         type: 'internal'
     },
     {
+        id: 'products-management',
+        label: 'Gestion Produits',
+        icon: 'Package',
+        path: '/products-management',
+        roles: ['owner', 'admin'],
+        type: 'internal'
+    },
+    {
         id: 'crm',
         label: 'CRM Hustel',
         icon: 'Users',
@@ -74,7 +82,9 @@ export const DEFAULT_MENU_CONFIG: MenuItem[] = [
         children: [
             { id: 'live-pulse', label: 'Live Pulse', path: '/crm/live-pulse', icon: 'Activity', roles: ['owner', 'admin'], type: 'internal' },
             { id: 'tickets', label: 'Tickets Support', path: '/crm/tickets', icon: 'MessageSquare', roles: ['owner', 'admin'], type: 'internal' },
-            { id: 'pipeline', label: 'Pipeline Ventes', path: '/crm/pipeline', icon: 'BarChart2', roles: ['owner', 'admin'], type: 'internal' }
+            { id: 'pipeline', label: 'Pipeline Ventes', path: '/crm/pipeline', icon: 'BarChart2', roles: ['owner', 'admin'], type: 'internal' },
+            { id: 'crm-hustel', label: 'Vue Hustel', path: '/crm/hustel', icon: 'Layout', roles: ['owner', 'admin'], type: 'internal' },
+            { id: 'crm-tickets', label: 'Support Tickets', path: '/crm/tickets', icon: 'LifeBuoy', roles: ['owner', 'admin'], type: 'internal' }
         ]
     },
     {

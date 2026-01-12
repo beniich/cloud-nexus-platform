@@ -18,9 +18,43 @@ import usersRoutes from './routes/users.js';
 
 dotenv.config();
 
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3005', 'http://localhost:8086'], // Update with frontend port
+        methods: ["GET", "POST"]
+    }
+});
+
 const PORT = process.env.PORT || 3001;
 
+// Socket.io Connection
+io.on('connection', (socket) => {
+    console.log('🔌 New client connected:', socket.id);
+
+    socket.on('disconnect', () => {
+        console.log('❌ Client disconnected:', socket.id);
+    });
+
+    // Example: Listen for new hosting requests
+    socket.on('newHostingRequest', (data) => {
+        console.log('📝 New Hosting Request received:', data);
+        // Broadcast to all connected clients (or specific rooms later)
+        io.emit('newRequest', data);
+    });
+});
+
+// Make io accessible in routes if needed (middleware)
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
+// ... (Middleware setup remains the same, remove the app = express() line above since we moved it)
 // ============================================
 // MIDDLEWARE GLOBAUX
 // ============================================
@@ -40,7 +74,7 @@ app.use(helmet({
 
 // CORS
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3005', 'http://localhost:3004'],
+    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3005', 'http://localhost:3004', 'http://localhost:8086'],
     credentials: true,
     optionsSuccessStatus: 200
 };
@@ -96,7 +130,7 @@ app.use(errorHandler);
 // START SERVER
 // ============================================
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════╗
 ║   🚀 Backend Server Running            ║
@@ -104,6 +138,7 @@ app.listen(PORT, () => {
 ║   Environment: ${process.env.NODE_ENV?.padEnd(24) || 'development'.padEnd(24)}║
 ║   Port: ${PORT.toString().padEnd(31)}║
 ║   URL: http://localhost:${PORT}          ║
+║   Socket.io: Enabled                   ║
 ╚════════════════════════════════════════╝
   `);
 });
