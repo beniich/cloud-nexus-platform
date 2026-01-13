@@ -16,11 +16,11 @@ import AppLayout from "@/components/layout/AppLayout";
 import { useNotifications } from "@/hooks/useNotifications";
 import { toast } from 'sonner';
 
-// Eager loaded components
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import Login from "./features/auth/routes/Login";
-import AuthCallback from "./features/auth/routes/AuthCallback";
+// Lazy loaded main entry points
+const Index = lazy(() => import("./pages/Index"));
+const Login = lazy(() => import("./features/auth/routes/Login"));
+const AuthCallback = lazy(() => import("./features/auth/routes/AuthCallback"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 // New Pages
 const CloudSpaces = lazy(() => import("./pages/CloudSpaces"));

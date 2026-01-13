@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { ChatService, Conversation, ChatMessage } from '@/services/chat.service';
+import { type Conversation, type ChatMessage } from '@/services/chat.service';
 
 export default function MessagingView() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -17,7 +17,8 @@ export default function MessagingView() {
 
   // Load conversations
   useEffect(() => {
-    const loadConvs = () => {
+    const loadConvs = async () => {
+      const { ChatService } = await import('@/services/chat.service');
       setConversations(ChatService.getAllConversations());
     };
     loadConvs();
@@ -28,9 +29,11 @@ export default function MessagingView() {
   // Load messages when conversation selected
   useEffect(() => {
     if (selectedConversation) {
-      ChatService.markAsRead(selectedConversation.id);
-      const loadMsgs = () => {
-        setMessages(ChatService.getMessages(selectedConversation.id));
+      const loadMsgs = async () => {
+        const { ChatService } = await import('@/services/chat.service');
+        ChatService.markAsRead(selectedConversation.id);
+        const msgs = ChatService.getMessages(selectedConversation.id);
+        setMessages(msgs);
       };
       loadMsgs();
       const interval = setInterval(loadMsgs, 2000);
@@ -45,9 +48,10 @@ export default function MessagingView() {
     }
   }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!newMessage.trim() || !selectedConversation) return;
 
+    const { ChatService } = await import('@/services/chat.service');
     // Admin sends message
     ChatService.sendMessage(selectedConversation.id, 'admin', 'Support', newMessage.trim());
     setNewMessage('');

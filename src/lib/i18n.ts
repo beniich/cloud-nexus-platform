@@ -15,7 +15,8 @@ i18n
     // init i18next
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init({
-        fallbackLng: 'fr',
+        lng: 'en',
+        fallbackLng: 'en',
         supportedLngs: ['fr', 'en', 'ar', 'de', 'es', 'sv'],
         load: 'languageOnly', // This prevents loading fr-FR, en-US, etc. Only loads 'fr', 'en'
         debug: false, // Désactivé pour la production
@@ -41,7 +42,7 @@ i18n.on('languageChanged', (lng) => {
 });
 
 // Initialiser la direction au chargement
-const currentLang = i18n.language || 'fr';
+const currentLang = i18n.language || 'en';
 if (currentLang === 'ar') {
     document.documentElement.dir = 'rtl';
 } else {

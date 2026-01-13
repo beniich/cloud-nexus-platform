@@ -6,7 +6,7 @@ import { MessageCircle, X, Send } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/contexts/AuthContext';
 
-import { ChatService, ChatMessage, Conversation } from '@/services/chat.service';
+import { type ChatMessage, type Conversation } from '@/services/chat.service';
 
 interface WidgetMessage {
     id: number;
