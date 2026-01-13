@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "api:gen": "openapi-typescript src/lib/api/openapi-spec.json -o src/lib/api/schema.d.ts",
     "api:fetch": "ts-node fetch-spec.ts",
-    "api:sync": "npm run api:fetch && npm run api:gen"
+    "api:sync": "npm run api:fetch && npm run api:gen",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -98,6 +99,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",

@@ -10,7 +10,200 @@
         "dashboard": "Tableau de Bord",
         "read_more": "En savoir plus",
         "view_all": "Tout voir",
-        "add_to_cart": "Ajouter au panier"
+        "add_to_cart": "Ajouter au panier",
+        "logout": "Déconnexion",
+        "loading": "Chargement...",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "delete": "Supprimer",
+        "edit": "Modifier",
+        "create": "Créer",
+        "submit": "Soumettre",
+        "back": "Retour",
+        "next": "Suivant",
+        "previous": "Précédent",
+        "close": "Fermer",
+        "confirm": "Confirmer",
+        "yes": "Oui",
+        "no": "Non"
+    },
+    "auth": {
+        "login": "Connexion",
+        "signup": "Inscription",
+        "email": "Email",
+        "password": "Mot de passe",
+        "professionalEmail": "Email professionnel",
+        "fullName": "Nom complet",
+        "forgotPassword": "Oublié ?",
+        "resetPassword": "Réinitialiser le mot de passe",
+        "signInButton": "Se connecter",
+        "signUpButton": "Créer mon compte",
+        "welcomeBack": "Bon retour",
+        "createAccount": "Créer un compte",
+        "accessInfrastructure": "Accédez à votre infrastructure Cloud",
+        "joinPlatform": "Rejoignez la plateforme Cloud Nexus",
+        "googleLogin": "Google",
+        "githubLogin": "GitHub",
+        "orByEmail": "OU PAR EMAIL",
+        "demoCredentials": "Démo Rapide: admin@hustel.com / password123",
+        "backToPortal": "← Retour au portail public",
+        "backToHome": "← Retour à l'accueil",
+        "authenticating": "Authentification...",
+        "signupDisabled": "L'inscription est désactivée en mode démo. Utilisez les comptes prédéfinis.",
+        "googleNotConfigured": "Connexion via {{provider}} non configurée.",
+        "fillAllFields": "Veuillez remplir tous les champs"
+    },
+    "navbar": {
+        "home": "Accueil",
+        "dashboard": "Dashboard",
+        "shop": "Boutique",
+        "services": "Services",
+        "products": "Produits",
+        "contact": "Contact",
+        "logout": "Déconnexion",
+        "language": "Langue",
+        "profile": "Profil",
+        "settings": "Paramètres",
+        "notifications": "Notifications",
+        "cms": "CMS",
+        "hosting": "Hébergement",
+        "customOffer": "Offre Sur Mesure"
+    },
+    "servicesPage": {
+        "title": "Nos Services",
+        "subtitle": "Des solutions complètes pour accélérer votre transformation digitale et optimiser votre infrastructure IT",
+        "items": {
+            "cloudInfrastructure": {
+                "title": "Infrastructure Cloud",
+                "desc": "Migrez votre infrastructure vers le cloud avec nos solutions scalables et sécurisées."
+            },
+            "digitalTransformation": {
+                "title": "Transformation Digitale",
+                "desc": "Accompagnement complet dans votre transition numérique."
+            },
+            "cybersecurity": {
+                "title": "Cybersécurité",
+                "desc": "Protection avancée contre les menaces cyber."
+            },
+            "cloudBackup": {
+                "title": "Sauvegarde Cloud",
+                "desc": "Solutions de backup automatisées et sécurisées."
+            },
+            "devops": {
+                "title": "DevOps & CI/CD",
+                "desc": "Optimisez vos processus de développement et déploiement."
+            },
+            "consulting": {
+                "title": "Consulting IT",
+                "desc": "Expertise technique et stratégique pour vos projets IT."
+            }
+        },
+        "cta": {
+            "title": "Besoin d'un service personnalisé ?",
+            "subtitle": "Contactez notre équipe pour discuter de vos besoins spécifiques",
+            "button": "Nous contacter"
+        }
+    },
+    "shopPage": {
+        "title": "Boutique",
+        "subtitle": "Équipements et matériel professionnel pour votre infrastructure IT",
+        "filters": {
+            "category": "Catégorie",
+            "allCategories": "Toutes catégories",
+            "sortBy": "Trier par",
+            "popularity": "Popularité",
+            "priceAsc": "Prix croissant",
+            "priceDesc": "Prix décroissant",
+            "name": "Nom"
+        },
+        "productsCount": "{{count}} produit",
+        "productsCount_other": "{{count}} produits",
+        "noProducts": "Aucun produit disponible dans cette catégorie."
+    },
+    "cartPage": {
+        "title": "Panier",
+        "emptyTitle": "Votre panier est vide",
+        "emptyDesc": "Découvrez nos produits et ajoutez-en à votre panier",
+        "exploreShop": "Explorer la boutique",
+        "summaryTitle": "Résumé de la commande",
+        "subtotal": "Sous-total",
+        "shipping": "Livraison",
+        "total": "Total",
+        "checkout": "Procéder au paiement",
+        "continueShopping": "Continuer mes achats",
+        "decreaseQty": "Diminuer la quantité",
+        "increaseQty": "Augmenter la quantité",
+        "removeItem": "Retirer du panier"
+    },
+    "cmsPage": {
+        "headerTitle": "Headless CMS Pro",
+        "headerSubtitle": "Système avancé avec IA + IndexedDB",
+        "sidebar": {
+            "dashboard": "Dashboard",
+            "contents": "Contenus",
+            "types": "Types",
+            "media": "Médias",
+            "aiGenerator": "Générateur IA",
+            "api": "API"
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "total": "Total",
+            "published": "Publiés",
+            "drafts": "Brouillons",
+            "types": "Types",
+            "recentContents": "Contenus récents"
+        },
+        "actions": {
+            "new": "Nouveau",
+            "media": "Médias",
+            "ai": "IA"
+        },
+        "alerts": {
+            "enterDescription": "Veuillez entrer une description",
+            "generationError": "Erreur lors de la génération. Veuillez réessayer.",
+            "deleteMedia": "Supprimer ce média ?",
+            "fillRequired": "Veuillez remplir tous les champs requis",
+            "deleteType": "Supprimer ce type de contenu ? Les contenus associés ne seront pas supprimés.",
+            "selectType": "Sélectionnez un type de contenu",
+            "missingFields": "Champs requis manquants",
+            "deleteContent": "Supprimer ce contenu ?"
+        },
+        "loading": "Chargement de la base de données..."
+    },
+    "serviceRequestPage": {
+        "title": "Configurez votre hébergement",
+        "subtitle": "Obtenez une estimation personnalisée",
+        "steps": {
+            "info": "Vos informations",
+            "serviceType": "Type de service",
+            "details": "Détails",
+            "summary": "Résumé"
+        },
+        "fields": {
+            "fullName": "Nom complet",
+            "email": "Email",
+            "phone": "Téléphone",
+            "country": "Pays",
+            "serviceType": "Type de service souhaité"
+        },
+        "estimation": {
+            "current": "Estimation actuelle",
+            "monthly": "€/mois",
+            "setup": "installation"
+        },
+        "success": {
+            "title": "Demande bien reçue !",
+            "message": "Nous vous contacterons sous 24-48h.",
+            "button": "Nouvelle demande"
+        },
+        "summary": {
+            "title": "Votre estimation",
+            "server": "Serveur de base",
+            "options": "Options & services",
+            "total": "Total mensuel",
+            "setupOneTime": "de frais d'installation (une fois)"
+        }
     },
     "hero": {
         "title": "Propulsez votre entreprise vers le cloud",
@@ -57,5 +250,89 @@
             "btn_contact": "Nous contacter",
             "btn_dashboard": "Accéder au dashboard"
         }
+    },
+    "dashboard": {
+        "title": "Tableau de Bord",
+        "welcome": "Bienvenue, {{name}} !",
+        "overview": "Vue d'ensemble",
+        "analytics": "Analytiques",
+        "cloud": "Cloud",
+        "hosting": "Hébergement",
+        "crm": "CRM",
+        "livepulse": "Live Pulse",
+        "quickActions": "Actions rapides",
+        "recentActivity": "Activité récente",
+        "statistics": "Statistiques"
+    },
+    "crm": {
+        "title": "CRM Hustel",
+        "leads": "Prospects",
+        "customers": "Clients",
+        "tickets": "Tickets",
+        "pipeline": "Pipeline",
+        "newLead": "Nouveau prospect",
+        "newTicket": "Nouveau ticket",
+        "status": "Statut",
+        "priority": "Priorité",
+        "assignedTo": "Assigné à",
+        "dueDate": "Date d'échéance",
+        "open": "Ouvert",
+        "closed": "Fermé",
+        "inProgress": "En cours",
+        "high": "Haute",
+        "medium": "Moyenne",
+        "low": "Basse"
+    },
+    "hosting": {
+        "title": "Hébergement",
+        "plans": "Plans d'hébergement",
+        "requests": "Demandes",
+        "myHosting": "Mon hébergement",
+        "starter": "Starter",
+        "pro": "Pro",
+        "enterprise": "Entreprise",
+        "custom": "Personnalisé",
+        "selectPlan": "Sélectionner ce plan",
+        "requestHosting": "Demander un hébergement",
+        "billingCycle": "Cycle de facturation",
+        "monthly": "Mensuel",
+        "yearly": "Annuel",
+        "features": "Fonctionnalités",
+        "storage": "Stockage",
+        "bandwidth": "Bande passante",
+        "domains": "Domaines",
+        "ssl": "Certificat SSL",
+        "support": "Support"
+    },
+    "footer": {
+        "company": "Entreprise",
+        "about": "À propos",
+        "careers": "Carrières",
+        "press": "Presse",
+        "legal": "Mentions légales",
+        "privacy": "Confidentialité",
+        "terms": "Conditions d'utilisation",
+        "support": "Support",
+        "documentation": "Documentation",
+        "helpCenter": "Centre d'aide",
+        "contactUs": "Nous contacter",
+        "followUs": "Suivez-nous",
+        "allRightsReserved": "Tous droits réservés"
+    },
+    "forms": {
+        "required": "Ce champ est requis",
+        "invalidEmail": "Email invalide",
+        "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+        "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+        "success": "Succès !",
+        "error": "Erreur",
+        "tryAgain": "Réessayer"
+    },
+    "errors": {
+        "AUTH_USER_NOT_FOUND": "Utilisateur non trouvé. Utilisez : admin@hustel.com, seller@hustel.com ou client@hustel.com",
+        "AUTH_PASSWORD_REQUIRED": "Mot de passe requis",
+        "AUTH_LOGIN_FAILED": "Échec de la connexion",
+        "GENERIC_ERROR": "Une erreur est survenue",
+        "NETWORK_ERROR": "Erreur réseau"
     }
 }

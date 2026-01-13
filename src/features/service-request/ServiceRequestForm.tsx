@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     ChevronRight, ChevronLeft, Check, Server, Globe, Database,
     Cpu, Settings, CheckCircle, User
@@ -19,6 +20,7 @@ interface PricingMatrix {
 }
 
 const ServiceRequestForm = () => {
+    const { t } = useTranslation();
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState<any>({
         fullName: '',
@@ -51,6 +53,22 @@ const ServiceRequestForm = () => {
         addons: 0,
         totalMonthly: 0
     });
+
+    const steps = [
+        { id: 1, title: t('serviceRequestPage.steps.info'), icon: Globe },
+        { id: 2, title: t('serviceRequestPage.steps.serviceType'), icon: Server },
+        { id: 3, title: t('serviceRequestPage.steps.details'), icon: Cpu },
+        { id: 4, title: t('serviceRequestPage.steps.summary'), icon: CheckCircle },
+    ];
+
+    const serviceOptions = [
+        { id: 'web-hosting', label: 'Web Hosting', icon: Globe, price: 10 },
+        { id: 'vps', label: 'VPS Cloud', icon: Server, price: 50 },
+        { id: 'dedicated-server', label: 'Serveur Dédié', icon: Database, price: 120 },
+        { id: 'cloud-server', label: 'Cloud Server', icon: Database, price: 80 },
+        { id: 'migration', label: 'Migration', icon: Settings, price: 180 },
+        { id: 'other', label: 'Autre', icon: Settings, price: 50 },
+    ];
 
     const totalSteps = 6;
 
@@ -91,7 +109,7 @@ const ServiceRequestForm = () => {
     };
 
     const calculatePricing = () => {
-        let serverPrice = pricingMatrix.server[`${formData.ram}-${formData.cpu}`]?.monthly || 0;
+        const serverPrice = pricingMatrix.server[`${formData.ram}-${formData.cpu}`]?.monthly || 0;
         let setupFee = 0;
         let addonsPrice = 0;
 
@@ -171,32 +189,32 @@ const ServiceRequestForm = () => {
                             <CheckCircle className="w-14 h-14 text-green-600" />
                         </div>
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                            Demande bien reçue !
+                            {t('serviceRequestPage.success.title')}
                         </h2>
                         <p className="text-lg text-gray-600 mb-8">
                             Merci <strong>{formData.fullName}</strong> !<br />
-                            Nous vous contacterons sous 24-48h.
+                            {t('serviceRequestPage.success.message')}
                         </p>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl p-6 mb-8">
-                        <h3 className="text-xl font-semibold text-center mb-6">Votre estimation</h3>
+                        <h3 className="text-xl font-semibold text-center mb-6">{t('serviceRequestPage.summary.title')}</h3>
                         <div className="space-y-4 text-gray-700">
                             <div className="flex justify-between py-2 border-b">
-                                <span>Serveur de base</span>
-                                <span className="font-medium">{pricing.server} €/mois</span>
+                                <span>{t('serviceRequestPage.summary.server')}</span>
+                                <span className="font-medium">{pricing.server} {t('serviceRequestPage.estimation.monthly')}</span>
                             </div>
                             <div className="flex justify-between py-2 border-b">
-                                <span>Options & services</span>
-                                <span className="font-medium">{pricing.addons.toFixed(2)} €/mois</span>
+                                <span>{t('serviceRequestPage.summary.options')}</span>
+                                <span className="font-medium">{pricing.addons.toFixed(2)} {t('serviceRequestPage.estimation.monthly')}</span>
                             </div>
                             <div className="flex justify-between text-xl font-bold text-blue-700 pt-4">
-                                <span>Total mensuel</span>
-                                <span>{pricing.totalMonthly} €/mois</span>
+                                <span>{t('serviceRequestPage.summary.total')}</span>
+                                <span>{pricing.totalMonthly} {t('serviceRequestPage.estimation.monthly')}</span>
                             </div>
                             {pricing.setupFee > 0 && (
                                 <p className="text-sm text-center text-red-600 mt-2">
-                                    + {pricing.setupFee} € de frais d'installation (une fois)
+                                    + {pricing.setupFee} € {t('serviceRequestPage.summary.setupOneTime')}
                                 </p>
                             )}
                         </div>
@@ -206,7 +224,7 @@ const ServiceRequestForm = () => {
                         onClick={() => { setSubmitted(false); setCurrentStep(1); }}
                         className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:brightness-110 transition"
                     >
-                        Nouvelle demande
+                        {t('serviceRequestPage.success.button')}
                     </button>
                 </div>
             </div>
@@ -221,9 +239,9 @@ const ServiceRequestForm = () => {
                         <Server className="w-12 h-12 text-white" />
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-                        Configurez votre hébergement
+                        {t('serviceRequestPage.title')}
                     </h1>
-                    <p className="text-xl text-gray-600">Obtenez une estimation personnalisée</p>
+                    <p className="text-xl text-gray-600">{t('serviceRequestPage.subtitle')}</p>
                 </div>
 
                 {/* Barre de progression */}
@@ -234,8 +252,8 @@ const ServiceRequestForm = () => {
                             return (
                                 <React.Fragment key={step}>
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${currentStep > step ? 'bg-green-500 text-white' :
-                                            currentStep === step ? 'bg-blue-600 text-white ring-4 ring-blue-100' :
-                                                'bg-gray-200 text-gray-500'
+                                        currentStep === step ? 'bg-blue-600 text-white ring-4 ring-blue-100' :
+                                            'bg-gray-200 text-gray-500'
                                         }`}>
                                         {currentStep > step ? <Check size={18} /> : step}
                                     </div>
@@ -255,23 +273,23 @@ const ServiceRequestForm = () => {
                         <div className="space-y-6">
                             <div className="flex items-center gap-3">
                                 <User className="w-8 h-8 text-blue-600" />
-                                <h2 className="text-2xl font-bold">Vos informations</h2>
+                                <h2 className="text-2xl font-bold">{t('serviceRequestPage.steps.info')}</h2>
                             </div>
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Nom complet *</label>
+                                    <label className="block text-sm font-medium mb-2">{t('serviceRequestPage.fields.fullName')} *</label>
                                     <input type="text" value={formData.fullName} onChange={e => update('fullName', e.target.value)} className="w-full p-3 border rounded-lg" required />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Email *</label>
+                                    <label className="block text-sm font-medium mb-2">{t('serviceRequestPage.fields.email')} *</label>
                                     <input type="email" value={formData.email} onChange={e => update('email', e.target.value)} className="w-full p-3 border rounded-lg" required />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Téléphone *</label>
+                                    <label className="block text-sm font-medium mb-2">{t('serviceRequestPage.fields.phone')} *</label>
                                     <input type="tel" value={formData.phone} onChange={e => update('phone', e.target.value)} className="w-full p-3 border rounded-lg" required />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Pays</label>
+                                    <label className="block text-sm font-medium mb-2">{t('serviceRequestPage.fields.country')}</label>
                                     <input type="text" value={formData.country} onChange={e => update('country', e.target.value)} className="w-full p-3 border rounded-lg" />
                                 </div>
                             </div>
@@ -283,7 +301,7 @@ const ServiceRequestForm = () => {
                         <div className="space-y-6">
                             <div className="flex items-center gap-3">
                                 <Globe className="w-8 h-8 text-blue-600" />
-                                <h2 className="text-2xl font-bold">Type de service souhaité</h2>
+                                <h2 className="text-2xl font-bold">{t('serviceRequestPage.fields.serviceType')}</h2>
                             </div>
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {[
@@ -299,8 +317,8 @@ const ServiceRequestForm = () => {
                                         type="button"
                                         onClick={() => toggleArray('serviceType', item.id)}
                                         className={`p-5 rounded-xl border-2 transition-all text-left ${formData.serviceType.includes(item.id)
-                                                ? 'border-blue-600 bg-blue-50 shadow-sm'
-                                                : 'border-gray-200 hover:border-blue-300'
+                                            ? 'border-blue-600 bg-blue-50 shadow-sm'
+                                            : 'border-gray-200 hover:border-blue-300'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -321,7 +339,7 @@ const ServiceRequestForm = () => {
                                 onClick={() => setCurrentStep(p => p - 1)}
                                 className="px-6 py-3 bg-gray-100 rounded-xl hover:bg-gray-200 flex items-center gap-2"
                             >
-                                <ChevronLeft size={20} /> Retour
+                                <ChevronLeft size={20} /> {t('common.back')}
                             </button>
                         )}
 
@@ -331,26 +349,26 @@ const ServiceRequestForm = () => {
                                 onClick={() => isStepValid() && setCurrentStep(p => p + 1)}
                                 disabled={!isStepValid()}
                                 className={`px-8 py-3 rounded-xl font-medium flex items-center gap-2 ml-auto ${isStepValid()
-                                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                     }`}
                             >
-                                Suivant <ChevronRight size={20} />
+                                {t('common.next')} <ChevronRight size={20} />
                             </button>
                         ) : (
                             <button
                                 type="submit"
                                 className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold ml-auto hover:brightness-110"
                             >
-                                Envoyer ma demande
+                                {t('common.submit')}
                             </button>
                         )}
                     </div>
 
                     {/* Estimation rapide */}
                     <div className="mt-6 text-center text-sm text-gray-600">
-                        Estimation actuelle : <strong className="text-blue-700">{pricing.totalMonthly} €/mois</strong>
-                        {pricing.setupFee > 0 && <span> + {pricing.setupFee}€ installation</span>}
+                        {t('serviceRequestPage.estimation.current')} <strong className="text-blue-700">{pricing.totalMonthly} {t('serviceRequestPage.estimation.monthly')}</strong>
+                        {pricing.setupFee > 0 && <span> + {pricing.setupFee}€ {t('serviceRequestPage.estimation.setup')}</span>}
                     </div>
                 </form>
             </div>

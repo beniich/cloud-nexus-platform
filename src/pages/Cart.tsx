@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -7,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
 
 export default function Cart() {
+  const { t } = useTranslation();
   const { items: cartItems, removeItem, updateQuantity, total } = useCart();
   const shipping = 20;
 
@@ -16,17 +18,17 @@ export default function Cart() {
 
       <main className="flex-1 pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="font-display font-bold text-4xl mb-8">Panier</h1>
+          <h1 className="font-display font-bold text-4xl mb-8">{t('cartPage.title')}</h1>
 
           {cartItems.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
                 <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <h2 className="font-display font-semibold text-2xl mb-2">Votre panier est vide</h2>
-                <p className="text-muted-foreground mb-6">Découvrez nos produits et ajoutez-en à votre panier</p>
+                <h2 className="font-display font-semibold text-2xl mb-2">{t('cartPage.emptyTitle')}</h2>
+                <p className="text-muted-foreground mb-6">{t('cartPage.emptyDesc')}</p>
                 <Link to="/shop">
                   <Button variant="accent" size="lg">
-                    Explorer la boutique
+                    {t('cartPage.exploreShop')}
                   </Button>
                 </Link>
               </CardContent>
@@ -52,7 +54,7 @@ export default function Cart() {
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                 className="p-2 hover:bg-muted transition-colors"
-                                aria-label="Diminuer la quantité"
+                                aria-label={t('cartPage.decreaseQty')}
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
@@ -60,7 +62,7 @@ export default function Cart() {
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                 className="p-2 hover:bg-muted transition-colors"
-                                aria-label="Augmenter la quantité"
+                                aria-label={t('cartPage.increaseQty')}
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -68,7 +70,7 @@ export default function Cart() {
                             <button
                               onClick={() => removeItem(item.id)}
                               className="text-destructive hover:text-destructive/80 transition-colors"
-                              aria-label="Retirer du panier"
+                              aria-label={t('cartPage.removeItem')}
                             >
                               <Trash2 className="w-5 h-5" />
                             </button>
@@ -87,31 +89,31 @@ export default function Cart() {
               <div>
                 <Card className="sticky top-20">
                   <CardContent className="p-6">
-                    <h2 className="font-display font-semibold text-xl mb-6">Résumé de la commande</h2>
+                    <h2 className="font-display font-semibold text-xl mb-6">{t('cartPage.summaryTitle')}</h2>
                     <div className="space-y-4 mb-6">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Sous-total</span>
+                        <span className="text-muted-foreground">{t('cartPage.subtotal')}</span>
                         <span className="font-semibold">{total}€</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Livraison</span>
+                        <span className="text-muted-foreground">{t('cartPage.shipping')}</span>
                         <span className="font-semibold">{shipping}€</span>
                       </div>
                       <div className="border-t border-border pt-4">
                         <div className="flex justify-between">
-                          <span className="font-display font-semibold text-lg">Total</span>
+                          <span className="font-display font-semibold text-lg">{t('cartPage.total')}</span>
                           <span className="font-display font-bold text-2xl text-primary">{total + shipping}€</span>
                         </div>
                       </div>
                     </div>
                     <Link to="/checkout">
                       <Button variant="accent" size="lg" className="w-full mb-4">
-                        Procéder au paiement
+                        {t('cartPage.checkout')}
                       </Button>
                     </Link>
                     <Link to="/shop">
                       <Button variant="outline" size="lg" className="w-full">
-                        Continuer mes achats
+                        {t('cartPage.continueShopping')}
                       </Button>
                     </Link>
                   </CardContent>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
@@ -8,6 +9,7 @@ import { useProducts } from '@/contexts/ProductContext';
 import SEO from "@/components/SEO";
 
 export default function Shop() {
+  const { t } = useTranslation();
   const { products } = useProducts();
   const [category, setCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('popularity');
@@ -28,16 +30,16 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen">
-      <SEO title="Boutique" description="Parcourez notre catalogue complet de matériel informatique et solutions cloud." />
+      <SEO title={t('shopPage.title')} description={t('shopPage.subtitle')} />
       <Navbar />
 
       <main className="pt-16">
         {/* Hero Section */}
         <section className="bg-gradient-primary text-primary-foreground py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="font-display font-bold mb-6">Boutique</h1>
+            <h1 className="font-display font-bold mb-6">{t('shopPage.title')}</h1>
             <p className="text-xl max-w-3xl mx-auto opacity-90">
-              Équipements et matériel professionnel pour votre infrastructure IT
+              {t('shopPage.subtitle')}
             </p>
           </div>
         </section>
@@ -49,10 +51,10 @@ export default function Shop() {
               <div className="flex gap-4 w-full sm:w-auto">
                 <Select value={category} onValueChange={setCategory}>
                   <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Catégorie" />
+                    <SelectValue placeholder={t('shopPage.filters.category')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Toutes catégories</SelectItem>
+                    <SelectItem value="all">{t('shopPage.filters.allCategories')}</SelectItem>
                     {categories.map((cat) => (
                       <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                     ))}
@@ -61,18 +63,18 @@ export default function Shop() {
 
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Trier par" />
+                    <SelectValue placeholder={t('shopPage.filters.sortBy')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="popularity">Popularité</SelectItem>
-                    <SelectItem value="price-asc">Prix croissant</SelectItem>
-                    <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                    <SelectItem value="name">Nom</SelectItem>
+                    <SelectItem value="popularity">{t('shopPage.filters.popularity')}</SelectItem>
+                    <SelectItem value="price-asc">{t('shopPage.filters.priceAsc')}</SelectItem>
+                    <SelectItem value="price-desc">{t('shopPage.filters.priceDesc')}</SelectItem>
+                    <SelectItem value="name">{t('shopPage.filters.name')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <p className="text-sm text-muted-foreground">
-                {sortedProducts.length} produit{sortedProducts.length > 1 ? 's' : ''}
+                {t('shopPage.productsCount', { count: sortedProducts.length })}
               </p>
             </div>
           </div>
@@ -98,7 +100,7 @@ export default function Shop() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">Aucun produit disponible dans cette catégorie.</p>
+                <p className="text-muted-foreground text-lg">{t('shopPage.noProducts')}</p>
               </div>
             )}
           </div>

@@ -10,7 +10,200 @@
         "dashboard": "Dashboard",
         "read_more": "Read More",
         "view_all": "View All",
-        "add_to_cart": "Add to Cart"
+        "add_to_cart": "Add to Cart",
+        "logout": "Logout",
+        "loading": "Loading...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "submit": "Submit",
+        "back": "Back",
+        "next": "Next",
+        "previous": "Previous",
+        "close": "Close",
+        "confirm": "Confirm",
+        "yes": "Yes",
+        "no": "No"
+    },
+    "auth": {
+        "login": "Login",
+        "signup": "Sign Up",
+        "email": "Email",
+        "password": "Password",
+        "professionalEmail": "Professional email",
+        "fullName": "Full name",
+        "forgotPassword": "Forgot?",
+        "resetPassword": "Reset password",
+        "signInButton": "Sign in",
+        "signUpButton": "Create my account",
+        "welcomeBack": "Welcome back",
+        "createAccount": "Create account",
+        "accessInfrastructure": "Access your Cloud infrastructure",
+        "joinPlatform": "Join Cloud Nexus platform",
+        "googleLogin": "Google",
+        "githubLogin": "GitHub",
+        "orByEmail": "OR BY EMAIL",
+        "demoCredentials": "Quick Demo: admin@hustel.com / password123",
+        "backToPortal": "← Back to public portal",
+        "backToHome": "← Back to home",
+        "authenticating": "Authenticating...",
+        "signupDisabled": "Sign up is disabled in demo mode. Use predefined accounts.",
+        "googleNotConfigured": "{{provider}} login not configured.",
+        "fillAllFields": "Please fill all fields"
+    },
+    "navbar": {
+        "home": "Home",
+        "dashboard": "Dashboard",
+        "shop": "Shop",
+        "services": "Services",
+        "products": "Products",
+        "contact": "Contact",
+        "logout": "Logout",
+        "language": "Language",
+        "profile": "Profile",
+        "settings": "Settings",
+        "notifications": "Notifications",
+        "cms": "CMS",
+        "hosting": "Hosting",
+        "customOffer": "Custom Offer"
+    },
+    "servicesPage": {
+        "title": "Our Services",
+        "subtitle": "Complete solutions to accelerate your digital transformation and optimize your IT infrastructure",
+        "items": {
+            "cloudInfrastructure": {
+                "title": "Cloud Infrastructure",
+                "desc": "Migrate your infrastructure to the cloud with our scalable and secure solutions."
+            },
+            "digitalTransformation": {
+                "title": "Digital Transformation",
+                "desc": "Complete support in your digital transition."
+            },
+            "cybersecurity": {
+                "title": "Cybersecurity",
+                "desc": "Advanced protection against cyber threats."
+            },
+            "cloudBackup": {
+                "title": "Cloud Backup",
+                "desc": "Automated and secure backup solutions."
+            },
+            "devops": {
+                "title": "DevOps & CI/CD",
+                "desc": "Optimize your development and deployment processes."
+            },
+            "consulting": {
+                "title": "IT Consulting",
+                "desc": "Technical and strategic expertise for your IT projects."
+            }
+        },
+        "cta": {
+            "title": "Need a custom service?",
+            "subtitle": "Contact our team to discuss your specific needs",
+            "button": "Contact Us"
+        }
+    },
+    "shopPage": {
+        "title": "Shop",
+        "subtitle": "Professional hardware and equipment for your IT infrastructure",
+        "filters": {
+            "category": "Category",
+            "allCategories": "All categories",
+            "sortBy": "Sort by",
+            "popularity": "Popularity",
+            "priceAsc": "Price ascending",
+            "priceDesc": "Price descending",
+            "name": "Name"
+        },
+        "productsCount": "{{count}} product",
+        "productsCount_other": "{{count}} products",
+        "noProducts": "No products available in this category."
+    },
+    "cartPage": {
+        "title": "Cart",
+        "emptyTitle": "Your cart is empty",
+        "emptyDesc": "Discover our products and add them to your cart",
+        "exploreShop": "Explore Shop",
+        "summaryTitle": "Order Summary",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "total": "Total",
+        "checkout": "Proceed to Checkout",
+        "continueShopping": "Continue Shopping",
+        "decreaseQty": "Decrease quantity",
+        "increaseQty": "Increase quantity",
+        "removeItem": "Remove item"
+    },
+    "cmsPage": {
+        "headerTitle": "Headless CMS Pro",
+        "headerSubtitle": "Advanced system with AI + IndexedDB",
+        "sidebar": {
+            "dashboard": "Dashboard",
+            "contents": "Contents",
+            "types": "Types",
+            "media": "Media",
+            "aiGenerator": "AI Generator",
+            "api": "API"
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "total": "Total",
+            "published": "Published",
+            "drafts": "Drafts",
+            "types": "Types",
+            "recentContents": "Recent Contents"
+        },
+        "actions": {
+            "new": "New",
+            "media": "Media",
+            "ai": "AI"
+        },
+        "alerts": {
+            "enterDescription": "Please enter a description",
+            "generationError": "Error during generation. Please try again.",
+            "deleteMedia": "Delete this media?",
+            "fillRequired": "Please fill all required fields",
+            "deleteType": "Delete this content type? Associated contents will not be deleted.",
+            "selectType": "Select a content type",
+            "missingFields": "Missing required fields",
+            "deleteContent": "Delete this content?"
+        },
+        "loading": "Loading database..."
+    },
+    "serviceRequestPage": {
+        "title": "Configure your hosting",
+        "subtitle": "Get a custom estimate",
+        "steps": {
+            "info": "Your Details",
+            "serviceType": "Service Type",
+            "details": "Details",
+            "summary": "Summary"
+        },
+        "fields": {
+            "fullName": "Full Name",
+            "email": "Email",
+            "phone": "Phone",
+            "country": "Country",
+            "serviceType": "Desired Service Type"
+        },
+        "estimation": {
+            "current": "Current estimation",
+            "monthly": "€/month",
+            "setup": "setup"
+        },
+        "success": {
+            "title": "Request received!",
+            "message": "We will contact you within 24-48h.",
+            "button": "New Request"
+        },
+        "summary": {
+            "title": "Your Estimate",
+            "server": "Base Server",
+            "options": "Options & Services",
+            "total": "Monthly Total",
+            "setupOneTime": "setup fee (one-time)"
+        }
     },
     "hero": {
         "title": "Propel your business to the cloud",
@@ -57,5 +250,89 @@
             "btn_contact": "Contact Us",
             "btn_dashboard": "Access Dashboard"
         }
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "welcome": "Welcome, {{name}}!",
+        "overview": "Overview",
+        "analytics": "Analytics",
+        "cloud": "Cloud",
+        "hosting": "Hosting",
+        "crm": "CRM",
+        "livepulse": "Live Pulse",
+        "quickActions": "Quick actions",
+        "recentActivity": "Recent activity",
+        "statistics": "Statistics"
+    },
+    "crm": {
+        "title": "CRM Hustel",
+        "leads": "Leads",
+        "customers": "Customers",
+        "tickets": "Tickets",
+        "pipeline": "Pipeline",
+        "newLead": "New lead",
+        "newTicket": "New ticket",
+        "status": "Status",
+        "priority": "Priority",
+        "assignedTo": "Assigned to",
+        "dueDate": "Due date",
+        "open": "Open",
+        "closed": "Closed",
+        "inProgress": "In progress",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+    },
+    "hosting": {
+        "title": "Hosting",
+        "plans": "Hosting plans",
+        "requests": "Requests",
+        "myHosting": "My hosting",
+        "starter": "Starter",
+        "pro": "Pro",
+        "enterprise": "Enterprise",
+        "custom": "Custom",
+        "selectPlan": "Select this plan",
+        "requestHosting": "Request hosting",
+        "billingCycle": "Billing cycle",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "features": "Features",
+        "storage": "Storage",
+        "bandwidth": "Bandwidth",
+        "domains": "Domains",
+        "ssl": "SSL Certificate",
+        "support": "Support"
+    },
+    "footer": {
+        "company": "Company",
+        "about": "About",
+        "careers": "Careers",
+        "press": "Press",
+        "legal": "Legal",
+        "privacy": "Privacy",
+        "terms": "Terms of Service",
+        "support": "Support",
+        "documentation": "Documentation",
+        "helpCenter": "Help Center",
+        "contactUs": "Contact Us",
+        "followUs": "Follow Us",
+        "allRightsReserved": "All rights reserved"
+    },
+    "forms": {
+        "required": "This field is required",
+        "invalidEmail": "Invalid email",
+        "passwordTooShort": "Password must be at least 8 characters",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "success": "Success!",
+        "error": "Error",
+        "tryAgain": "Try again"
+    },
+    "errors": {
+        "AUTH_USER_NOT_FOUND": "User not found. Use: admin@hustel.com, seller@hustel.com or client@hustel.com",
+        "AUTH_PASSWORD_REQUIRED": "Password required",
+        "AUTH_LOGIN_FAILED": "Login failed",
+        "GENERIC_ERROR": "An error occurred",
+        "NETWORK_ERROR": "Network error"
     }
 }

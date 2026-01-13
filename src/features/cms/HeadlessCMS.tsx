@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Save, Plus, Trash2, Edit2, Eye, Code, FileText, Layout, Settings, Search, Filter, Calendar, Tag, Users, Globe, Sparkles, Zap, Download, Copy, Upload, X, Image, Film, File, Check } from 'lucide-react';
 
 // IndexedDB avec Dexie-like simple implementation
@@ -141,6 +142,7 @@ class LocalAPI {
 }
 
 const HeadlessCMS = () => {
+    const { t } = useTranslation();
     const [db, setDb] = useState<SimpleDB | null>(null);
     const [api, setApi] = useState<LocalAPI | null>(null);
     const [activeView, setActiveView] = useState('dashboard');
@@ -255,7 +257,7 @@ const HeadlessCMS = () => {
     // Générer avec l'IA
     const generateWithAI = async () => {
         if (!aiPrompt.trim()) {
-            alert('Veuillez entrer une description');
+            alert(t('cmsPage.alerts.enterDescription'));
             return;
         }
 
@@ -316,7 +318,7 @@ Description: ${aiPrompt}`
             setGeneratedCode(cleanCode);
         } catch (error) {
             console.error('Erreur génération IA:', error);
-            alert('Erreur lors de la génération. Veuillez réessayer.');
+            alert(t('cmsPage.alerts.generationError'));
         } finally {
             setAiGenerating(false);
         }
@@ -354,7 +356,7 @@ Description: ${aiPrompt}`
     // Supprimer média
     const deleteMedia = async (id: string) => {
         if (!db) return;
-        if (confirm('Supprimer ce média ?')) {
+        if (confirm(t('cmsPage.alerts.deleteMedia'))) {
             await db.delete('media', id);
             setMedia(prev => prev.filter(m => m.id !== id));
         }
@@ -364,7 +366,7 @@ Description: ${aiPrompt}`
     const saveContentType = async () => {
         if (!db) return;
         if (!typeFormData.id || !typeFormData.name || typeFormData.fields.length === 0) {
-            alert('Veuillez remplir tous les champs requis');
+            alert(t('cmsPage.alerts.fillRequired'));
             return;
         }
 
@@ -385,7 +387,7 @@ Description: ${aiPrompt}`
 
     const deleteContentType = async (id: string) => {
         if (!db) return;
-        if (confirm('Supprimer ce type de contenu ? Les contenus associés ne seront pas supprimés.')) {
+        if (confirm(t('cmsPage.alerts.deleteType'))) {
             await db.delete('contentTypes', id);
             setContentTypes(prev => prev.filter(t => t.id !== id));
         }
@@ -433,7 +435,7 @@ Description: ${aiPrompt}`
         if (!api || !db) return;
         const selectedType = contentTypes.find(t => t.id === formData.contentType);
         if (!selectedType) {
-            alert('Sélectionnez un type de contenu');
+            alert(t('cmsPage.alerts.selectType'));
             return;
         }
 
@@ -443,7 +445,7 @@ Description: ${aiPrompt}`
             .map((f: any) => f.label);
 
         if (missingFields.length > 0) {
-            alert(`Champs requis manquants: ${missingFields.join(', ')}`);
+            alert(`${t('cmsPage.alerts.missingFields')}: ${missingFields.join(', ')}`);
             return;
         }
 
@@ -461,7 +463,7 @@ Description: ${aiPrompt}`
 
     const deleteContent = async (id: string) => {
         if (!api) return;
-        if (confirm('Supprimer ce contenu ?')) {
+        if (confirm(t('cmsPage.alerts.deleteContent'))) {
             await api.deleteContent(id);
             setContents(prev => prev.filter(c => c.id !== id));
         }
@@ -640,7 +642,7 @@ Description: ${aiPrompt}`
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
-                <div className="text-gray-500 text-lg">Chargement de la base de données...</div>
+                <div className="text-gray-500 text-lg">{t('cmsPage.loading')}</div>
             </div>
         );
     }
@@ -657,9 +659,9 @@ Description: ${aiPrompt}`
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                    Headless CMS Pro
+                                    {t('cmsPage.headerTitle')}
                                 </h1>
-                                <p className="text-sm text-gray-500">Système avancé avec IA + IndexedDB</p>
+                                <p className="text-sm text-gray-500">{t('cmsPage.headerSubtitle')}</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -702,7 +704,7 @@ Description: ${aiPrompt}`
                                 }`}
                         >
                             <Layout className="w-5 h-5" />
-                            <span className="font-medium">Dashboard</span>
+                            <span className="font-medium">{t('cmsPage.sidebar.dashboard')}</span>
                         </button>
                         <button
                             onClick={() => setActiveView('contents')}
@@ -710,7 +712,7 @@ Description: ${aiPrompt}`
                                 }`}
                         >
                             <FileText className="w-5 h-5" />
-                            <span className="font-medium">Contenus</span>
+                            <span className="font-medium">{t('cmsPage.sidebar.contents')}</span>
                         </button>
                         <button
                             onClick={() => setActiveView('types')}
@@ -718,7 +720,7 @@ Description: ${aiPrompt}`
                                 }`}
                         >
                             <Settings className="w-5 h-5" />
-                            <span className="font-medium">Types</span>
+                            <span className="font-medium">{t('cmsPage.sidebar.types')}</span>
                         </button>
                         <button
                             onClick={() => setActiveView('media')}
@@ -726,7 +728,7 @@ Description: ${aiPrompt}`
                                 }`}
                         >
                             <Image className="w-5 h-5" />
-                            <span className="font-medium">Médias</span>
+                            <span className="font-medium">{t('cmsPage.sidebar.media')}</span>
                         </button>
                         <button
                             onClick={() => setActiveView('ai-generator')}
@@ -734,7 +736,7 @@ Description: ${aiPrompt}`
                                 }`}
                         >
                             <Sparkles className="w-5 h-5" />
-                            <span className="font-medium">Générateur IA</span>
+                            <span className="font-medium">{t('cmsPage.sidebar.aiGenerator')}</span>
                         </button>
                         <button
                             onClick={() => setActiveView('api')}
@@ -742,12 +744,12 @@ Description: ${aiPrompt}`
                                 }`}
                         >
                             <Code className="w-5 h-5" />
-                            <span className="font-medium">API</span>
+                            <span className="font-medium">{t('cmsPage.sidebar.api')}</span>
                         </button>
                     </nav>
 
                     <div className="p-4 border-t border-gray-200">
-                        <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">Types de contenu</h3>
+                        <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">{t('cmsPage.types')}</h3>
                         <div className="space-y-1">
                             {contentTypes.map(type => (
                                 <div key={type.id} className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 rounded hover:bg-gray-50">
@@ -766,14 +768,14 @@ Description: ${aiPrompt}`
                     {/* Dashboard */}
                     {activeView === 'dashboard' && (
                         <div className="space-y-6">
-                            <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+                            <h2 className="text-2xl font-bold text-gray-900">{t('cmsPage.dashboard.title')}</h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                                 {[
-                                    { label: 'Total', value: stats.total, icon: FileText, color: 'blue' },
-                                    { label: 'Publiés', value: stats.published, icon: Eye, color: 'green' },
-                                    { label: 'Brouillons', value: stats.draft, icon: Edit2, color: 'yellow' },
-                                    { label: 'Types', value: stats.types, icon: Settings, color: 'purple' }
+                                    { label: t('cmsPage.dashboard.total'), value: stats.total, icon: FileText, color: 'blue' },
+                                    { label: t('cmsPage.dashboard.published'), value: stats.published, icon: Eye, color: 'green' },
+                                    { label: t('cmsPage.dashboard.drafts'), value: stats.draft, icon: Edit2, color: 'yellow' },
+                                    { label: t('cmsPage.dashboard.types'), value: stats.types, icon: Settings, color: 'purple' }
                                 ].map(stat => (
                                     <div key={stat.label} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                                         <div className="flex items-center justify-between">
@@ -790,7 +792,7 @@ Description: ${aiPrompt}`
                             </div>
 
                             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Contenus récents</h3>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('cmsPage.dashboard.recentContents')}</h3>
                                 <div className="space-y-3">
                                     {contents.slice(0, 5).map(content => (
                                         <div key={content.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">

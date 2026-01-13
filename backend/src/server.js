@@ -15,6 +15,8 @@ import digitalOceanRoutes from './routes/digitalOcean.js';
 import spacesRoutes from './routes/spaces.js';
 import featureFlagsRoutes from './routes/featureFlags.js';
 import usersRoutes from './routes/users.js';
+import vendorRoutes from './routes/vendor.js';
+import settingsRoutes from './routes/settings.js';
 
 dotenv.config();
 
@@ -25,7 +27,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3005', 'http://localhost:8086'], // Update with frontend port
+        origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3005', 'http://localhost:3006', 'http://localhost:8086'], // Update with frontend port
         methods: ["GET", "POST"]
     }
 });
@@ -118,6 +120,8 @@ app.use('/api/digitalocean', digitalOceanRoutes);
 app.use('/api/spaces', spacesRoutes);
 app.use('/api/feature-flags', featureFlagsRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/vendor', vendorRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // ============================================
 // ERROR HANDLING

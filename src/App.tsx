@@ -34,6 +34,13 @@ const CRMHustel = lazy(() => import("./pages/crm/CRMHustel"));
 const SupportTickets = lazy(() => import("./pages/crm/TicketSupportSystem"));
 const ProductManagement = lazy(() => import("./pages/ProductManagement"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const BillingPage = lazy(() => import("./pages/Billing"));
+const CustomDashboard = lazy(() => import("./pages/CustomizableDashboard"));
+const SettingsPage = lazy(() => import("./pages/Settings"));
+
+// Vendor
+const VendorDashboard = lazy(() => import("./pages/vendor/VendorDashboard"));
+import RoleGuard from "./components/RoleGuard";
 
 // CRM Sub-pages
 const LivePulseDashboard = lazy(() => import("./pages/crm/LivePulse"));
@@ -158,6 +165,19 @@ const App = () => {
                         <Route path="/hosting" element={<HostingManagement />} />
                         <Route path="/crm-hustel" element={<CrmDashboard />} />
                         <Route path="/request-service" element={<ServiceRequestForm />} />
+
+                        <Route path="/billing" element={<BillingPage />} />
+                        <Route path="/custom-dashboard" element={<CustomDashboard />} />
+                        <Route path="/billing" element={<BillingPage />} />
+                        <Route path="/custom-dashboard" element={<CustomDashboard />} />
+                        <Route path="/settings" element={<SettingsPage />} />
+
+                        {/* Vendor Routes */}
+                        <Route path="/vendor/dashboard" element={
+                          <RoleGuard allow={['vendor', 'admin']}>
+                            <VendorDashboard />
+                          </RoleGuard>
+                        } />
 
                         <Route path="*" element={<NotFound />} />
                       </Routes>

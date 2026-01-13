@@ -1,0 +1,313 @@
+{
+    "common": {
+        "welcome": "مرحبًا بكم في كلاود نيكسوس",
+        "shop": "المتجر",
+        "services": "الخدمات",
+        "contact": "اتصل بنا",
+        "login": "تسجيل الدخول",
+        "search": "بحث...",
+        "cart": "عربة التسوق",
+        "dashboard": "لوحة التحكم",
+        "read_more": "قراءة المزيد",
+        "view_all": "عرض الكل",
+        "add_to_cart": "أضف إلى السلة",
+        "logout": "تسجيل الخروج",
+        "loading": "جاري التحميل...",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "delete": "حذف",
+        "edit": "تعديل",
+        "create": "إنشاء",
+        "submit": "إرسال",
+        "back": "عودة",
+        "next": "التالي",
+        "previous": "السابق",
+        "close": "إغلاق",
+        "confirm": "تأكيد",
+        "yes": "نعم",
+        "no": "لا"
+    },
+    "auth": {
+        "login": "تسجيل الدخول",
+        "signup": "إنشاء حساب",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "professionalEmail": "البريد المهني",
+        "fullName": "الاسم الكامل",
+        "forgotPassword": "هل نسيت كلمة المرور؟",
+        "resetPassword": "إعادة تعيين كلمة المرور",
+        "signInButton": "تسجيل الدخول",
+        "signUpButton": "إنشاء حسابي",
+        "welcomeBack": "مرحبًا بعودتك",
+        "createAccount": "إنشاء حساب",
+        "accessInfrastructure": "الوصول إلى البنية التحتية السحابية",
+        "joinPlatform": "انضم إلى منصة كلاود نيكسوس",
+        "googleLogin": "Google",
+        "githubLogin": "GitHub",
+        "orByEmail": "أو عبر البريد الإلكتروني",
+        "demoCredentials": "عرض تجريبي سريع: admin@hustel.com / password123",
+        "backToPortal": "← العودة إلى البوابة العامة",
+        "backToHome": "← العودة إلى الرئيسية",
+        "authenticating": "جاري المصادقة...",
+        "signupDisabled": "التسجيل معطل في الوضع التجريبي. استخدم الحسابات المحددة مسبقًا.",
+        "googleNotConfigured": "تسجيل الدخول عبر {{provider}} غير مهيأ.",
+        "fillAllFields": "يرجى ملء جميع الحقول"
+    },
+    "navbar": {
+        "home": "الرئيسية",
+        "dashboard": "لوحة التحكم",
+        "shop": "المتجر",
+        "services": "الخدمات",
+        "products": "المنتجات",
+        "contact": "اتصل بنا",
+        "logout": "خروج",
+        "language": "اللغة",
+        "profile": "الملف الشخصي",
+        "settings": "الإعدادات",
+        "notifications": "الإشعارات",
+        "cms": "نظام إدارة المحتوى",
+        "hosting": "الاستضافة",
+        "customOffer": "عرض مخصص"
+    },
+    "servicesPage": {
+        "title": "خدماتنا",
+        "subtitle": "حلول شاملة لتسريع تحولك الرقمي وتحسين بنيتك التحتية لتكنولوجيا المعلومات",
+        "items": {
+            "cloudInfrastructure": {
+                "title": "البنية التحتية السحابية",
+                "desc": "قم بترحيل بنيتك التحتية إلى السحابة باستخدام حلولنا القابلة للتطوير والآمنة."
+            },
+            "digitalTransformation": {
+                "title": "التحول الرقمي",
+                "desc": "دعم كامل في انتقالك الرقمي."
+            },
+            "cybersecurity": {
+                "title": "الأمن السيبراني",
+                "desc": "حماية متقدمة ضد التهديدات السيبرانية."
+            },
+            "cloudBackup": {
+                "title": "النسخ الاحتياطي السحابي",
+                "desc": "حلول نسخ احتياطي آلية وآمنة."
+            },
+            "devops": {
+                "title": "DevOps & CI/CD",
+                "desc": "تحسين عمليات التطوير والنشر الخاصة بك."
+            },
+            "consulting": {
+                "title": "استشارات تكنولوجيا المعلومات",
+                "desc": "خبرة فنية واستراتيجية لمشاريعك التقنية."
+            }
+        },
+        "cta": {
+            "title": "هل تحتاج إلى خدمة مخصصة؟",
+            "subtitle": "تواصل مع فريقنا لمناقشة احتياجاتك المحددة",
+            "button": "اتصل بنا"
+        }
+    },
+    "shopPage": {
+        "title": "المتجر",
+        "subtitle": "أجهزة ومعدات احترافية لبنيتك التحتية لتكنولوجيا المعلومات",
+        "filters": {
+            "category": "الفئة",
+            "allCategories": "جميع الفئات",
+            "sortBy": "ترتيب حسب",
+            "popularity": "الشعبية",
+            "priceAsc": "السعر تصاعدي",
+            "priceDesc": "السعر تنازلي",
+            "name": "الاسم"
+        },
+        "productsCount": "{{count}} منتج",
+        "productsCount_other": "{{count}} منتجات",
+        "noProducts": "لا توجد منتجات متاحة في هذه الفئة."
+    },
+    "cartPage": {
+        "title": "عربة التسوق",
+        "emptyTitle": "عربة التسوق فارغة",
+        "emptyDesc": "اكتشف منتجاتنا وأضفها إلى عربة التسوق الخاصة بك",
+        "exploreShop": "تصفح المتجر",
+        "summaryTitle": "ملخص الطلب",
+        "subtotal": "المجموع الفرعي",
+        "shipping": "الشحن",
+        "total": "الإجمالي",
+        "checkout": "إتمام الشراء",
+        "continueShopping": "متابعة التسوق",
+        "decreaseQty": "رقم انخفاض",
+        "increaseQty": "زيادة الكمية",
+        "removeItem": "إزالة من العربة"
+    },
+    "cmsPage": {
+        "headerTitle": "Headless CMS Pro",
+        "headerSubtitle": "نظام متقدم مع الذكاء الاصطناعي + IndexedDB",
+        "sidebar": {
+            "dashboard": "لوحة التحكم",
+            "contents": "المحتويات",
+            "types": "الأنواع",
+            "media": "الوسائط",
+            "aiGenerator": "مولد الذكاء الاصطناعي",
+            "api": "API"
+        },
+        "dashboard": {
+            "title": "لوحة التحكم",
+            "total": "الإجمالي",
+            "published": "منشور",
+            "drafts": "مسودات",
+            "types": "أنواع",
+            "recentContents": "المحتويات الحديثة"
+        },
+        "actions": {
+            "new": "جديد",
+            "media": "الوسائط",
+            "ai": "الذكاء الاصطناعي"
+        }
+    },
+    "serviceRequestPage": {
+        "title": "تكوين الاستضافة الخاصة بك",
+        "subtitle": "احصل على تقدير مخصص",
+        "steps": {
+            "info": "معلوماتك",
+            "serviceType": "نوع الخدمة",
+            "details": "التفاصيل",
+            "summary": "ملخص"
+        },
+        "fields": {
+            "fullName": "الاسم الكامل",
+            "email": "بريد إلكتروني",
+            "phone": "هاتف",
+            "country": "بلد",
+            "serviceType": "نوع الخدمة المطلوبة"
+        },
+        "estimation": {
+            "current": "التقدير الحالي",
+            "monthly": "€/شهر",
+            "setup": "تثبيت"
+        },
+        "success": {
+            "title": "تم استلام الطلب!",
+            "message": "سنتصل بك في غضون 24-48 ساعة.",
+            "button": "طلب جديد"
+        }
+    },
+    "hero": {
+        "title": "ادفع عملك إلى السحابة",
+        "subtitle": "حلول رقمية وخدمات سحابية من الجيل التالي لتحويل عملك",
+        "cta_services": "اكتشف خدماتنا",
+        "cta_shop": "تصفح المتجر"
+    },
+    "features": {
+        "cloud_native": {
+            "title": "سحابي أصلي",
+            "desc": "بنية تحتية حديثة"
+        },
+        "secure": {
+            "title": "آمن",
+            "desc": "حماية قصوى"
+        },
+        "performant": {
+            "title": "عالي الأداء",
+            "desc": "سرعة مثالية"
+        },
+        "support": {
+            "title": "دعم 24/7",
+            "desc": "فريق مخصص"
+        }
+    },
+    "home_sections": {
+        "services": {
+            "title": "خدماتنا",
+            "subtitle": "حلول شاملة لتسريع تحولك الرقمي",
+            "cta": "عرض جميع الخدمات"
+        },
+        "products": {
+            "title": "منتجاتنا",
+            "subtitle": "أجهزة ومعدات احترافية لبنيتك التحتية لتكنولوجيا المعلومات",
+            "cta": "تصفح المتجر"
+        },
+        "testimonials": {
+            "title": "ماذا يقول عملاؤنا",
+            "subtitle": "يثقون بنا في تحولهم الرقمي"
+        },
+        "cta": {
+            "title": "هل أنت مستعد لتحويل عملك؟",
+            "subtitle": "اتصل بنا اليوم لمناقشة احتياجاتك واكتشاف كيف يمكننا مساعدتك",
+            "btn_contact": "تواصل معنا",
+            "btn_dashboard": "الوصول إلى لوحة التحكم"
+        }
+    },
+    "dashboard": {
+        "title": "لوحة التحكم",
+        "welcome": "مرحبًا، {{name}}!",
+        "overview": "نظرة عامة",
+        "analytics": "التحليلات",
+        "cloud": "السحابة",
+        "hosting": "الاستضافة",
+        "crm": "إدارة علاقات العملاء",
+        "livepulse": "النبض الحي",
+        "quickActions": "إجراءات سريعة",
+        "recentActivity": "النشاط الأخير",
+        "statistics": "الإحصائيات"
+    },
+    "crm": {
+        "title": "نظام CRM Hustel",
+        "leads": "العملاء المحتملين",
+        "customers": "العملاء",
+        "tickets": "التذاكر",
+        "pipeline": "خط المبيعات",
+        "newLead": "عميل محتمل جديد",
+        "newTicket": "تذكرة جديدة",
+        "status": "الحالة",
+        "priority": "الأولوية",
+        "assignedTo": "مسند إلى",
+        "dueDate": "تاريخ الاستحقاق",
+        "open": "مفتوح",
+        "closed": "مغلق",
+        "inProgress": "قيد التنفيذ",
+        "high": "عالية",
+        "medium": "متوسطة",
+        "low": "منخفضة"
+    },
+    "hosting": {
+        "title": "الاستضافة",
+        "plans": "خطط الاستضافة",
+        "requests": "الطلبات",
+        "myHosting": "استضافتي",
+        "starter": "مبتدئ",
+        "pro": "محترف",
+        "enterprise": "مؤسسة",
+        "custom": "مخصص",
+        "selectPlan": "اختر هذه الخطة",
+        "requestHosting": "طلب استضافة",
+        "billingCycle": "دورة الفوترة",
+        "monthly": "شهري",
+        "yearly": "سنوي",
+        "features": "الميزات",
+        "storage": "التخزين",
+        "bandwidth": "النطاق الترددي",
+        "domains": "النطاقات",
+        "ssl": "شهادة SSL",
+        "support": "الدعم"
+    },
+    "footer": {
+        "company": "الشركة",
+        "about": "معلومات عنا",
+        "careers": "وظائف",
+        "press": "صحافة",
+        "legal": "قانوني",
+        "privacy": "الخصوصية",
+        "terms": "شروط الخدمة",
+        "support": "الدعم",
+        "documentation": "التوثيق",
+        "helpCenter": "مركز المساعدة",
+        "contactUs": "تواصل معنا",
+        "followUs": "تابعنا",
+        "allRightsReserved": "جميع الحقوق محفوظة"
+    },
+    "forms": {
+        "required": "هذا الحقل مطلوب",
+        "invalidEmail": "بريد إلكتروني غير صالح",
+        "passwordTooShort": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+        "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+        "success": "نجاح!",
+        "error": "خطأ",
+        "tryAgain": "حاول مرة أخرى"
+    }
+}

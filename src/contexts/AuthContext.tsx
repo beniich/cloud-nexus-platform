@@ -1,26 +1,57 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { User, AuthContextType } from '../types/auth';
 import { toast } from 'sonner';
-import { apiClient } from '../lib/api/client';
+// import { apiClient } from '../lib/api/client'; // Commenté pour mode MOCK
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// MODE MOCK - Utilisateurs de démonstration (sans backend)
+const MOCK_USERS = [
+    {
+        id: 'user-1',
+        email: 'admin@hustel.com',
+        name: 'Administrateur Cloud Nexus',
+        role: 'admin' as const,
+        avatar: '',
+        teamId: 'team-1'
+    },
+    {
+        id: 'user-2',
+        email: 'vendor@hustel.com',
+        name: 'Vendeur Cloud Nexus',
+        role: 'vendor' as const,
+        avatar: '',
+        teamId: 'team-1'
+    },
+    {
+        id: 'user-3',
+        email: 'client@hustel.com',
+        name: 'Client Cloud Nexus',
+        role: 'client' as const,
+        avatar: '',
+        teamId: 'team-2'
+    }
+];
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    const { t } = useTranslation();
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Verify session with server on mount
+        // Simuler vérification de session locale (MODE MOCK)
         const verifySession = async () => {
             try {
-                const { data } = await apiClient.get<{ user: User }>('/auth/me');
-                if (data.user) {
-                    setUser(data.user);
+                // Vérifier si un user est stocké dans localStorage
+                const storedUser = localStorage.getItem('mockUser');
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
                 }
             } catch (error) {
-                // If verification fails, clear local user
                 console.log('Session verification failed, logging out');
                 setUser(null);
+                localStorage.removeItem('mockUser');
             } finally {
                 setIsLoading(false);
             }
@@ -32,20 +63,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const login = async (email: string, password?: string) => {
         setIsLoading(true);
         try {
-            // Note: In types/auth.ts, login signature might need adjustment or casting
-            const { data } = await apiClient.post<{ user: User, token: string }>('/auth/login', {
-                email,
-                password: password || 'password123'
-            });
+            // Simuler délai réseau
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-            if (data.user) {
-                setUser(data.user);
-                // Save token for non-cookie support if backend returns it
-                if (data.token) localStorage.setItem('token', data.token);
-                toast.success(`Bienvenue, ${data.user.name} !`);
+            // MODE MOCK - Trouver l'utilisateur dans les mocks
+            const mockUser = MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+            if (!mockUser) {
+                throw new Error('errors.AUTH_USER_NOT_FOUND');
             }
+
+            // Simuler validation du mot de passe (accepte n'importe quel mot de passe en mode MOCK)
+            if (!password || password.length === 0) {
+                throw new Error('errors.AUTH_PASSWORD_REQUIRED');
+            }
+
+            // Authentification réussie
+            setUser(mockUser);
+            localStorage.setItem('mockUser', JSON.stringify(mockUser));
+            localStorage.setItem('mockToken', 'mock-jwt-token-' + Date.now());
+
+            toast.success(t('dashboard.welcome', { name: mockUser.name }), {
+                description: 'Authentification en mode MOCK (sans backend)'
+            });
         } catch (error: any) {
-            toast.error(error.message || 'Échec de la connexion');
+            const message = error.message?.startsWith('errors.')
+                ? t(error.message)
+                : t('errors.AUTH_LOGIN_FAILED');
+            toast.error(message);
             throw error;
         } finally {
             setIsLoading(false);
@@ -54,13 +99,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = async () => {
         try {
-            await apiClient.post('/auth/logout', {});
+            // MODE MOCK - Pas besoin d'appel API
+            await new Promise(resolve => setTimeout(resolve, 300));
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
             setUser(null);
-            localStorage.removeItem('token');
-            toast.info('Déconnexion réussie');
+            localStorage.removeItem('mockUser');
+            localStorage.removeItem('mockToken');
+            toast.info(t('auth.logout')); // Assuming auth.logout exists or common.logout
             window.location.href = '/login';
         }
     };

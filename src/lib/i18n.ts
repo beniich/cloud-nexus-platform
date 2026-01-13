@@ -16,7 +16,9 @@ i18n
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init({
         fallbackLng: 'fr',
-        debug: true,
+        supportedLngs: ['fr', 'en', 'ar', 'de', 'es', 'sv'],
+        load: 'languageOnly', // This prevents loading fr-FR, en-US, etc. Only loads 'fr', 'en'
+        debug: false, // Désactivé pour la production
 
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
@@ -24,7 +26,26 @@ i18n
 
         backend: {
             loadPath: '/locales/{{lng}}/translation.json',
-        }
+        },
+
+        react: {
+            useSuspense: false, // Permet le chargement asynchrone
+        },
     });
+
+// Auto-detect RTL pour l'arabe
+i18n.on('languageChanged', (lng) => {
+    const direction = lng === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = direction;
+    document.documentElement.lang = lng;
+});
+
+// Initialiser la direction au chargement
+const currentLang = i18n.language || 'fr';
+if (currentLang === 'ar') {
+    document.documentElement.dir = 'rtl';
+} else {
+    document.documentElement.dir = 'ltr';
+}
 
 export default i18n;

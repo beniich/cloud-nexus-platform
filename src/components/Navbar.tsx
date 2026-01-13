@@ -1,22 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, ShoppingCart, User, Cloud, Globe } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, Cloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { t, i18n } = useTranslation();
-
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
+  const { t } = useTranslation();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -31,7 +22,7 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-foreground hover:text-primary transition-colors">
-              {t('common.welcome').split(' ').slice(3).join(' ') || 'Accueil'}
+              {t('navbar.home')}
             </Link>
             <Link to="/services" className="text-foreground hover:text-primary transition-colors">
               {t('common.services')}
@@ -46,7 +37,7 @@ export default function Navbar() {
               CMS
             </Link>
             <Link to="/hosting" className="text-foreground hover:text-primary transition-colors font-medium">
-              Hébergement
+              {t('hosting.title')}
             </Link>
             <Link to="/request-service" className="text-foreground hover:text-primary transition-colors font-medium">
               Offre Sur Mesure
@@ -55,21 +46,8 @@ export default function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Language Switcher */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Globe className="w-5 h-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => changeLanguage('fr')}>Français</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('en')}>English</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('es')}>Español</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('de')}>Deutsch</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('sv')}>Svenska</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Language Switcher - NEW COMPONENT */}
+            <LanguageSwitcher />
 
             <Link to="/login">
               <Button variant="ghost" size="sm">
@@ -147,11 +125,9 @@ export default function Navbar() {
               Hébergement
             </Link>
             <div className="pt-4 space-y-2">
-              {/* Mobile Lang Switcher - Simplified */}
-              <div className="flex gap-2 justify-center mb-4">
-                <Button size="sm" variant="outline" onClick={() => changeLanguage('fr')}>FR</Button>
-                <Button size="sm" variant="outline" onClick={() => changeLanguage('en')}>EN</Button>
-                <Button size="sm" variant="outline" onClick={() => changeLanguage('es')}>ES</Button>
+              {/* Mobile Language Switcher */}
+              <div className="flex justify-center mb-4">
+                <LanguageSwitcher />
               </div>
               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="ghost" size="sm" className="w-full">
