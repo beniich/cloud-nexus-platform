@@ -1,3 +1,11 @@
+export const STORAGE_KEYS = {
+    MENU_CONFIG: 'marketplace_menu_config',
+    THEME: 'marketplace_theme',
+    SIDEBAR: 'marketplace_sidebar',
+};
+
+export const DEFAULT_MENU_CONFIG = [];
+
 export const menuByRole = {
     admin: [
         { label: "Dashboard Global", path: "/dashboard" },
