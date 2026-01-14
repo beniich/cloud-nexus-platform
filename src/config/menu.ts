@@ -1,98 +1,104 @@
-import { MenuItem, UserRole } from '@/types/menu';
-
-export const STORAGE_KEYS = {
-    MENU_CONFIG: 'marketplace_menu_config',
-    THEME: 'marketplace_theme',
-    SIDEBAR: 'marketplace_sidebar',
-};
+import { MenuConfig, MenuItem } from '@/types/menu';
 
 export const DEFAULT_MENU_CONFIG: MenuItem[] = [
     {
         id: 'dashboard',
-        label: "Vue d'ensemble",
+        label: 'Dashboard',
         icon: 'LayoutDashboard',
         path: '/dashboard',
+        roles: ['owner', 'admin', 'manager', 'user', 'client'], // Expanded roles for visibility
         type: 'internal',
-        roles: ['admin', 'owner', 'client', 'seller']
+        badge: undefined
     },
     {
-        id: 'cloud',
-        label: "Cloud Spaces",
+        id: 'cloud-spaces',
+        label: 'Cloud Spaces',
         icon: 'Cloud',
         path: '/cloud-spaces',
+        roles: ['owner', 'admin'],
         type: 'internal',
-        roles: ['admin', 'owner', 'client']
+        badge: undefined,
+        children: [
+            { id: 'spaces-browser', label: 'Fichiers', path: '/cloud-spaces/browser', icon: 'Database', roles: ['owner', 'admin'], type: 'internal' },
+            { id: 'spaces-upload', label: 'Upload', path: '/cloud-spaces/upload', icon: 'Upload', roles: ['owner', 'admin'], type: 'internal' }
+        ]
     },
     {
         id: 'servers',
-        label: "Serveurs",
+        label: 'Serveurs',
         icon: 'Server',
         path: '/servers',
+        roles: ['owner', 'admin'],
         type: 'internal',
-        roles: ['admin', 'owner', 'client']
+        badge: 3 // Handled as number in component
     },
     {
-        id: 'hosting',
-        label: "Hébergement",
-        icon: 'HardDrive',
-        path: '/hosting',
-        type: 'internal',
-        roles: ['admin', 'owner', 'client']
-    },
-    {
-        id: 'crm',
-        label: "CRM LivePulse",
-        icon: 'TrendingUp',
-        path: '/crm/live-pulse',
-        type: 'internal',
-        roles: ['admin', 'owner', 'seller']
-    },
-    {
-        id: 'crm-hustel',
-        label: "CRM Hustel",
-        icon: 'Users',
-        path: '/crm/hustel',
-        type: 'internal',
-        roles: ['admin', 'owner', 'seller']
-    },
-    {
-        id: 'marketplace',
-        label: "Marketplace",
-        icon: 'ShoppingBag',
-        path: '/shop',
-        type: 'internal',
-        roles: ['client', 'admin', 'owner']
+        id: 'products',
+        label: 'Produits',
+        icon: 'Package',
+        path: '/products',
+        roles: ['owner', 'admin', 'manager'],
+        type: 'internal'
     },
     {
         id: 'users',
-        label: "Utilisateurs",
+        label: 'Utilisateurs',
         icon: 'Users',
         path: '/users',
-        type: 'internal',
-        roles: ['admin', 'owner']
+        roles: ['owner', 'admin'],
+        type: 'internal'
     },
     {
-        id: 'cms',
-        label: "Contenu (CMS)",
-        icon: 'FileText',
-        path: '/cms',
-        type: 'internal',
-        roles: ['admin', 'owner', 'seller']
+        id: 'analytics',
+        label: 'Analytics',
+        icon: 'TrendingUp',
+        path: '/analytics',
+        roles: ['owner', 'admin', 'manager'],
+        type: 'internal'
     },
     {
-        id: 'billing',
-        label: "Facturation",
-        icon: 'MessageSquare',
-        path: '/billing',
+        id: 'hosting-request',
+        label: 'Demande Hébergement',
+        icon: 'Server',
+        path: '/hosting-request',
+        roles: ['owner', 'admin', 'manager', 'user', 'client'],
+        type: 'internal'
+    },
+    {
+        id: 'crm',
+        label: 'CRM Hustel',
+        icon: 'Users',
+        path: '/crm',
+        roles: ['owner', 'admin', 'manager'],
         type: 'internal',
-        roles: ['admin', 'owner', 'client']
+        children: [
+            { id: 'live-pulse', label: 'Live Pulse', path: '/crm/live-pulse', icon: 'Activity', roles: ['owner', 'admin'], type: 'internal' },
+            { id: 'tickets', label: 'Tickets Support', path: '/crm/tickets', icon: 'MessageSquare', roles: ['owner', 'admin'], type: 'internal' },
+            { id: 'pipeline', label: 'Pipeline Ventes', path: '/crm/pipeline', icon: 'BarChart2', roles: ['owner', 'admin'], type: 'internal' }
+        ]
     },
     {
         id: 'settings',
-        label: "Paramètres",
+        label: 'Paramètres',
         icon: 'Settings',
         path: '/settings',
-        type: 'internal',
-        roles: ['admin', 'owner', 'client', 'seller']
+        roles: ['owner', 'admin', 'manager', 'user'],
+        type: 'internal'
     }
 ];
+
+export const STORAGE_KEYS = {
+    USER: 'app_user',
+    SIDEBAR: 'sidebar_state',
+    THEME: 'app_theme',
+    MENU_CONFIG: 'menu_config'
+};
+
+// Aligning with existing UserRole type
+export const ROLES = {
+    SUPER_ADMIN: 'owner',
+    ADMIN: 'admin',
+    MANAGER: 'seller', // Mapping manager to seller for compatibility
+    USER: 'client',
+    CLIENT: 'client'
+};
