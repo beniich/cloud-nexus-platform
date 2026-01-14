@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Heart, Users, TrendingUp, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Progress } from '@/shared/ui/progress';
+import { Badge } from '@/shared/ui/badge';
 import { useLivePulse } from '@/contexts/LivePulseContext';
 import LivePulseLayout from '@/components/livepulse/LivePulseLayout';
 import NewSignalModal from '@/components/livepulse/NewSignalModal';

@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMenuConfig } from '@/hooks/useMenuConfig';
 import { SidebarItem } from './SidebarItem';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 interface SidebarProps {
     activeSection: string;

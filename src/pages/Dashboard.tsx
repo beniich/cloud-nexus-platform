@@ -12,14 +12,14 @@ import {
   LogOut,
   Cloud,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/shared/ui/select';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import ProductsManager from '@/components/dashboard/ProductsManager';
 import SalesManager from '@/components/dashboard/SalesManager';

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Target, User, Calendar, TrendingUp, CheckCircle, Award } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import { useLivePulse, ActionStatus } from '@/contexts/LivePulseContext';
 import LivePulseLayout from '@/components/livepulse/LivePulseLayout';
 import NewSignalModal from '@/components/livepulse/NewSignalModal';

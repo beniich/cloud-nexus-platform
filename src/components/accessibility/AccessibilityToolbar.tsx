@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAccessibility } from '@/contexts/AccessibilityContext';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import {
     Type,
     Minus,
@@ -16,7 +16,7 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
+} from '@/shared/ui/card';
 import { cn } from '@/lib/utils';
 
 export default function AccessibilityToolbar() {

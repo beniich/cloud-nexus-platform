@@ -1,23 +1,23 @@
 import { useState } from 'react';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Textarea } from '@/shared/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/shared/ui/select';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Progress } from '@/components/ui/progress';
+} from '@/shared/ui/dialog';
+import { Progress } from '@/shared/ui/progress';
 import { useLivePulse, SignalImpact } from '@/contexts/LivePulseContext';
 import { useToast } from '@/hooks/use-toast';
 

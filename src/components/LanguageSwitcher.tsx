@@ -5,8 +5,8 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from '@/shared/ui/dropdown-menu';
+import { Button } from '@/shared/ui/button';
 
 const LANGUAGES = [
     { code: 'fr', name: 'Français', flag: '🇫🇷', nativeName: 'Français' },

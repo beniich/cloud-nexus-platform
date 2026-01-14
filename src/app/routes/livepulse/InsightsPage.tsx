@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Lightbulb, ArrowRight, Eye, Target, CheckCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import { Progress } from '@/shared/ui/progress';
 import { useLivePulse } from '@/contexts/LivePulseContext';
 import LivePulseLayout from '@/components/livepulse/LivePulseLayout';
 import NewSignalModal from '@/components/livepulse/NewSignalModal';

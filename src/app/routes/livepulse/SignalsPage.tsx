@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { Search, Filter, Radio } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Input } from '@/shared/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/shared/ui/select';
 import { useLivePulse } from '@/contexts/LivePulseContext';
 import LivePulseLayout from '@/components/livepulse/LivePulseLayout';
 import NewSignalModal from '@/components/livepulse/NewSignalModal';

@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { ScrollArea } from '@/shared/ui/scroll-area';
+import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
 import { Sparkles, Send, Bot, FileText, Loader2, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useReactToPrint } from 'react-to-print';

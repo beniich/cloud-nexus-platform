@@ -14,21 +14,21 @@ import {
   Activity,
   Menu
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/shared/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+} from '@/shared/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
 import { useLivePulse, SpaceType, PeriodType } from '@/contexts/LivePulseContext';
 import { cn } from '@/lib/utils';
 
