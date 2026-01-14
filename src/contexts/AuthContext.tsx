@@ -40,18 +40,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Simuler vérification de session locale (MODE MOCK)
+        // Verify session using real token
         const verifySession = async () => {
             try {
-                // Vérifier si un user est stocké dans localStorage
-                const storedUser = localStorage.getItem('mockUser');
-                if (storedUser) {
+                const storedUser = localStorage.getItem('user');
+                const token = localStorage.getItem('token');
+
+                if (storedUser && token) {
                     setUser(JSON.parse(storedUser));
                 }
             } catch (error) {
                 console.log('Session verification failed, logging out');
                 setUser(null);
-                localStorage.removeItem('mockUser');
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
             } finally {
                 setIsLoading(false);
             }
@@ -63,33 +65,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const login = async (email: string, password?: string) => {
         setIsLoading(true);
         try {
-            // Simuler délai réseau
-            await new Promise(resolve => setTimeout(resolve, 800));
-
-            // MODE MOCK - Trouver l'utilisateur dans les mocks
-            const mockUser = MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
-
-            if (!mockUser) {
-                throw new Error('errors.AUTH_USER_NOT_FOUND');
-            }
-
-            // Simuler validation du mot de passe (accepte n'importe quel mot de passe en mode MOCK)
-            if (!password || password.length === 0) {
-                throw new Error('errors.AUTH_PASSWORD_REQUIRED');
-            }
-
-            // Authentification réussie
-            setUser(mockUser);
-            localStorage.setItem('mockUser', JSON.stringify(mockUser));
-            localStorage.setItem('mockToken', 'mock-jwt-token-' + Date.now());
-
-            toast.success(t('dashboard.welcome', { name: mockUser.name }), {
-                description: 'Authentification en mode MOCK (sans backend)'
+            // Call real backend API
+            const response = await fetch('http://localhost:3000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
             });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Login failed' }));
+                throw new Error(errorData.error || 'Authentication failed');
+            }
+
+            const data = await response.json();
+
+            if (!data.token || !data.user) {
+                throw new Error('Invalid response from server');
+            }
+
+            // Store authentication data
+            const authenticatedUser: User = {
+                id: data.user.id,
+                email: data.user.email,
+                name: data.user.name,
+                role: data.user.role as 'admin' | 'owner' | 'seller' | 'client' | 'vendor',
+                avatar: data.user.avatar || '',
+                teamId: data.user.teamId || ''
+            };
+
+            setUser(authenticatedUser);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(authenticatedUser));
+
+            toast.success(t('dashboard.welcome', { name: authenticatedUser.name }) || `Welcome back, ${authenticatedUser.name}!`);
         } catch (error: any) {
-            const message = error.message?.startsWith('errors.')
-                ? t(error.message)
-                : t('errors.AUTH_LOGIN_FAILED');
+            console.error('Login error:', error);
+            const message = error.message || t('errors.AUTH_LOGIN_FAILED') || 'Login failed';
             toast.error(message);
             throw error;
         } finally {
@@ -99,15 +112,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = async () => {
         try {
-            // MODE MOCK - Pas besoin d'appel API
             await new Promise(resolve => setTimeout(resolve, 300));
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
             setUser(null);
-            localStorage.removeItem('mockUser');
-            localStorage.removeItem('mockToken');
-            toast.info(t('auth.logout')); // Assuming auth.logout exists or common.logout
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            toast.info(t('auth.logout') || 'You have been logged out');
             window.location.href = '/login';
         }
     };
