@@ -11,6 +11,8 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     const { user, isLoading } = useAuth();
     const location = useLocation();
 
+    console.log('ProtectedRoute check:', { user, isLoading });
+
     if (isLoading) {
         return <div className="flex items-center justify-center min-h-screen">Chargement...</div>;
     }

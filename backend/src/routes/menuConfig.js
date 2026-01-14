@@ -4,6 +4,7 @@ import { apiLimiter } from '../middleware/rateLimit.js';
 
 const router = express.Router();
 
+// Configuration des menus par rôle
 const MENU_CONFIG = {
     client: [
         { id: 'overview', label: "Vue d'ensemble", icon: 'LayoutDashboard', path: '/dashboard', roles: ['client'], type: 'internal' },
@@ -24,25 +25,19 @@ const MENU_CONFIG = {
     ],
     admin: [
         { id: 'overview', label: "Vue d'ensemble", icon: 'LayoutDashboard', path: '/dashboard', roles: ['admin'], type: 'internal' },
-        { id: 'executive', label: 'Vision Stratégique', icon: 'Lightbulb', path: '/dashboard/executive', roles: ['admin'], type: 'internal' },
-        { id: 'users', label: 'Utilisateurs', icon: 'Users', path: '/dashboard/users', roles: ['admin'], type: 'internal' },
-        { id: 'products', label: 'Produits', icon: 'Package', path: '/dashboard/products', roles: ['admin'], type: 'internal' },
-        { id: 'analytics', label: 'Analytics', icon: 'TrendingUp', path: '/dashboard/analytics', roles: ['admin'], type: 'internal' },
-        { id: 'cloud_console', label: 'Cloud Console', icon: 'Cloud', path: '/cloud', roles: ['admin'], type: 'external', color: 'text-blue-500' },
-        { id: 'crm_hosting', label: 'CRM Hosting', icon: 'Server', path: '/hosting', roles: ['admin'], type: 'external', color: 'text-emerald-500' },
-        { id: 'crm_hustel', label: 'CRM Hustel', icon: 'Briefcase', path: '/crm-hustel', roles: ['admin'], type: 'external', color: 'text-orange-500', featureFlag: 'crm_hustel_enabled' },
-        { id: 'settings', label: 'Configuration', icon: 'Settings', path: '/dashboard/settings', roles: ['admin'], type: 'internal' }
+        { id: 'servers', label: 'Serveurs', icon: 'Server', path: '/servers', roles: ['admin'], type: 'internal' },
+        { id: 'users', label: 'Utilisateurs', icon: 'Users', path: '/users', roles: ['admin'], type: 'internal' },
+        { id: 'analytics', label: 'Analytics', icon: 'TrendingUp', path: '/analytics', roles: ['admin'], type: 'internal' },
+        { id: 'cloud_spaces', label: 'Cloud Spaces', icon: 'Cloud', path: '/cloud-spaces', roles: ['admin'], type: 'internal' },
+        { id: 'settings', label: 'Configuration', icon: 'Settings', path: '/settings', roles: ['admin'], type: 'internal' }
     ],
     owner: [
         { id: 'overview', label: "Vue d'ensemble", icon: 'LayoutDashboard', path: '/dashboard', roles: ['owner'], type: 'internal' },
-        { id: 'executive', label: 'Vision Stratégique', icon: 'Lightbulb', path: '/dashboard/executive', roles: ['owner'], type: 'internal' },
-        { id: 'users', label: 'Utilisateurs', icon: 'Users', path: '/dashboard/users', roles: ['owner'], type: 'internal' },
-        { id: 'products', label: 'Produits', icon: 'Package', path: '/dashboard/products', roles: ['owner'], type: 'internal' },
-        { id: 'analytics', label: 'Analytics', icon: 'TrendingUp', path: '/dashboard/analytics', roles: ['owner'], type: 'internal' },
-        { id: 'cloud_console', label: 'Cloud Console', icon: 'Cloud', path: '/cloud', roles: ['owner'], type: 'external', color: 'text-blue-500' },
-        { id: 'crm_hosting', label: 'CRM Hosting', icon: 'Server', path: '/hosting', roles: ['owner'], type: 'external', color: 'text-emerald-500' },
-        { id: 'crm_hustel', label: 'CRM Hustel', icon: 'Briefcase', path: '/crm-hustel', roles: ['owner'], type: 'external', color: 'text-orange-500' },
-        { id: 'settings', label: 'Configuration', icon: 'Settings', path: '/dashboard/settings', roles: ['owner'], type: 'internal' }
+        { id: 'servers', label: 'Serveurs', icon: 'Server', path: '/servers', roles: ['owner'], type: 'internal' },
+        { id: 'users', label: 'Utilisateurs', icon: 'Users', path: '/users', roles: ['owner'], type: 'internal' },
+        { id: 'analytics', label: 'Analytics', icon: 'TrendingUp', path: '/analytics', roles: ['owner'], type: 'internal' },
+        { id: 'cloud_spaces', label: 'Cloud Spaces', icon: 'Cloud', path: '/cloud-spaces', roles: ['owner'], type: 'internal' },
+        { id: 'settings', label: 'Configuration', icon: 'Settings', path: '/settings', roles: ['owner'], type: 'internal' }
     ]
 };
 

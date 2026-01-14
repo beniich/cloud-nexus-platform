@@ -10,10 +10,3 @@ export const errorHandler = (err, req, res, next) => {
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
     });
 };
-
-export const notFoundHandler = (req, res) => {
-    res.status(404).json({
-        success: false,
-        error: 'Route not found'
-    });
-};

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { TrendingUp, DollarSign, Users, ShoppingCart, Server, Eye, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Users, ShoppingCart, Server, Eye, ArrowUpRight, ArrowDownRight, Calendar, Download, Filter } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, AreaChart, Area, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // ============================================
@@ -64,7 +64,7 @@ const TOP_PRODUCTS = [
 // COMPOSANTS
 // ============================================
 
-function StatCard({ title, value, change, icon: Icon, trend }: any) {
+function StatCard({ title, value, change, icon: Icon, trend }) {
     const isPositive = change >= 0;
 
     return (
@@ -87,7 +87,7 @@ function StatCard({ title, value, change, icon: Icon, trend }: any) {
     );
 }
 
-function ChartCard({ title, children, actions }: { title: string, children: React.ReactNode, actions?: React.ReactNode }) {
+function ChartCard({ title, children, actions }) {
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
@@ -99,13 +99,13 @@ function ChartCard({ title, children, actions }: { title: string, children: Reac
     );
 }
 
-function CustomTooltip({ active, payload, label }: any) {
+function CustomTooltip({ active, payload, label }) {
     if (!active || !payload) return null;
 
     return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
             <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{label}</p>
-            {payload.map((entry: any, index: number) => (
+            {payload.map((entry, index) => (
                 <p key={index} className="text-sm" style={{ color: entry.color }}>
                     {entry.name}: {typeof entry.value === 'number' ? entry.value.toLocaleString() : entry.value}
                 </p>
@@ -311,7 +311,6 @@ export default function AnalyticsDashboard() {
                                 cx="50%"
                                 cy="50%"
                                 labelLine={false}
-                                label={({ name, percent }: any) => `${name} (${(percent * 100).toFixed(0)}%)`}
                                 outerRadius={100}
                                 fill="#8884d8"
                                 dataKey="value"
@@ -320,74 +319,71 @@ export default function AnalyticsDashboard() {
                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
                             </Pie>
-                            <Tooltip />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
                         </PieChart>
                     </ResponsiveContainer>
                 </ChartCard>
             </div>
 
-            {/* Performance Serveurs */}
+            {/* Performances Serveurs */}
             <ChartCard title="Performance des Serveurs">
                 <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={SERVERS_PERFORMANCE}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} />
-                        <XAxis dataKey="name" stroke="#9CA3AF" />
-                        <YAxis stroke="#9CA3AF" />
+                    <BarChart data={SERVERS_PERFORMANCE} layout="vertical" margin={{ left: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#374151" opacity={0.1} />
+                        <XAxis type="number" stroke="#9CA3AF" />
+                        <YAxis dataKey="name" type="category" stroke="#9CA3AF" width={80} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend />
-                        <Bar dataKey="cpu" fill="#3B82F6" name="CPU (%)" radius={[8, 8, 0, 0]} />
-                        <Bar dataKey="ram" fill="#8B5CF6" name="RAM (%)" radius={[8, 8, 0, 0]} />
-                        <Bar dataKey="storage" fill="#10B981" name="Stockage (%)" radius={[8, 8, 0, 0]} />
+                        <Bar dataKey="cpu" fill="#EF4444" name="CPU Usage (%)" radius={[0, 4, 4, 0]} barSize={20} />
+                        <Bar dataKey="ram" fill="#3B82F6" name="RAM Usage (%)" radius={[0, 4, 4, 0]} barSize={20} />
+                        <Bar dataKey="storage" fill="#10B981" name="Storage (%)" radius={[0, 4, 4, 0]} barSize={20} />
                     </BarChart>
                 </ResponsiveContainer>
             </ChartCard>
 
             {/* Top Produits */}
-            <ChartCard title="Top Produits">
-                <div className="space-y-4">
-                    {TOP_PRODUCTS.map((product, index) => (
-                        <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                                    #{index + 1}
-                                </div>
-                                <div>
-                                    <p className="font-semibold text-gray-900 dark:text-white">{product.name}</p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">{product.sales} ventes</p>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-bold text-gray-900 dark:text-white">{product.revenue.toLocaleString()}€</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Revenus</p>
-                            </div>
-                        </div>
-                    ))}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Top Produits</h3>
                 </div>
-            </ChartCard>
-
-            {/* Résumé Rapide */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
-                    <ShoppingCart className="w-10 h-10 mb-4 opacity-80" />
-                    <p className="text-sm opacity-90 mb-1">Ventes Totales</p>
-                    <p className="text-3xl font-bold">
-                        {TOP_PRODUCTS.reduce((acc, p) => acc + p.sales, 0).toLocaleString()}
-                    </p>
-                    <p className="text-sm opacity-80 mt-2">Ce mois-ci</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white">
-                    <Server className="w-10 h-10 mb-4 opacity-80" />
-                    <p className="text-sm opacity-90 mb-1">Serveurs Actifs</p>
-                    <p className="text-3xl font-bold">{SERVERS_PERFORMANCE.length}</p>
-                    <p className="text-sm opacity-80 mt-2">CPU moyen: {(SERVERS_PERFORMANCE.reduce((acc, s) => acc + s.cpu, 0) / SERVERS_PERFORMANCE.length).toFixed(1)}%</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white">
-                    <TrendingUp className="w-10 h-10 mb-4 opacity-80" />
-                    <p className="text-sm opacity-90 mb-1">Croissance</p>
-                    <p className="text-3xl font-bold">+{kpis.users.change}%</p>
-                    <p className="text-sm opacity-80 mt-2">Par rapport au mois dernier</p>
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                            <tr>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produit</th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ventes</th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenus</th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tendance</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                            {TOP_PRODUCTS.map((product, idx) => (
+                                <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                                <ShoppingCart className="w-4 h-4 text-blue-600" />
+                                            </div>
+                                            {product.name}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                        {product.sales}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                                        {product.revenue.toLocaleString()}€
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                        <div className="flex items-center gap-1 text-green-500">
+                                            <TrendingUp className="w-4 h-4" />
+                                            <span>+12%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
