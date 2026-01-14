@@ -100,9 +100,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             localStorage.setItem('user', JSON.stringify(authenticatedUser));
 
             toast.success(t('dashboard.welcome', { name: authenticatedUser.name }) || `Welcome back, ${authenticatedUser.name}!`);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Login error:', error);
-            const message = error.message || t('errors.AUTH_LOGIN_FAILED') || 'Login failed';
+            const message = error instanceof Error ? error.message : t('errors.AUTH_LOGIN_FAILED') || 'Login failed';
             toast.error(message);
             throw error;
         } finally {
