@@ -1,10 +1,12 @@
+import { MenuItem, UserRole } from '@/types/menu';
+
 export const STORAGE_KEYS = {
     MENU_CONFIG: 'marketplace_menu_config',
     THEME: 'marketplace_theme',
     SIDEBAR: 'marketplace_sidebar',
 };
 
-export const DEFAULT_MENU_CONFIG = [
+export const DEFAULT_MENU_CONFIG: MenuItem[] = [
     {
         id: 'dashboard',
         label: "Vue d'ensemble",
