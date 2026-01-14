@@ -1,66 +1,38 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Cloud, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
-import { UserRole } from '@/types/auth';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
-  const [searchParams] = useSearchParams();
-  const roleParam = searchParams.get('role') as UserRole | null;
-
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>(roleParam || 'client');
-
-  // Update role if URL param changes
-  useEffect(() => {
-    if (roleParam) {
-      setSelectedRole(roleParam);
-    }
-  }, [roleParam]);
-
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupName, setSignupName] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    // Mock login - in production, this would call an API
     if (loginEmail && loginPassword) {
-      try {
-        await login(loginEmail, selectedRole);
-        navigate('/dashboard');
-      } catch (error) {
-        toast.error('Erreur lors de la connexion');
-      }
+      toast.success('Connexion réussie !');
+      navigate('/dashboard');
     } else {
       toast.error('Veuillez remplir tous les champs');
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    // Mock signup - in production, this would call an API
     if (signupEmail && signupPassword && signupName) {
-      try {
-        await login(signupEmail, 'client'); // Default to client for signup
-        navigate('/dashboard');
-      } catch (error) {
-        toast.error('Erreur lors de l\'inscription');
-      }
+      toast.success('Compte créé avec succès !');
+      navigate('/dashboard');
     } else {
       toast.error('Veuillez remplir tous les champs');
     }
@@ -114,22 +86,6 @@ export default function Login() {
                       required
                     />
                   </div>
-
-                  {/* Only show role selector if triggered by specific routes or if already selected as non-client */}
-                  {(roleParam === 'admin' || roleParam === 'seller') && (
-                    <div className="space-y-2">
-                      <Label className="text-destructive uppercase tracking-wide text-xs font-bold">
-                        Accès Restreint : {roleParam === 'admin' ? 'Administrateur' : 'Vendeur'}
-                      </Label>
-                      <div className="p-2 bg-destructive/10 border border-destructive/20 rounded text-sm text-destructive">
-                        Vous vous connectez en tant que <strong>{roleParam === 'admin' ? 'Administrateur' : 'Vendeur'}</strong>.
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Hidden input for role to ensure it is submitted if needed, though state is key */}
-                  {/* For dev/demo simplicity, we just keep the state logic but hide the UI switcher */}
-
                   <div className="text-right">
                     <Link to="/reset-password" className="text-sm text-primary hover:text-accent transition-colors">
                       Mot de passe oublié ?
@@ -137,9 +93,9 @@ export default function Login() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" variant="accent" className="w-full" size="lg" disabled={isLoading}>
-                    {isLoading ? 'Connexion...' : 'Se connecter'}
-                    {!isLoading && <ArrowRight className="ml-2" />}
+                  <Button type="submit" variant="accent" className="w-full" size="lg">
+                    Se connecter
+                    <ArrowRight className="ml-2" />
                   </Button>
                 </CardFooter>
               </form>

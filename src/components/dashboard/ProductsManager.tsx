@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Plus, Edit, Trash2, Package, Store } from 'lucide-react';
+import { Plus, Edit, Trash2, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -22,11 +21,25 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useProducts } from '@/contexts/ProductContext';
-import { Product } from '@/types/data';
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  category: string;
+  image: string;
+}
+
+const initialProducts: Product[] = [
+  { id: '1', name: 'Routeur Cloud Pro', description: 'Routeur haute performance', price: 299.99, stock: 15, category: 'Réseau', image: '/placeholder.svg' },
+  { id: '2', name: 'Stockage NAS 4To', description: 'Solution de stockage réseau', price: 449.99, stock: 8, category: 'Stockage', image: '/placeholder.svg' },
+  { id: '3', name: 'Switch Ethernet 24 ports', description: 'Switch manageable', price: 189.99, stock: 20, category: 'Réseau', image: '/placeholder.svg' },
+];
 
 export default function ProductsManager() {
-  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
@@ -35,40 +48,38 @@ export default function ProductsManager() {
     price: '',
     stock: '',
     category: '',
-    image: '',
   });
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (editingProduct) {
-      updateProduct(editingProduct.id, {
-        name: formData.name,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock),
-        category: formData.category,
-        image: formData.image || '/placeholder.svg',
-      });
-      toast({ title: 'Produit modifié', description: 'Le produit a été mis à jour dans la boutique.' });
+      setProducts(products.map(p => 
+        p.id === editingProduct.id 
+          ? { ...p, ...formData, price: parseFloat(formData.price), stock: parseInt(formData.stock) }
+          : p
+      ));
+      toast({ title: 'Produit modifié', description: 'Le produit a été mis à jour avec succès.' });
     } else {
-      addProduct({
+      const newProduct: Product = {
+        id: Date.now().toString(),
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
         category: formData.category,
-        image: formData.image || '/placeholder.svg',
-      });
-      toast({ title: 'Produit ajouté', description: 'Le produit est maintenant visible dans la boutique.' });
+        image: '/placeholder.svg',
+      };
+      setProducts([...products, newProduct]);
+      toast({ title: 'Produit ajouté', description: 'Le nouveau produit a été créé avec succès.' });
     }
-
+    
     resetForm();
   };
 
   const resetForm = () => {
-    setFormData({ name: '', description: '', price: '', stock: '', category: '', image: '' });
+    setFormData({ name: '', description: '', price: '', stock: '', category: '' });
     setEditingProduct(null);
     setIsDialogOpen(false);
   };
@@ -81,14 +92,13 @@ export default function ProductsManager() {
       price: product.price.toString(),
       stock: product.stock.toString(),
       category: product.category,
-      image: product.image,
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = (id: string) => {
-    deleteProduct(id);
-    toast({ title: 'Produit supprimé', description: 'Le produit a été retiré de la boutique.' });
+    setProducts(products.filter(p => p.id !== id));
+    toast({ title: 'Produit supprimé', description: 'Le produit a été supprimé avec succès.' });
   };
 
   return (
@@ -96,19 +106,16 @@ export default function ProductsManager() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display font-bold text-3xl mb-2">Mes Produits</h1>
-          <p className="text-muted-foreground flex items-center gap-2">
-            <Store className="w-4 h-4" />
-            Synchronisés avec la boutique publique
-          </p>
+          <p className="text-muted-foreground">Gérez votre catalogue de produits</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingProduct(null); setFormData({ name: '', description: '', price: '', stock: '', category: '', image: '' }); }}>
+            <Button onClick={() => { setEditingProduct(null); setFormData({ name: '', description: '', price: '', stock: '', category: '' }); }}>
               <Plus className="w-4 h-4 mr-2" />
               Ajouter un produit
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>{editingProduct ? 'Modifier le produit' : 'Nouveau produit'}</DialogTitle>
               <DialogDescription>
@@ -136,11 +143,11 @@ export default function ProductsManager() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Prix (FCFA)</Label>
+                  <Label htmlFor="price">Prix (€)</Label>
                   <Input
                     id="price"
                     type="number"
-                    step="1"
+                    step="0.01"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     required
@@ -167,47 +174,9 @@ export default function ProductsManager() {
                     <SelectItem value="Réseau">Réseau</SelectItem>
                     <SelectItem value="Stockage">Stockage</SelectItem>
                     <SelectItem value="Sécurité">Sécurité</SelectItem>
-                    <SelectItem value="Serveur">Serveur</SelectItem>
                     <SelectItem value="Cloud">Cloud</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Image du produit</Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="image-url" className="text-xs text-muted-foreground">Par URL</Label>
-                    <Input
-                      id="image-url"
-                      value={formData.image}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                      placeholder="https://..."
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="image-file" className="text-xs text-muted-foreground">Ou Téléverser</Label>
-                    <Input
-                      id="image-file"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setFormData(prev => ({ ...prev, image: reader.result as string }));
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-                {formData.image && (
-                  <div className="mt-2 relative w-full h-32 bg-muted rounded-md overflow-hidden">
-                    <img src={formData.image} alt="Aperçu" className="object-cover w-full h-full" />
-                  </div>
-                )}
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={resetForm}>Annuler</Button>
@@ -218,33 +187,23 @@ export default function ProductsManager() {
         </Dialog>
       </div>
 
-      <div className="mb-4">
-        <Badge variant="secondary" className="text-sm">
-          {products.length} produit{products.length > 1 ? 's' : ''} en ligne
-        </Badge>
-      </div>
-
       <div className="grid gap-4">
         {products.map((product) => (
           <Card key={product.id}>
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-                  {product.image && product.image !== '/placeholder.svg' ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <Package className="w-8 h-8 text-muted-foreground" />
-                  )}
+                <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                  <Package className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg">{product.name}</h3>
                   <p className="text-sm text-muted-foreground">{product.description}</p>
                   <div className="flex gap-4 mt-2 text-sm">
-                    <span className="text-primary font-medium">{product.price.toLocaleString()} FCFA</span>
+                    <span className="text-primary font-medium">{product.price.toFixed(2)} €</span>
                     <span className={product.stock > 0 ? 'text-green-600' : 'text-red-600'}>
                       Stock: {product.stock}
                     </span>
-                    <Badge variant="outline">{product.category}</Badge>
+                    <span className="text-muted-foreground">{product.category}</span>
                   </div>
                 </div>
                 <div className="flex gap-2">

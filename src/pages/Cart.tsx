@@ -1,34 +1,74 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useCart } from '@/contexts/CartContext';
+import productRouter from '@/assets/product-router.jpg';
+import productStorage from '@/assets/product-storage.jpg';
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
 
 export default function Cart() {
-  const { t } = useTranslation();
-  const { items: cartItems, removeItem, updateQuantity, total } = useCart();
+  const [cartItems, setCartItems] = useState<CartItem[]>([
+    {
+      id: '1',
+      name: 'Routeur Pro Enterprise',
+      price: 299,
+      image: productRouter,
+      quantity: 1,
+    },
+    {
+      id: '2',
+      name: 'Cloud Storage 10TB',
+      price: 599,
+      image: productStorage,
+      quantity: 2,
+    },
+  ]);
+
+  const updateQuantity = (id: string, delta: number) => {
+    setCartItems(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
+          : item
+      )
+    );
+  };
+
+  const removeItem = (id: string) => {
+    setCartItems(items => items.filter(item => item.id !== id));
+  };
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = 20;
+  const total = subtotal + shipping;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-
+      
       <main className="flex-1 pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="font-display font-bold text-4xl mb-8">{t('cartPage.title')}</h1>
+          <h1 className="font-display font-bold text-4xl mb-8">Panier</h1>
 
           {cartItems.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
                 <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <h2 className="font-display font-semibold text-2xl mb-2">{t('cartPage.emptyTitle')}</h2>
-                <p className="text-muted-foreground mb-6">{t('cartPage.emptyDesc')}</p>
+                <h2 className="font-display font-semibold text-2xl mb-2">Votre panier est vide</h2>
+                <p className="text-muted-foreground mb-6">Découvrez nos produits et ajoutez-en à votre panier</p>
                 <Link to="/shop">
                   <Button variant="accent" size="lg">
-                    {t('cartPage.exploreShop')}
+                    Explorer la boutique
                   </Button>
                 </Link>
               </CardContent>
@@ -52,17 +92,17 @@ export default function Cart() {
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 border border-border rounded-lg">
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() => updateQuantity(item.id, -1)}
                                 className="p-2 hover:bg-muted transition-colors"
-                                aria-label={t('cartPage.decreaseQty')}
+                                aria-label="Diminuer la quantité"
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
                               <span className="px-4 font-semibold">{item.quantity}</span>
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() => updateQuantity(item.id, 1)}
                                 className="p-2 hover:bg-muted transition-colors"
-                                aria-label={t('cartPage.increaseQty')}
+                                aria-label="Augmenter la quantité"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -70,7 +110,7 @@ export default function Cart() {
                             <button
                               onClick={() => removeItem(item.id)}
                               className="text-destructive hover:text-destructive/80 transition-colors"
-                              aria-label={t('cartPage.removeItem')}
+                              aria-label="Retirer du panier"
                             >
                               <Trash2 className="w-5 h-5" />
                             </button>
@@ -89,31 +129,31 @@ export default function Cart() {
               <div>
                 <Card className="sticky top-20">
                   <CardContent className="p-6">
-                    <h2 className="font-display font-semibold text-xl mb-6">{t('cartPage.summaryTitle')}</h2>
+                    <h2 className="font-display font-semibold text-xl mb-6">Résumé de la commande</h2>
                     <div className="space-y-4 mb-6">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">{t('cartPage.subtotal')}</span>
-                        <span className="font-semibold">{total}€</span>
+                        <span className="text-muted-foreground">Sous-total</span>
+                        <span className="font-semibold">{subtotal}€</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">{t('cartPage.shipping')}</span>
+                        <span className="text-muted-foreground">Livraison</span>
                         <span className="font-semibold">{shipping}€</span>
                       </div>
                       <div className="border-t border-border pt-4">
                         <div className="flex justify-between">
-                          <span className="font-display font-semibold text-lg">{t('cartPage.total')}</span>
-                          <span className="font-display font-bold text-2xl text-primary">{total + shipping}€</span>
+                          <span className="font-display font-semibold text-lg">Total</span>
+                          <span className="font-display font-bold text-2xl text-primary">{total}€</span>
                         </div>
                       </div>
                     </div>
                     <Link to="/checkout">
                       <Button variant="accent" size="lg" className="w-full mb-4">
-                        {t('cartPage.checkout')}
+                        Procéder au paiement
                       </Button>
                     </Link>
                     <Link to="/shop">
                       <Button variant="outline" size="lg" className="w-full">
-                        {t('cartPage.continueShopping')}
+                        Continuer mes achats
                       </Button>
                     </Link>
                   </CardContent>

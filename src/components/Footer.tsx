@@ -1,30 +1,17 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Cloud, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
-  const navigate = useNavigate();
-
-  const handleAdminAccess = () => {
-    navigate('/adm-secure');
-  };
-
   return (
     <footer className="bg-muted border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <div
-              onClick={(e) => {
-                if (e.detail === 2) { // Determine double click
-                  handleAdminAccess();
-                }
-              }}
-              className="flex items-center gap-2 group cursor-pointer select-none"
-            >
-              <img src="/logo.png" alt="Logo" className="w-10 h-10 group-hover:opacity-80 transition-opacity" />
+            <Link to="/" className="flex items-center gap-2 group">
+              <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
               <span className="font-display font-bold text-xl">Cloud Industrie</span>
-            </div>
+            </Link>
             <p className="text-sm text-muted-foreground">
               Solutions digitales et services cloud pour propulser votre entreprise vers l'avenir.
             </p>
@@ -72,11 +59,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/security" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Sécurité des données
-                </Link>
-              </li>
-              <li>
                 <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Contact
                 </Link>
@@ -104,10 +86,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground relative">
+        <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Cloud Industrie. Tous droits réservés.</p>
-          {/* Hidden Vendor Link */}
-          <Link to="/vrd" className="absolute bottom-0 right-0 p-2 opacity-5 hover:opacity-100 transition-opacity text-[10px]">vrd</Link>
         </div>
       </div>
     </footer>

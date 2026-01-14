@@ -1,60 +1,174 @@
-import React from 'react';
-import { LayoutDashboard, ShoppingBag, Users, Settings, Package, TrendingUp, FileText, MessageSquare, Cloud, Server, HardDrive } from 'lucide-react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Users,
+  Settings,
+  Package,
+  TrendingUp,
+  FileText,
+  MessageSquare,
+  LogOut,
+  Cloud,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import DashboardOverview from '@/components/dashboard/DashboardOverview';
+import ProductsManager from '@/components/dashboard/ProductsManager';
+import SalesManager from '@/components/dashboard/SalesManager';
+import StatisticsView from '@/components/dashboard/StatisticsView';
+import MessagingView from '@/components/dashboard/MessagingView';
+import SettingsView from '@/components/dashboard/SettingsView';
 
-const IconMap: any = {
-  LayoutDashboard, ShoppingBag, Users, Settings, Package,
-  TrendingUp, FileText, MessageSquare, Cloud, Server,
-  HardDrive
-};
-
-function DynamicIcon({ name, className = "w-5 h-5" }: { name: string, className?: string }) {
-  const Icon = IconMap[name] || LayoutDashboard;
-  return <Icon className={className} />;
-}
+type UserRole = 'client' | 'seller' | 'admin';
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config';
 
 export default function Dashboard() {
-  const stats = [
-    { label: 'Total Fichiers', value: '1,234', icon: 'FileText', color: 'blue' },
-    { label: 'Stockage Utilisé', value: '45.2 GB', icon: 'HardDrive', color: 'purple' },
-    { label: 'Serveurs Actifs', value: '12', icon: 'Server', color: 'green' },
-    { label: 'Utilisateurs', value: '89', icon: 'Users', color: 'orange' }
-  ];
+  const [currentRole, setCurrentRole] = useState<UserRole>('seller');
+  const [activeSection, setActiveSection] = useState<Section>('overview');
+
+  const menuItems = {
+    client: [
+      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
+      { icon: ShoppingBag, label: 'Mes commandes', section: 'orders' as Section },
+      { icon: FileText, label: 'Mes factures', section: 'invoices' as Section },
+      { icon: Package, label: 'Services achetés', section: 'services' as Section },
+      { icon: MessageSquare, label: 'Support', section: 'support' as Section },
+      { icon: Settings, label: 'Paramètres', section: 'settings' as Section },
+    ],
+    seller: [
+      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
+      { icon: Package, label: 'Mes produits', section: 'products' as Section },
+      { icon: ShoppingBag, label: 'Ventes', section: 'sales' as Section },
+      { icon: TrendingUp, label: 'Statistiques', section: 'stats' as Section },
+      { icon: MessageSquare, label: 'Messages', section: 'messages' as Section },
+      { icon: Settings, label: 'Paramètres', section: 'settings' as Section },
+    ],
+    admin: [
+      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
+      { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
+      { icon: Package, label: 'Produits', section: 'products' as Section },
+      { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
+      { icon: Settings, label: 'Configuration', section: 'config' as Section },
+    ],
+  };
+
+  const stats = {
+    client: [
+      { label: 'Commandes', value: '12', change: '+2 ce mois' },
+      { label: 'Services actifs', value: '3', change: '2 expirent bientôt' },
+      { label: 'Factures', value: '8', change: '2 en attente' },
+      { label: 'Tickets support', value: '1', change: 'Ouvert' },
+    ],
+    seller: [
+      { label: 'Ventes ce mois', value: '15.600€', change: '+12%' },
+      { label: 'Produits actifs', value: '24', change: '3 en rupture' },
+      { label: 'Commandes en cours', value: '8', change: '2 à expédier' },
+      { label: 'Note moyenne', value: '4.8/5', change: '156 avis' },
+    ],
+    admin: [
+      { label: 'Utilisateurs totaux', value: '1.234', change: '+45 ce mois' },
+      { label: 'Ventes totales', value: '89.500€', change: '+18%' },
+      { label: 'Produits', value: '156', change: '12 en attente' },
+      { label: 'Uptime', value: '99.9%', change: 'Excellent' },
+    ],
+  };
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
+      case 'products':
+        return <ProductsManager />;
+      case 'sales':
+        return <SalesManager />;
+      case 'stats':
+      case 'analytics':
+        return <StatisticsView />;
+      case 'messages':
+      case 'support':
+        return <MessagingView />;
+      case 'settings':
+      case 'config':
+        return <SettingsView />;
+      default:
+        return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Vue d'ensemble</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, idx) => (
-          <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{stat.value}</p>
-              </div>
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-700`}>
-                {/* Note: Tailwind dynamic classes like bg-${color}-100 don't verify well if not safe-listed. Using inline styles or map for reliability. */}
-                {/* For this specific snippet, I'll rely on text color classes which are more likely to work if standard. */}
-                <DynamicIcon name={stat.icon} className={`text-${stat.color}-600`} />
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-subtle">
+      <header className="bg-background border-b border-border sticky top-0 z-10">
+        <div className="flex items-center justify-between px-6 py-4">
+          <Link to="/" className="flex items-center gap-2 group">
+            <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
+            <span className="font-display font-bold text-xl">Cloud Industrie</span>
+          </Link>
+          
+          <div className="flex items-center gap-4">
+            <Select value={currentRole} onValueChange={(value: UserRole) => { setCurrentRole(value); setActiveSection('overview'); }}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="client">Client</SelectItem>
+                <SelectItem value="seller">Vendeur</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Link to="/">
+              <Button variant="ghost" size="sm">
+                <LogOut className="w-4 h-4 mr-2" />
+                Déconnexion
+              </Button>
+            </Link>
           </div>
-        ))}
-      </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Activité Récente</h3>
-        <div className="space-y-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg transition-all hover:scale-105">
-              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Fichier uploadé avec succès</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Il y a {i} heures</p>
-              </div>
-            </div>
-          ))}
         </div>
+      </header>
+
+      <div className="flex">
+        <aside className="w-64 bg-background border-r border-border min-h-[calc(100vh-73px)] p-4">
+          <nav className="space-y-2">
+            {menuItems[currentRole].map((item, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveSection(item.section)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  activeSection === item.section
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-accent hover:text-accent-foreground'
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="font-medium">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+
+          <div className="mt-8 p-4 bg-muted rounded-lg">
+            <p className="text-sm font-medium mb-2">Besoin d'aide ?</p>
+            <p className="text-xs text-muted-foreground mb-3">Consultez notre documentation ou contactez le support.</p>
+            <Link to="/contact">
+              <Button variant="outline" size="sm" className="w-full">
+                Contacter le support
+              </Button>
+            </Link>
+          </div>
+        </aside>
+
+        <main className="flex-1 p-8">
+          <div className="max-w-7xl mx-auto">
+            {renderContent()}
+          </div>
+        </main>
       </div>
     </div>
   );
