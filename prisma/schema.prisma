@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -130,7 +130,7 @@ model ActivityLog {
   action     String   // EMAIL_SENT, DROPLET_CREATED, SNAPSHOT_CREATED, etc.
   entityType String   // EMAIL, DROPLET, SNAPSHOT, BACKUP, etc.
   entityId   String
-  metadata   Json?
+  metadata   String?
   createdAt  DateTime @default(now())
 
   teamId     String?
@@ -154,7 +154,7 @@ model Backup {
   type      String   // database, droplets, full
   size      Float    // MB
   status    String   @default("pending") // pending, completed, failed
-  metadata  Json?
+  metadata  String?
   createdAt DateTime @default(now())
 
   teamId    String
