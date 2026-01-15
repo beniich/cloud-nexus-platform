@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Server as ServerIcon, Plus, Search, MoreVertical, Power, PowerOff, RefreshCw, Trash2, Edit, Activity, Cpu, HardDrive, Wifi, AlertCircle, CheckCircle, Clock, Database, Globe } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Server as ServerIcon, Plus, Search, Filter, MoreVertical, Power, PowerOff, RefreshCw, Trash2, Edit, Activity, Cpu, HardDrive, Wifi, AlertCircle, CheckCircle, Clock, Database, Globe, Lock } from 'lucide-react';
 
 // ============================================
 // DONNÉES INITIALES
@@ -251,8 +251,11 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
 
     const [tagInput, setTagInput] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = () => {
+        if (!formData.name) {
+            alert('Le nom du serveur est requis');
+            return;
+        }
         onSubmit(formData);
         onClose();
         setFormData({
@@ -290,7 +293,7 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <div className="p-6 space-y-6">
                     {/* Nom du serveur */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -298,7 +301,6 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
                         </label>
                         <input
                             type="text"
-                            required
                             value={formData.name}
                             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
@@ -419,12 +421,11 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
                                 type="text"
                                 value={tagInput}
                                 onChange={(e) => setTagInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                                onKeyPress={(e) => e.key === 'Enter' && addTag()}
                                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                 placeholder="Ajouter un tag..."
                             />
                             <button
-                                type="button"
                                 onClick={addTag}
                                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                             >
@@ -435,7 +436,7 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
                             {formData.tags.map(tag => (
                                 <span key={tag} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm flex items-center gap-2">
                                     {tag}
-                                    <button type="button" onClick={() => removeTag(tag)}>×</button>
+                                    <button onClick={() => removeTag(tag)}>×</button>
                                 </span>
                             ))}
                         </div>
@@ -444,20 +445,19 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
                     {/* Buttons */}
                     <div className="flex gap-3 pt-4">
                         <button
-                            type="button"
                             onClick={onClose}
                             className="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                             Annuler
                         </button>
                         <button
-                            type="submit"
+                            onClick={handleSubmit}
                             className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
                         >
                             Créer le serveur
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );
