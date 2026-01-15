@@ -115,7 +115,7 @@ interface ServerCardProps {
 function ServerCard({ server, onAction }: ServerCardProps) {
     const [showMenu, setShowMenu] = useState(false);
 
-    const statusConfig: Record<string, { color: string; icon: any; label: string }> = {
+    const statusConfig: Record<string, { color: string; icon: React.ElementType; label: string }> = {
         running: { color: 'green', icon: CheckCircle, label: 'En ligne' },
         stopped: { color: 'red', icon: PowerOff, label: 'Arrêté' },
         maintenance: { color: 'yellow', icon: Clock, label: 'Maintenance' },
@@ -234,7 +234,7 @@ function ServerCard({ server, onAction }: ServerCardProps) {
 interface CreateServerModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: any) => void;
+    onSubmit: (data: Partial<ServerData>) => void;
 }
 
 function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps) {
@@ -564,7 +564,7 @@ export default function ServersManagement() {
                             <p className="text-sm text-gray-600 dark:text-gray-400">Total Serveurs</p>
                             <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
                         </div>
-                        <Server className="w-10 h-10 text-blue-500" />
+                        <ServerIcon className="w-10 h-10 text-blue-500" />
                     </div>
                 </div>
 
@@ -642,7 +642,7 @@ export default function ServersManagement() {
             {/* Empty State */}
             {filteredServers.length === 0 && (
                 <div className="text-center py-12">
-                    <Server className="w-16 h-16 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
+                    <ServerIcon className="w-16 h-16 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
                     <p className="text-gray-500 dark:text-gray-400">
                         Aucun serveur trouvé
                     </p>
