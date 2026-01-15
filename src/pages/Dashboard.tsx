@@ -146,6 +146,7 @@ export default function Dashboard() {
       {/* Header */}
       <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
+          <img src="/logo.png" alt="Cloud Industrie" className="h-10 w-auto mr-4" />
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
             {menuItems[currentRole].find(item => item.section === activeSection)?.label}
           </h2>
