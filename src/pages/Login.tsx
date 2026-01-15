@@ -43,8 +43,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center gap-2 mb-8 group">
-          <Cloud className="w-10 h-10 text-primary group-hover:text-accent transition-colors" />
-          <span className="font-display font-bold text-2xl">Cloud Industrie</span>
+          <img src="/logo.png" alt="Cloud Industrie" className="h-16 w-auto" />
         </Link>
 
         <Tabs defaultValue="login" className="w-full">

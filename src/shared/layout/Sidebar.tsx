@@ -13,7 +13,7 @@ import { MenuItem } from '../../types/menu';
 // COMPONENTS HELPERS
 // ============================================
 
-const IconMap: any = {
+const IconMap: Record<string, React.ElementType> = {
     LayoutDashboard, ShoppingBag, Users, Settings, Package,
     TrendingUp, FileText, MessageSquare, Cloud, Server,
     Database, Upload, HardDrive
@@ -25,7 +25,7 @@ function DynamicIcon({ name, className = "w-5 h-5" }: { name: string, className?
 }
 
 function Badge({ count, variant = 'primary' }: { count: number | string, variant?: string }) {
-    const variants: any = {
+    const variants: Record<string, string> = {
         primary: 'bg-blue-500',
         success: 'bg-green-500',
         warning: 'bg-yellow-500',
@@ -110,9 +110,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             {/* Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                 {!isCollapsed && (
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
-                        Dashboard Pro
-                    </h1>
+                    <img src="/logo.png" alt="Cloud Industrie" className="h-8 max-w-[150px] object-contain" />
                 )}
                 <button onClick={onToggle} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
                     <Menu className="w-5 h-5" />

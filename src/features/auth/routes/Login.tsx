@@ -33,7 +33,7 @@ export default function Login() {
             await login(loginEmail, loginPassword);
             toast.success('Bon retour parmi nous !');
             navigate('/dashboard');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Login error:', error);
             // toast.error is already handled in AuthContext but we could add more here
         } finally {
@@ -61,13 +61,7 @@ export default function Login() {
             <div className="w-full max-w-md z-10">
                 {/* Logo */}
                 <Link to="/" className="flex items-center justify-center gap-3 mb-10 group transition-transform hover:scale-105">
-                    <div className="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <Cloud className="w-7 h-7 text-white" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-2xl tracking-tight text-slate-900 dark:text-white">Cloud Nexus</span>
-                        <span className="text-[10px] uppercase tracking-widest text-blue-600 font-bold">Platform Management</span>
-                    </div>
+                    <img src="/logo.png" alt="Cloud Industrie" className="h-20 w-auto" />
                 </Link>
 
                 <Tabs defaultValue="login" className="w-full">
