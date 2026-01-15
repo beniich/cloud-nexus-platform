@@ -467,7 +467,11 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
 // COMPOSANT PRINCIPAL
 // ============================================
 
-export default function ServersManagement() {
+interface ServersManagementProps {
+    role?: 'client' | 'seller' | 'admin';
+}
+
+export default function ServersManagement({ role = 'admin' }: ServersManagementProps) {
     const [servers, setServers] = useState<ServerData[]>(INITIAL_SERVERS);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
@@ -508,10 +512,10 @@ export default function ServersManagement() {
         }
     };
 
-    const handleCreateServer = (formData: any) => {
+    const handleCreateServer = (formData: Partial<ServerData>) => {
         const newServer: ServerData = {
             id: `srv-${Date.now()}`,
-            ...formData,
+            name: formData.name || 'Server',
             ip: `192.168.1.${100 + servers.length}`,
             status: 'running',
             provider: formData.provider || 'DigitalOcean',
@@ -520,7 +524,7 @@ export default function ServersManagement() {
             cpu: formData.cpu || '2 vCPUs',
             ram: formData.ram || '4 GB',
             storage: formData.storage || '80 GB SSD',
-            bandwidth: '4 TB',
+            bandwidth: formData.bandwidth || '4 TB',
             uptime: '100%',
             lastBackup: new Date().toISOString().slice(0, 16).replace('T', ' '),
             createdAt: new Date().toISOString().split('T')[0],
@@ -542,18 +546,22 @@ export default function ServersManagement() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestion des Serveurs</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        {role === 'client' ? 'Mes Services' : 'Gestion des Serveurs'}
+                    </h1>
                     <p className="text-gray-600 dark:text-gray-400 mt-2">
-                        Gérez et surveillez vos serveurs cloud
+                        {role === 'client' ? 'Gérez vos services actifs' : 'Gérez et surveillez vos serveurs cloud'}
                     </p>
                 </div>
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
-                >
-                    <Plus className="w-5 h-5" />
-                    Nouveau serveur
-                </button>
+                {role !== 'client' && (
+                    <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Nouveau serveur
+                    </button>
+                )}
             </div>
 
             {/* Stats */}

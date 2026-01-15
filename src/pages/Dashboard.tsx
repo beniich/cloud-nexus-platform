@@ -31,17 +31,28 @@ import SettingsView from '@/components/dashboard/SettingsView';
 import CloudSpacesBrowser from '@/components/dashboard/CloudSpacesBrowser';
 import CloudSpacesUpload from '@/components/dashboard/CloudSpacesUpload';
 import ServersManagement from '@/components/dashboard/ServersManagement';
+import HostingRequestForm from '@/components/dashboard/HostingRequestForm';
+import BillingPaymentSystem from '@/components/dashboard/BillingPaymentSystem';
+import UsersManagement from '@/components/dashboard/UsersManagement';
+import AnalyticsDashboard from '@/components/dashboard/AnalyticsDashboard';
+import TicketSupportSystem from '@/components/dashboard/TicketSupportSystem';
+
+import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
+import { ToastContainer } from "@/components/notifications/ToastContainer";
 
 type UserRole = 'client' | 'seller' | 'admin';
-type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces' | 'cloud-upload' | 'servers';
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces' | 'cloud-upload' | 'servers' | 'new-hosting';
 
 export default function Dashboard() {
   const [currentRole, setCurrentRole] = useState<UserRole>('seller');
   const [activeSection, setActiveSection] = useState<Section>('overview');
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const menuItems = {
     client: [
       { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
+      { icon: ShoppingBag, label: 'Commander', section: 'new-hosting' as Section },
       { icon: ShoppingBag, label: 'Mes commandes', section: 'orders' as Section },
       { icon: FileText, label: 'Mes factures', section: 'invoices' as Section },
       { icon: Package, label: 'Services achetés', section: 'services' as Section },
@@ -100,38 +111,50 @@ export default function Dashboard() {
         return <CloudSpacesBrowser />;
       case 'cloud-upload':
         return <CloudSpacesUpload />;
+      case 'orders':
+      case 'invoices':
+        return <BillingPaymentSystem />;
       case 'servers':
-        return <ServersManagement />;
+        return <ServersManagement role={currentRole} />;
+      case 'services':
+        return <ServersManagement role={currentRole} />;
       case 'products':
         return <ProductsManager />;
       case 'sales':
         return <SalesManager />;
       case 'stats':
-      case 'analytics':
         return <StatisticsView />;
       case 'messages':
       case 'support':
-        return <MessagingView />;
+        return <TicketSupportSystem />;
       case 'settings':
       case 'config':
         return <SettingsView />;
+      case 'users':
+        return <UsersManagement />;
+      case 'analytics':
+        return <AnalyticsDashboard />;
+      case 'new-hosting':
+        return <HostingRequestForm />;
       default:
         return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <header className="bg-background border-b border-border sticky top-0 z-10">
-        <div className="flex items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-2 group">
-            <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
-            <span className="font-display font-bold text-xl">Cloud Industrie</span>
-          </Link>
-
-          <div className="flex items-center gap-4">
-            <Select value={currentRole} onValueChange={(value: UserRole) => { setCurrentRole(value); setActiveSection('overview'); }}>
-              <SelectTrigger className="w-[180px]">
+    <div className="min-h-screen bg-gradient-subtl">
+      {/* Header */}
+      <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            {menuItems[currentRole].find(item => item.section === activeSection)?.label}
+          </h2>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">Mode:</span>
+            <Select value={currentRole} onValueChange={(v: UserRole) => setCurrentRole(v)}>
+              <SelectTrigger className="w-[120px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -140,14 +163,15 @@ export default function Dashboard() {
                 <SelectItem value="admin">Admin</SelectItem>
               </SelectContent>
             </Select>
-
-            <Link to="/">
-              <Button variant="ghost" size="sm">
-                <LogOut className="w-4 h-4 mr-2" />
-                Déconnexion
-              </Button>
-            </Link>
           </div>
+
+          <div className="h-6 w-px bg-gray-200 dark:bg-gray-700" />
+
+          <NotificationBell onClick={() => setIsNotificationOpen(true)} />
+
+          <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400">
+            <LogOut className="h-5 w-5" />
+          </Button>
         </div>
       </header>
 
@@ -186,6 +210,11 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
+      <NotificationCenter
+        isOpen={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+      />
+      <ToastContainer />
     </div>
   );
 }
