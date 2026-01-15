@@ -33,6 +33,9 @@ const CRMHustel = lazy(() => import("./pages/crm/CRMHustel"));
 const SupportTickets = lazy(() => import("./pages/crm/TicketSupportSystem"));
 const ProductManagement = lazy(() => import("./pages/ProductManagement"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Settings = lazy(() => import("./pages/Settings"));
+const VendorDashboard = lazy(() => import("./pages/vendor/VendorDashboard"));
+const VendorPermissions = lazy(() => import("./pages/admin/VendorPermissions"));
 
 // CRM Sub-pages
 const LivePulseDashboard = lazy(() => import("./pages/crm/LivePulse"));
@@ -74,19 +77,28 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/services/:id" element={<ServiceDetail />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/shop/:id" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/contact" element={<Contact />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AuthProvider>
+              <ProductProvider>
+                <CartProvider>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/services" element={<Services />} />
+                    <Route path="/services/:id" element={<ServiceDetail />} />
+                    <Route path="/shop" element={<Shop />} />
+                    <Route path="/shop/:id" element={<ProductDetail />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+                    <Route path="/admin/vendor-permissions" element={<VendorPermissions />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </CartProvider>
+              </ProductProvider>
+            </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
       </NotificationProvider>
