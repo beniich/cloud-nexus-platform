@@ -11,6 +11,7 @@ import {
   MessageSquare,
   LogOut,
   Cloud,
+  Upload,
 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
