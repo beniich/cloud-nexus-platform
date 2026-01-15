@@ -12,6 +12,7 @@ import {
   LogOut,
   Cloud,
   Upload,
+  Server,
 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
@@ -29,9 +30,10 @@ import MessagingView from '@/components/dashboard/MessagingView';
 import SettingsView from '@/components/dashboard/SettingsView';
 import CloudSpacesBrowser from '@/components/dashboard/CloudSpacesBrowser';
 import CloudSpacesUpload from '@/components/dashboard/CloudSpacesUpload';
+import ServersManagement from '@/components/dashboard/ServersManagement';
 
 type UserRole = 'client' | 'seller' | 'admin';
-type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces' | 'cloud-upload';
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces' | 'cloud-upload' | 'servers';
 
 export default function Dashboard() {
   const [currentRole, setCurrentRole] = useState<UserRole>('seller');
@@ -50,6 +52,7 @@ export default function Dashboard() {
       { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
       { icon: Cloud, label: 'Cloud Spaces', section: 'cloud-spaces' as Section },
       { icon: Upload, label: 'Upload Fichiers', section: 'cloud-upload' as Section },
+      { icon: Server, label: 'Mes Serveurs', section: 'servers' as Section },
       { icon: Package, label: 'Mes produits', section: 'products' as Section },
       { icon: ShoppingBag, label: 'Ventes', section: 'sales' as Section },
       { icon: TrendingUp, label: 'Statistiques', section: 'stats' as Section },
@@ -60,6 +63,7 @@ export default function Dashboard() {
       { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
       { icon: Cloud, label: 'Cloud Spaces', section: 'cloud-spaces' as Section },
       { icon: Upload, label: 'Upload Fichiers', section: 'cloud-upload' as Section },
+      { icon: Server, label: 'Gérer Serveurs', section: 'servers' as Section },
       { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
       { icon: Package, label: 'Produits', section: 'products' as Section },
       { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
@@ -96,6 +100,8 @@ export default function Dashboard() {
         return <CloudSpacesBrowser />;
       case 'cloud-upload':
         return <CloudSpacesUpload />;
+      case 'servers':
+        return <ServersManagement />;
       case 'products':
         return <ProductsManager />;
       case 'sales':
