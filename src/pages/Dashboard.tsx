@@ -27,9 +27,10 @@ import StatisticsView from '@/components/dashboard/StatisticsView';
 import MessagingView from '@/components/dashboard/MessagingView';
 import SettingsView from '@/components/dashboard/SettingsView';
 import CloudSpacesBrowser from '@/components/dashboard/CloudSpacesBrowser';
+import CloudSpacesUpload from '@/components/dashboard/CloudSpacesUpload';
 
 type UserRole = 'client' | 'seller' | 'admin';
-type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces';
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces' | 'cloud-upload';
 
 export default function Dashboard() {
   const [currentRole, setCurrentRole] = useState<UserRole>('seller');
@@ -47,6 +48,7 @@ export default function Dashboard() {
     seller: [
       { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
       { icon: Cloud, label: 'Cloud Spaces', section: 'cloud-spaces' as Section },
+      { icon: Upload, label: 'Upload Fichiers', section: 'cloud-upload' as Section },
       { icon: Package, label: 'Mes produits', section: 'products' as Section },
       { icon: ShoppingBag, label: 'Ventes', section: 'sales' as Section },
       { icon: TrendingUp, label: 'Statistiques', section: 'stats' as Section },
@@ -56,6 +58,7 @@ export default function Dashboard() {
     admin: [
       { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
       { icon: Cloud, label: 'Cloud Spaces', section: 'cloud-spaces' as Section },
+      { icon: Upload, label: 'Upload Fichiers', section: 'cloud-upload' as Section },
       { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
       { icon: Package, label: 'Produits', section: 'products' as Section },
       { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
@@ -90,6 +93,8 @@ export default function Dashboard() {
         return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
       case 'cloud-spaces':
         return <CloudSpacesBrowser />;
+      case 'cloud-upload':
+        return <CloudSpacesUpload />;
       case 'products':
         return <ProductsManager />;
       case 'sales':
@@ -147,8 +152,8 @@ export default function Dashboard() {
                 key={i}
                 onClick={() => setActiveSection(item.section)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === item.section
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-accent hover:text-accent-foreground'
                   }`}
               >
                 <item.icon className="w-5 h-5" />
