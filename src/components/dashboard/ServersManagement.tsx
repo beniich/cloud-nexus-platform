@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
-import { Server, Plus, Search, MoreVertical, Power, PowerOff, RefreshCw, Trash2, Edit, Activity, Cpu, HardDrive, Wifi, AlertCircle, CheckCircle, Clock, Database, Globe } from 'lucide-react';
+import { Server as ServerIcon, Plus, Search, MoreVertical, Power, PowerOff, RefreshCw, Trash2, Edit, Activity, Cpu, HardDrive, Wifi, AlertCircle, CheckCircle, Clock, Database, Globe } from 'lucide-react';
 
 // ============================================
 // DONNÉES INITIALES
 // ============================================
 
-const INITIAL_SERVERS = [
+interface ServerData {
+    id: string;
+    name: string;
+    ip: string;
+    status: 'running' | 'stopped' | 'maintenance' | 'error';
+    provider: string;
+    region: string;
+    os: string;
+    cpu: string;
+    ram: string;
+    storage: string;
+    bandwidth: string;
+    uptime: string;
+    lastBackup: string;
+    createdAt: string;
+    monthlyPrice: number;
+    tags: string[];
+}
+
+const INITIAL_SERVERS: ServerData[] = [
     {
         id: 'srv-001',
         name: 'Production Web Server',
@@ -88,10 +107,15 @@ const OS_OPTIONS = ['Ubuntu 22.04', 'Ubuntu 20.04', 'Debian 11', 'CentOS 8', 'Fe
 // COMPOSANTS
 // ============================================
 
-function ServerCard({ server, onAction }) {
+interface ServerCardProps {
+    server: ServerData;
+    onAction: (action: string, server: ServerData) => void;
+}
+
+function ServerCard({ server, onAction }: ServerCardProps) {
     const [showMenu, setShowMenu] = useState(false);
 
-    const statusConfig = {
+    const statusConfig: Record<string, { color: string; icon: any; label: string }> = {
         running: { color: 'green', icon: CheckCircle, label: 'En ligne' },
         stopped: { color: 'red', icon: PowerOff, label: 'Arrêté' },
         maintenance: { color: 'yellow', icon: Clock, label: 'Maintenance' },
@@ -106,7 +130,7 @@ function ServerCard({ server, onAction }) {
             <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                     <div className={`w-12 h-12 rounded-lg bg-${status.color}-100 dark:bg-${status.color}-900 flex items-center justify-center`}>
-                        <Server className={`w-6 h-6 text-${status.color}-600`} />
+                        <ServerIcon className={`w-6 h-6 text-${status.color}-600`} />
                     </div>
                     <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white">{server.name}</h3>
@@ -207,7 +231,13 @@ function ServerCard({ server, onAction }) {
     );
 }
 
-function CreateServerModal({ isOpen, onClose, onSubmit }) {
+interface CreateServerModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (data: any) => void;
+}
+
+function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps) {
     const [formData, setFormData] = useState({
         name: '',
         provider: 'DigitalOcean',
@@ -216,12 +246,12 @@ function CreateServerModal({ isOpen, onClose, onSubmit }) {
         cpu: '2 vCPUs',
         ram: '4 GB',
         storage: '80 GB SSD',
-        tags: []
+        tags: [] as string[]
     });
 
     const [tagInput, setTagInput] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit(formData);
         onClose();
@@ -244,7 +274,7 @@ function CreateServerModal({ isOpen, onClose, onSubmit }) {
         }
     };
 
-    const removeTag = (tag) => {
+    const removeTag = (tag: string) => {
         setFormData(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
     };
 
@@ -438,7 +468,7 @@ function CreateServerModal({ isOpen, onClose, onSubmit }) {
 // ============================================
 
 export default function ServersManagement() {
-    const [servers, setServers] = useState(INITIAL_SERVERS);
+    const [servers, setServers] = useState<ServerData[]>(INITIAL_SERVERS);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -450,7 +480,7 @@ export default function ServersManagement() {
         return matchesSearch && matchesStatus;
     });
 
-    const handleServerAction = (action, server) => {
+    const handleServerAction = (action: string, server: ServerData) => {
         switch (action) {
             case 'start':
                 setServers(prev => prev.map(s =>
@@ -478,12 +508,18 @@ export default function ServersManagement() {
         }
     };
 
-    const handleCreateServer = (formData) => {
-        const newServer = {
+    const handleCreateServer = (formData: any) => {
+        const newServer: ServerData = {
             id: `srv-${Date.now()}`,
             ...formData,
             ip: `192.168.1.${100 + servers.length}`,
             status: 'running',
+            provider: formData.provider || 'DigitalOcean',
+            region: formData.region || 'NYC3',
+            os: formData.os || 'Ubuntu 22.04',
+            cpu: formData.cpu || '2 vCPUs',
+            ram: formData.ram || '4 GB',
+            storage: formData.storage || '80 GB SSD',
             bandwidth: '4 TB',
             uptime: '100%',
             lastBackup: new Date().toISOString().slice(0, 16).replace('T', ' '),
