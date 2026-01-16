@@ -1,35 +1,45 @@
 import { api as apiClient } from '../api/secureAxios';
 
 export enum Permission {
+    // Dashboard
+    DASHBOARD_VIEW = 'dashboard:view',
+
+    // Products
+    PRODUCTS_VIEW = 'products:view',
+    PRODUCTS_CREATE = 'products:create',
+    PRODUCTS_EDIT = 'products:edit',
+    PRODUCTS_DELETE = 'products:delete',
+
+    // Orders
+    ORDERS_VIEW = 'orders:view',
+    ORDERS_MANAGE = 'orders:manage',
+
     // Users
     USERS_VIEW = 'users:view',
-    USERS_CREATE = 'users:create',
-    USERS_EDIT = 'users:edit',
-    USERS_DELETE = 'users:delete',
+    USERS_MANAGE = 'users:manage',
 
-    // Servers
-    SERVERS_VIEW = 'servers:view',
-    SERVERS_CREATE = 'servers:create',
-    SERVERS_MANAGE = 'servers:manage',
-    SERVERS_DELETE = 'servers:delete',
-
-    // Cloud Spaces
-    FILES_VIEW = 'files:view',
-    FILES_UPLOAD = 'files:upload',
-    FILES_DELETE = 'files:delete',
-    FILES_SHARE = 'files:share',
-
-    // CRM
-    CRM_VIEW = 'crm:view',
-    CRM_EDIT = 'crm:edit',
-    CRM_DELETE = 'crm:delete',
+    // Analytics
+    ANALYTICS_VIEW = 'analytics:view',
+    ANALYTICS_EDIT = 'analytics:edit',
 
     // AI
     AI_USE_GENERAL = 'ai:use:general',
     AI_USE_SERVERS = 'ai:use:servers',
     AI_USE_CODE = 'ai:use:code',
 
+    // Servers
+    SERVERS_VIEW = 'servers:view',
+    SERVERS_MANAGE = 'servers:manage',
+
+    // Files (Cloud Spaces)
+    FILES_VIEW = 'files:view',
+    FILES_MANAGE = 'files:manage',
+
+    // CRM
+    CRM_VIEW = 'crm:view',
+
     // Admin
+    ADMIN = 'admin:all',
     ADMIN_FULL = 'admin:*',
 }
 

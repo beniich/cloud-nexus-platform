@@ -42,6 +42,16 @@ export default function CRM() {
                         <Button variant="outline" className="w-full">View Pipeline</Button>
                     </Link>
                 </Card>
+
+                <Card className="p-6">
+                    <h3 className="text-xl font-semibold mb-4">CRM Dashboard</h3>
+                    <p className="text-muted-foreground mb-4">
+                        Global overview of contacts and leads (Hustel)
+                    </p>
+                    <Link to="/crm/dashboard">
+                        <Button variant="default" className="w-full">Open Dashboard</Button>
+                    </Link>
+                </Card>
             </div>
         </div>
     );

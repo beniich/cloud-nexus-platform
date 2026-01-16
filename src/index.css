@@ -156,7 +156,8 @@
   }
 
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body text-[11px];
+    font-size: 11px;
     font-feature-settings: "kern" 1, "liga" 1;
   }
 

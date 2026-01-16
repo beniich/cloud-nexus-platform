@@ -4,7 +4,7 @@ import { MenuItem } from '../../types/menu';
 
 // Fallback menu in case backend is offline
 const FALLBACK_MENU: MenuItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', path: '/', roles: ['client', 'admin', 'owner'], type: 'internal' },
+    { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', path: '/dashboard', roles: ['client', 'admin', 'owner'], type: 'internal' },
     { id: 'analytics', label: 'Analytics', icon: 'TrendingUp', path: '/analytics', roles: ['admin', 'owner'], type: 'internal' },
     { id: 'servers', label: 'Servers', icon: 'Server', path: '/servers', roles: ['admin', 'owner'], type: 'internal' },
     { id: 'users', label: 'Users', icon: 'Users', path: '/users', roles: ['admin', 'owner'], type: 'internal' },

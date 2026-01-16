@@ -1,39 +1,36 @@
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { Permission } from '@/lib/permissions/permissionSystem';
-import { lazy } from "react";
-
-// Providers
-import { CartProvider } from "./contexts/CartContext";
-import { ProductProvider } from "./contexts/ProductContext";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./shared/layout/AppLayout";
-import { NotificationProvider } from "@/contexts/NotificationContext";
-import { MockModeBanner } from './shared/components/MockModeBanner';
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { SecureLoginForm } from "./features/auth/components/SecureLoginForm";
+import { Permission } from "./lib/permissions/permissionSystem";
+import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
+import { ProductProvider } from "./contexts/ProductContext";
 import { AIProvider } from "./features/ai-assistant/contexts/AIContext";
-
-// Pages
+import { MockModeBanner } from "./shared/components/MockModeBanner";
 import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
-import { SecureLoginForm } from '@/features/auth/components/SecureLoginForm';
+import NotFound from "./pages/NotFound";
 import CloudSpaces from "./pages/CloudSpaces";
 import Servers from "./pages/Servers";
 import Products from "./pages/Products";
 import Users from "./pages/Users";
 import Analytics from "./pages/Analytics";
-import HostingRequest from "./pages/HostingRequest";
-import CRM from "./pages/CRM";
 import Settings from "./pages/Settings";
-
-// Demo/Feature Components
-import LivePulse from "./pages/crm/LivePulse";
-import TicketSupportSystem from "./pages/crm/TicketSupportSystem";
-import SalesPipeline from "./pages/crm/Pipeline";
+import CRM from "./pages/CRM";
+import HostingRequest from "./pages/HostingRequest";
+import HeadlessCMS from "./features/cms/HeadlessCMS";
+import ServiceRequestForm from "./features/service-request/ServiceRequestForm";
+import ServiceRequestWizard from "./features/service-request/ServiceRequestWizard";
+import CrmDashboard from "./features/crmhustel/routes/CrmDashboard";
+import AdminOrdersValidation from "./pages/admin/AdminOrdersValidation";
+import InvoiceView from "./pages/InvoiceView";
 
 const queryClient = new QueryClient();
 
@@ -41,19 +38,15 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
         <BrowserRouter>
           <MockModeBanner />
-          {/* Note: In main.tsx we should wrap with I18nextProvider and potentially AIProvider external if needed, 
-              but internal wrapping here is fine as long as order is correct. 
-              Ideally main.tsx does core setup.
-          */}
           <AuthProvider>
             <AIProvider>
               <ProductProvider>
                 <CartProvider>
                   <NotificationProvider>
+                    <Toaster />
+                    <Sonner />
                     <Routes>
                       {/* Public Routes */}
                       <Route path="/" element={<Index />} />
@@ -94,6 +87,54 @@ function App() {
                           }
                         />
                         <Route
+                          path="/crm/*"
+                          element={
+                            <ProtectedRoute>
+                              <CRM />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/crm/dashboard"
+                          element={
+                            <ProtectedRoute>
+                              <CrmDashboard />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/cms"
+                          element={
+                            <ProtectedRoute>
+                              <HeadlessCMS />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/service-request"
+                          element={
+                            <ProtectedRoute>
+                              <ServiceRequestForm />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/service-request/wizard"
+                          element={
+                            <ProtectedRoute>
+                              <ServiceRequestWizard />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/orders"
+                          element={
+                            <ProtectedRoute requiredPermissions={[Permission.ADMIN]}>
+                              <AdminOrdersValidation />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/users"
                           element={
                             <ProtectedRoute requiredPermissions={[Permission.USERS_VIEW]}>
@@ -117,37 +158,11 @@ function App() {
                             </ProtectedRoute>
                           }
                         />
-
-                        {/* CRM Feature Routes */}
                         <Route
-                          path="/crm"
+                          path="/invoices/:id"
                           element={
                             <ProtectedRoute>
-                              <CRM />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/crm/live-pulse"
-                          element={
-                            <ProtectedRoute>
-                              <LivePulse />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/crm/tickets"
-                          element={
-                            <ProtectedRoute>
-                              <TicketSupportSystem />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/crm/pipeline"
-                          element={
-                            <ProtectedRoute>
-                              <SalesPipeline />
+                              <InvoiceView />
                             </ProtectedRoute>
                           }
                         />

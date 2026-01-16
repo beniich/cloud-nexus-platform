@@ -5,7 +5,8 @@ export type TabId =
     | "appearance"
     | "security"
     | "notifications"
-    | "payments";
+    | "payments"
+    | "admin";
 
 export interface SettingsState {
     storeName: string;
@@ -13,4 +14,9 @@ export interface SettingsState {
     theme: "light" | "dark" | "system";
     twoFactorAuth: boolean;
     emailNotifications: boolean;
+}
+
+export interface Settings extends SettingsState {
+    // Merge pour compatibilité
+    [key: string]: any;
 }

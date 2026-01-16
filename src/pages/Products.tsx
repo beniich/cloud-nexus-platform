@@ -39,7 +39,7 @@ export default function ProductsPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Gestion des Produits</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Gestion des Produits</h2>
                 <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-500 text-white rounded-lg flex gap-2 hover:bg-blue-600 transition-colors">
                     <Plus className="w-4 h-4" /> Ajouter Produit
                 </button>

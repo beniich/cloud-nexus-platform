@@ -89,6 +89,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchProducts();
+    console.log("ProductProvider mounted with default products");
   }, []);
 
   const addProduct = (product: Omit<Product, 'id'>) => {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TabId, UserRole } from "@/types/settings";
+import { TabId, UserRole, Settings } from "@/types/settings";
 import { useSettings } from "@/hooks/useSettings";
 
 import SettingsSidebar from "@/components/settings/SettingsSidebar";
@@ -8,6 +8,7 @@ import SettingsSecurityForm from "@/components/settings/SettingsSecurityForm";
 import SettingsAppearanceForm from "@/components/settings/SettingsAppearanceForm";
 import SettingsNotificationsForm from "@/components/settings/SettingsNotificationsForm";
 import SettingsPaymentsForm from "@/components/settings/SettingsPaymentsForm";
+import SettingsAdminForm from "@/components/settings/SettingsAdminForm";
 
 export default function SettingsPage() {
     // \ud83d\udc49 TODO: Injecter le rôle depuis le contexte d'authentification réel
@@ -56,8 +57,18 @@ export default function SettingsPage() {
                         <SettingsPaymentsForm settings={settings} update={update} />
                     )}
 
+                    {activeTab === "admin" && role === "admin" && (
+                        <SettingsAdminForm
+                            settings={settings as Settings}
+                            update={async (section, data) => {
+                                // Wrapper pour compatibilité async
+                                await Promise.resolve(update(section as any, data));
+                            }}
+                        />
+                    )}
+
                     {/* Fallback for unauthorized access */}
-                    {((activeTab === "security" || activeTab === "payments") && role !== "admin") && (
+                    {((activeTab === "security" || activeTab === "payments" || activeTab === "admin") && role !== "admin") && (
                         <div className="flex flex-col items-center justify-center h-full text-center p-8">
                             <span className="text-4xl mb-4">🚫</span>
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Accès non autorisé</h3>
