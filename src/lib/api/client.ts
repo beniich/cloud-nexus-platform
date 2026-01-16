@@ -1,50 +1,50 @@
-const API_URL = 'http://localhost:3002/api'; // Ajuster selon l'env
+import axios from 'axios';
 
-interface RequestOptions extends RequestInit {
-    params?: Record<string, string>;
-}
+const API_URL = 'http://localhost:3002/api';
 
-async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<{ data: T }> {
-    const { params, ...init } = options;
+// Create Axios instance
+export const axiosInstance = axios.create({
+    baseURL: API_URL,
+    withCredentials: true, // Important for cookies
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
 
-    let url = `${API_URL}${endpoint}`;
-    if (params) {
-        const searchParams = new URLSearchParams(params);
-        url += `?${searchParams.toString()}`;
+// Mock CSRF Token getter (would ideally come from a cookie or meta tag)
+const getCsrfToken = () => {
+    return localStorage.getItem('csrf-token') || 'mock-csrf-token';
+};
+
+// CSRF Interceptor
+axiosInstance.interceptors.request.use((config) => {
+    if (['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase() || '')) {
+        config.headers['X-CSRF-Token'] = getCsrfToken();
     }
 
-    // Add auth token if exists in localStorage (fallback for non-cookie auth)
+    // Legacy: Add token from localStorage if exists (to be removed in next step)
     const token = localStorage.getItem('token');
-    const headers = new Headers(init.headers);
     if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        config.headers['Authorization'] = `Bearer ${token}`;
     }
 
-    // Set default content type
-    if (!headers.has('Content-Type')) {
-        headers.set('Content-Type', 'application/json');
+    return config;
+});
+
+// Response Interceptor for generic error handling
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const message = error.response?.data?.error || error.message || 'Request failed';
+        console.error('API Error:', message);
+        return Promise.reject(error);
     }
+);
 
-    const config: RequestInit = {
-        ...init,
-        headers,
-        credentials: 'include', // Important for cookies
-    };
-
-    const response = await fetch(url, config);
-
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    return { data }; // Wrap in data property to match Axios-like structure expected by hooks
-}
-
+// Adapter to maintain existing apiClient interface
 export const apiClient = {
-    get: <T>(endpoint: string, options?: RequestOptions) => request<T>(endpoint, { ...options, method: 'GET' }),
-    post: <T>(endpoint: string, body: any, options?: RequestOptions) => request<T>(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) }),
-    put: <T>(endpoint: string, body: any, options?: RequestOptions) => request<T>(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) }),
-    delete: <T>(endpoint: string, options?: RequestOptions) => request<T>(endpoint, { ...options, method: 'DELETE' }),
+    get: <T>(endpoint: string, options?: any) => axiosInstance.get<T>(endpoint, options),
+    post: <T>(endpoint: string, body: any, options?: any) => axiosInstance.post<T>(endpoint, body, options),
+    put: <T>(endpoint: string, body: any, options?: any) => axiosInstance.put<T>(endpoint, body, options),
+    delete: <T>(endpoint: string, options?: any) => axiosInstance.delete<T>(endpoint, options),
 };

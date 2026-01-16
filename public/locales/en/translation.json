@@ -262,7 +262,22 @@
         "livepulse": "Live Pulse",
         "quickActions": "Quick actions",
         "recentActivity": "Recent activity",
-        "statistics": "Statistics"
+        "statistics": "Statistics",
+        "order": "Order",
+        "myOrders": "My Orders",
+        "myInvoices": "My Invoices",
+        "purchasedServices": "Purchased Services",
+        "support": "Support",
+        "cloudSpaces": "Cloud Spaces",
+        "upload": "Upload Files",
+        "myServers": "My Servers",
+        "myProducts": "My Products",
+        "sales": "Sales",
+        "messages": "Messages",
+        "subscription": "Subscription",
+        "users": "Users",
+        "configuration": "Configuration",
+        "mode": "Mode"
     },
     "crm": {
         "title": "CRM Hustel",

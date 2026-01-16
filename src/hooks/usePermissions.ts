@@ -1,13 +1,25 @@
-import { UserRole } from "@/types/auth";
+import { useState, useEffect } from 'react';
+import { Permission, permissionService } from '@/lib/permissions/permissionSystem';
 
-export function usePermissions(role?: UserRole) {
-    return {
-        isAdmin: role === "admin",
-        isVendor: role === "vendor",
+export const usePermissions = (requiredPermissions: Permission | Permission[]) => {
+    const [hasPermission, setHasPermission] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-        canManageUsers: role === "admin",
-        canManageMarketplace: role === "admin",
-        canManageOwnStore: role === "vendor",
-        canViewRevenue: role === "vendor" || role === "admin",
-    };
-}
+    useEffect(() => {
+        const check = async () => {
+            await permissionService.loadUserPermissions();
+
+            const permissions = Array.isArray(requiredPermissions)
+                ? requiredPermissions
+                : [requiredPermissions];
+
+            const hasAccess = permissionService.hasAllPermissions(permissions);
+            setHasPermission(hasAccess);
+            setIsLoading(false);
+        };
+
+        check();
+    }, [requiredPermissions]);
+
+    return { hasPermission, isLoading };
+};

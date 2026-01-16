@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -13,7 +13,13 @@ import {
   Cloud,
   Upload,
   Server,
+  Sun,
+  Moon,
+  CreditCard,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/config/menu';
 import { Button } from '@/shared/ui/button';
 import {
   Select,
@@ -36,49 +42,62 @@ import BillingPaymentSystem from '@/components/dashboard/BillingPaymentSystem';
 import UsersManagement from '@/components/dashboard/UsersManagement';
 import AnalyticsDashboard from '@/components/dashboard/AnalyticsDashboard';
 import TicketSupportSystem from '@/components/dashboard/TicketSupportSystem';
+import SubscriptionSection from '@/components/dashboard/SubscriptionSection';
 
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { ToastContainer } from "@/components/notifications/ToastContainer";
 
 type UserRole = 'client' | 'seller' | 'admin';
-type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces' | 'cloud-upload' | 'servers' | 'new-hosting';
+type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces' | 'cloud-upload' | 'servers' | 'new-hosting' | 'subscription';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [currentRole, setCurrentRole] = useState<UserRole>('seller');
   const [activeSection, setActiveSection] = useState<Section>('overview');
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [darkMode, setDarkMode] = useLocalStorage(STORAGE_KEYS.THEME, false);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   const menuItems = {
     client: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
-      { icon: ShoppingBag, label: 'Commander', section: 'new-hosting' as Section },
-      { icon: ShoppingBag, label: 'Mes commandes', section: 'orders' as Section },
-      { icon: FileText, label: 'Mes factures', section: 'invoices' as Section },
-      { icon: Package, label: 'Services achetés', section: 'services' as Section },
-      { icon: MessageSquare, label: 'Support', section: 'support' as Section },
-      { icon: Settings, label: 'Paramètres', section: 'settings' as Section },
+      { icon: LayoutDashboard, label: t('dashboard.overview'), section: 'overview' as Section },
+      { icon: ShoppingBag, label: t('dashboard.order'), section: 'new-hosting' as Section },
+      { icon: ShoppingBag, label: t('dashboard.myOrders'), section: 'orders' as Section },
+      { icon: FileText, label: t('dashboard.myInvoices'), section: 'invoices' as Section },
+      { icon: Package, label: t('dashboard.purchasedServices'), section: 'services' as Section },
+      { icon: MessageSquare, label: t('dashboard.support'), section: 'support' as Section },
+      { icon: CreditCard, label: t('dashboard.subscription'), section: 'subscription' as Section },
+      { icon: Settings, label: t('navbar.settings'), section: 'settings' as Section },
     ],
     seller: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
-      { icon: Cloud, label: 'Cloud Spaces', section: 'cloud-spaces' as Section },
-      { icon: Upload, label: 'Upload Fichiers', section: 'cloud-upload' as Section },
-      { icon: Server, label: 'Mes Serveurs', section: 'servers' as Section },
-      { icon: Package, label: 'Mes produits', section: 'products' as Section },
-      { icon: ShoppingBag, label: 'Ventes', section: 'sales' as Section },
-      { icon: TrendingUp, label: 'Statistiques', section: 'stats' as Section },
-      { icon: MessageSquare, label: 'Messages', section: 'messages' as Section },
-      { icon: Settings, label: 'Paramètres', section: 'settings' as Section },
+      { icon: LayoutDashboard, label: t('dashboard.overview'), section: 'overview' as Section },
+      { icon: Cloud, label: t('dashboard.cloudSpaces'), section: 'cloud-spaces' as Section },
+      { icon: Upload, label: t('dashboard.upload'), section: 'cloud-upload' as Section },
+      { icon: Server, label: t('dashboard.myServers'), section: 'servers' as Section },
+      { icon: Package, label: t('dashboard.myProducts'), section: 'products' as Section },
+      { icon: ShoppingBag, label: t('dashboard.sales'), section: 'sales' as Section },
+      { icon: TrendingUp, label: t('dashboard.statistics'), section: 'stats' as Section },
+      { icon: MessageSquare, label: t('dashboard.messages'), section: 'messages' as Section },
+      { icon: CreditCard, label: t('dashboard.subscription'), section: 'subscription' as Section },
+      { icon: Settings, label: t('navbar.settings'), section: 'settings' as Section },
     ],
     admin: [
-      { icon: LayoutDashboard, label: 'Vue d\'ensemble', section: 'overview' as Section },
-      { icon: Cloud, label: 'Cloud Spaces', section: 'cloud-spaces' as Section },
-      { icon: Upload, label: 'Upload Fichiers', section: 'cloud-upload' as Section },
-      { icon: Server, label: 'Gérer Serveurs', section: 'servers' as Section },
-      { icon: Users, label: 'Utilisateurs', section: 'users' as Section },
-      { icon: Package, label: 'Produits', section: 'products' as Section },
-      { icon: TrendingUp, label: 'Analytics', section: 'analytics' as Section },
-      { icon: Settings, label: 'Configuration', section: 'config' as Section },
+      { icon: LayoutDashboard, label: t('dashboard.overview'), section: 'overview' as Section },
+      { icon: Cloud, label: t('dashboard.cloudSpaces'), section: 'cloud-spaces' as Section },
+      { icon: Upload, label: t('dashboard.upload'), section: 'cloud-upload' as Section },
+      { icon: Server, label: t('dashboard.hosting'), section: 'servers' as Section },
+      { icon: Users, label: t('dashboard.users'), section: 'users' as Section },
+      { icon: Package, label: t('dashboard.products'), section: 'products' as Section },
+      { icon: TrendingUp, label: t('dashboard.analytics'), section: 'analytics' as Section },
+      { icon: Settings, label: t('dashboard.configuration'), section: 'config' as Section },
     ],
   };
 
@@ -136,6 +155,8 @@ export default function Dashboard() {
         return <AnalyticsDashboard />;
       case 'new-hosting':
         return <HostingRequestForm />;
+      case 'subscription':
+        return <SubscriptionSection />;
       default:
         return <DashboardOverview stats={stats[currentRole]} role={currentRole} />;
     }
@@ -153,7 +174,7 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">Mode:</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.mode')}:</span>
             <Select value={currentRole} onValueChange={(v: UserRole) => setCurrentRole(v)}>
               <SelectTrigger className="w-[120px]">
                 <SelectValue />
@@ -167,6 +188,13 @@ export default function Dashboard() {
           </div>
 
           <div className="h-6 w-px bg-gray-200 dark:bg-gray-700" />
+
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400"
+          >
+            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
 
           <NotificationBell onClick={() => setIsNotificationOpen(true)} />
 
