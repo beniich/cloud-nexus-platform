@@ -1,4 +1,4 @@
-```javascript
+
 import React, { useState } from 'react';
 import { useLocation, useNavigate, NavLink } from 'react-router-dom';
 import { AIChat } from '@/features/ai-assistant/components/AIChat';
@@ -38,7 +38,7 @@ function Badge({ count, variant = 'primary' }: { count: number | string, variant
     };
 
     return (
-        <span className={`${ variants[variant] || variants.primary } text - white text - xs px - 2 py - 0.5 rounded - full`}>
+        <span className={`${variants[variant] || variants.primary} text-white text-xs px-2 py-0.5 rounded-full`}>
             {count}
         </span>
     );
@@ -59,11 +59,10 @@ function SidebarItem({ item, isActive, onClick, isCollapsed }: { item: MenuItem,
         <div>
             <button
                 onClick={handleClick}
-                className={`w - full flex items - center justify - between px - 4 py - 3 text - sm transition - all ${
-    isActive
-        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-} rounded - lg mb - 1`}
+                className={`w-full flex items-center justify-between px-4 py-3 text-sm transition-all ${isActive
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    } rounded-lg mb-1`}
             >
                 <div className="flex items-center gap-3">
                     <DynamicIcon name={item.icon} />
@@ -74,7 +73,7 @@ function SidebarItem({ item, isActive, onClick, isCollapsed }: { item: MenuItem,
                     <div className="flex items-center gap-2">
                         {item.badge && <Badge count={item.badge} variant={typeof item.badge === 'number' ? 'success' : 'primary'} />}
                         {item.children && (
-                            <ChevronRight className={`w - 4 h - 4 transition - transform ${ isExpanded ? 'rotate-90' : '' } `} />
+                            <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                         )}
                     </div>
                 )}
@@ -112,7 +111,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     const currentPath = location.pathname;
 
     return (
-        <div className={`${ isCollapsed ? 'w-20' : 'w-64' } h - screen bg - white dark: bg - gray - 900 border - r border - gray - 200 dark: border - gray - 800 transition - all duration - 300 flex flex - col sticky top - 0 left - 0`}>
+        <div className={`${isCollapsed ? 'w-20' : 'w-64'} h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 flex flex-col sticky top-0 left-0`}>
             {/* Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                 {!isCollapsed && (
@@ -138,7 +137,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
             {/* User Profile */}
             <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-                <div className={`flex items - center ${ isCollapsed ? 'justify-center' : 'gap-3' } `}>
+                <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shrink-0">
                         {user?.name?.charAt(0) || 'U'}
                     </div>

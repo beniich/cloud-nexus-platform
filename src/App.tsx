@@ -31,9 +31,9 @@ import CRM from "./pages/CRM";
 import Settings from "./pages/Settings";
 
 // Demo/Feature Components
-import LivePulse from "./features/crm/components/LivePulse";
-import TicketSupportSystem from "./features/crm/components/TicketSupportSystem";
-import SalesPipeline from "./features/crm/components/SalesPipeline";
+import LivePulse from "./pages/crm/LivePulse";
+import TicketSupportSystem from "./pages/crm/TicketSupportSystem";
+import SalesPipeline from "./pages/crm/Pipeline";
 
 const queryClient = new QueryClient();
 
