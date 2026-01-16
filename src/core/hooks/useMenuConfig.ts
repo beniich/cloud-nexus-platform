@@ -7,8 +7,10 @@ const FALLBACK_MENU: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', path: '/dashboard', roles: ['client', 'admin', 'owner'], type: 'internal' },
     { id: 'analytics', label: 'Analytics', icon: 'TrendingUp', path: '/analytics', roles: ['admin', 'owner'], type: 'internal' },
     { id: 'servers', label: 'Servers', icon: 'Server', path: '/servers', roles: ['admin', 'owner'], type: 'internal' },
+    { id: 'servers', label: 'Servers', icon: 'Server', path: '/servers', roles: ['admin', 'owner'], type: 'internal' },
     { id: 'users', label: 'Users', icon: 'Users', path: '/users', roles: ['admin', 'owner'], type: 'internal' },
     { id: 'cloud_spaces', label: 'Cloud Spaces', icon: 'Cloud', path: '/cloud-spaces', roles: ['admin', 'owner'], type: 'internal' },
+    { id: 'sites', label: 'Mes Sites', icon: 'Globe', path: '/sites', roles: ['admin', 'owner', 'client'], type: 'internal' },
 ];
 
 export const useMenuConfig = () => {

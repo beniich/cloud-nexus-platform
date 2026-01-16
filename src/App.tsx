@@ -31,6 +31,7 @@ import ServiceRequestWizard from "./features/service-request/ServiceRequestWizar
 import CrmDashboard from "./features/crmhustel/routes/CrmDashboard";
 import AdminOrdersValidation from "./pages/admin/AdminOrdersValidation";
 import InvoiceView from "./pages/InvoiceView";
+import SitesDashboard from "./features/site-builder/SitesDashboard";
 
 const queryClient = new QueryClient();
 
@@ -163,6 +164,14 @@ function App() {
                           element={
                             <ProtectedRoute>
                               <InvoiceView />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/sites"
+                          element={
+                            <ProtectedRoute>
+                              <SitesDashboard />
                             </ProtectedRoute>
                           }
                         />

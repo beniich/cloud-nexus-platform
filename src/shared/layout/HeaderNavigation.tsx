@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import {
     LayoutDashboard, ShoppingBag, Users, Settings, Package,
     TrendingUp, FileText, MessageSquare, Cloud, Server,
-    Database, HardDrive, Upload
+    Database, HardDrive, Upload, Globe
 } from 'lucide-react';
 import { useMenuConfig } from '../../core/hooks/useMenuConfig';
 
@@ -12,7 +12,7 @@ import { useMenuConfig } from '../../core/hooks/useMenuConfig';
 const IconMap: Record<string, React.ElementType> = {
     LayoutDashboard, ShoppingBag, Users, Settings, Package,
     TrendingUp, FileText, MessageSquare, Cloud, Server,
-    Database, Upload, HardDrive
+    Database, Upload, HardDrive, Globe
 };
 
 function DynamicIcon({ name, className = "w-4 h-4" }: { name: string, className?: string }) {
