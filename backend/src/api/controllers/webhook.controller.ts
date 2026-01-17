@@ -15,7 +15,7 @@ async function sendWebhookRequest(webhook: any, payload: any) {
 
     if (webhook.secret) {
         // Generate HMAC signature
-        const crypto = awaitimport('crypto');
+        const crypto = await import('crypto');
         const signature = crypto
             .createHmac('sha256', webhook.secret)
             .update(JSON.stringify(payload))
