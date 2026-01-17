@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     BarChart3, TrendingUp, Users, Clock, Globe,
     Search, Layout, AlertCircle, CheckCircle,
-    MousePointer2, FileText, ArrowLeft, Download, RefreshCw
+    MousePointer2, FileText, ArrowLeft, Download, RefreshCw,
+    Settings as SettingsIcon, Activity, Smartphone, LucideIcon
 } from 'lucide-react';
 import { Site } from '../../../types/site.types';
 import { AnalyticsService } from '../../../services/analytics-service';
@@ -23,15 +24,12 @@ export const SitesInsights: React.FC<SitesInsightsProps> = ({ site, onBack }) =>
     const [seoScore, setSeoScore] = useState<SEOScore | null>(null);
     const [formsData, setFormsData] = useState<{ analytics: FormAnalytics[], submissions: FormSubmission[] }>({ analytics: [], submissions: [] });
 
-    const analyticsService = new AnalyticsService();
-    const seoAnalyzer = new SEOAnalyzer();
-    const formService = new FormService();
 
-    useEffect(() => {
-        loadData();
-    }, [site.id]);
+    const analyticsService = useMemo(() => new AnalyticsService(), []);
+    const seoAnalyzer = useMemo(() => new SEOAnalyzer(), []);
+    const formService = useMemo(() => new FormService(), []);
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         setIsLoading(true);
         try {
             // Analytics
@@ -66,7 +64,13 @@ export const SitesInsights: React.FC<SitesInsightsProps> = ({ site, onBack }) =>
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [site, analyticsService, seoAnalyzer, formService]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+
 
     if (isLoading) {
         return (
@@ -252,8 +256,8 @@ export const SitesInsights: React.FC<SitesInsightsProps> = ({ site, onBack }) =>
                                     <div key={i} className="p-4 hover:bg-slate-50 transition-colors">
                                         <div className="flex items-start gap-4">
                                             <div className={`mt-1 ${issue.severity === 'error' ? 'text-red-500' :
-                                                    issue.severity === 'warning' ? 'text-amber-500' :
-                                                        'text-blue-500'
+                                                issue.severity === 'warning' ? 'text-amber-500' :
+                                                    'text-blue-500'
                                                 }`}>
                                                 <AlertCircle size={20} />
                                             </div>
@@ -261,8 +265,8 @@ export const SitesInsights: React.FC<SitesInsightsProps> = ({ site, onBack }) =>
                                                 <div className="flex items-center justify-between mb-1">
                                                     <span className="font-medium text-slate-900">{issue.element}</span>
                                                     <span className={`text-xs px-2 py-0.5 rounded-full uppercase font-bold ${issue.severity === 'error' ? 'bg-red-100 text-red-700' :
-                                                            issue.severity === 'warning' ? 'bg-amber-100 text-amber-700' :
-                                                                'bg-blue-100 text-blue-700'
+                                                        issue.severity === 'warning' ? 'bg-amber-100 text-amber-700' :
+                                                            'bg-blue-100 text-blue-700'
                                                         }`}>
                                                         {issue.severity}
                                                     </span>
@@ -325,7 +329,15 @@ export const SitesInsights: React.FC<SitesInsightsProps> = ({ site, onBack }) =>
 };
 
 // Utils
-const MetricCard = ({ title, value, icon: Icon, trend, isNegative }: any) => (
+interface MetricCardProps {
+    title: string;
+    value: number | string;
+    icon: LucideIcon;
+    trend: string;
+    isNegative?: boolean;
+}
+
+const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon: Icon, trend, isNegative }) => (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-slate-500">{title}</h3>
@@ -336,8 +348,8 @@ const MetricCard = ({ title, value, icon: Icon, trend, isNegative }: any) => (
         <div className="flex items-end gap-2">
             <span className="text-2xl font-bold text-slate-900">{value}</span>
             <span className={`text-sm font-medium mb-1 ${(trend.startsWith('+') && !isNegative) || (trend.startsWith('-') && isNegative)
-                    ? 'text-green-600'
-                    : 'text-red-600'
+                ? 'text-green-600'
+                : 'text-red-600'
                 }`}>
                 {trend}
             </span>
@@ -345,7 +357,13 @@ const MetricCard = ({ title, value, icon: Icon, trend, isNegative }: any) => (
     </div>
 );
 
-const SEOCategoryCard = ({ title, score, icon: Icon }: any) => (
+interface SEOCategoryCardProps {
+    title: string;
+    score: number;
+    icon: LucideIcon;
+}
+
+const SEOCategoryCard: React.FC<SEOCategoryCardProps> = ({ title, score, icon: Icon }) => (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center gap-3 mb-3">
             <div className="bg-blue-50 p-2 rounded text-blue-600">
@@ -372,5 +390,4 @@ const getScoreColor = (score: number) => {
     return 'text-red-500';
 };
 
-// Icons needed for SEO cards that weren't in lucide imports
-import { Settings as SettingsIcon, Activity, Smartphone } from 'lucide-react';
+
