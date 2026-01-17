@@ -11,7 +11,24 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({ section, isPre
 
     const baseClass = "py-16 px-6";
 
+    import { FormRenderer } from './forms/FormRenderer';
+
     switch (type) {
+        case 'form':
+            return (
+                <section className={`${baseClass} bg-white`}>
+                    <div className="max-w-3xl mx-auto">
+                        <div className="text-center mb-10">
+                            <h2 className="text-3xl font-bold text-slate-900 mb-4">{content.heading}</h2>
+                            <p className="text-lg text-slate-600">{content.subheading}</p>
+                        </div>
+                        {content.form && (
+                            <FormRenderer form={content.form} previewMode={isPreview} />
+                        )}
+                    </div>
+                </section>
+            );
+
         case 'hero':
             return (
                 <section

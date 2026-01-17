@@ -21,6 +21,10 @@ import { SectionRenderer } from './SectionRenderer';
 import { ThemeCustomizer } from './ThemeCustomizer';
 import { CustomDomainSettings } from './CustomDomainSettings';
 import { BuildEngine } from '../../../services/build-engine';
+import { AIChatAssistant } from './AIChatAssistant';
+import { AccessSettings } from './AccessSettings';
+import { AIPropertiesPanel } from './AIPropertiesPanel';
+import { FormEditor } from './forms/FormEditor';
 
 interface EditorProps {
     site: Site;
@@ -262,8 +266,8 @@ export const Editor: React.FC<EditorProps> = ({ site, onBack }) => {
                                         setSelectedSection(section);
                                     }}
                                     className={`relative group ring-2 transition-all ${selectedSection?.id === section.id
-                                            ? 'ring-blue-500 z-10'
-                                            : 'ring-transparent hover:ring-blue-300 ring-1'
+                                        ? 'ring-blue-500 z-10'
+                                        : 'ring-transparent hover:ring-blue-300 ring-1'
                                         }`}
                                 >
                                     <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-none">
@@ -311,10 +315,19 @@ export const Editor: React.FC<EditorProps> = ({ site, onBack }) => {
                 <div className="flex-1 overflow-y-auto p-4">
                     {activeTab === 'section' && (
                         selectedSection ? (
-                            <PropertiesPanel
-                                section={selectedSection}
-                                onUpdate={(updates) => updateSection(selectedSection.id, updates)}
-                            />
+                            selectedSection.type === 'form' && selectedSection.content.form ? (
+                                <FormEditor
+                                    form={selectedSection.content.form}
+                                    onUpdate={(updatedForm) => updateSection(selectedSection.id, {
+                                        content: { ...selectedSection.content, form: updatedForm }
+                                    })}
+                                />
+                            ) : (
+                                <AIPropertiesPanel
+                                    section={selectedSection}
+                                    onUpdate={(updatedSection) => updateSection(selectedSection.id, updatedSection)}
+                                />
+                            )
                         ) : (
                             <div className="text-center py-12">
                                 <Settings size={48} className="mx-auto text-slate-300 mb-4" />
@@ -335,6 +348,15 @@ export const Editor: React.FC<EditorProps> = ({ site, onBack }) => {
                             site={localSite}
                             onUpdate={(domain) => setLocalSite(prev => ({ ...prev, domain }))}
                         />
+                        <div className="my-6 border-t border-slate-200" />
+                        <AccessSettings
+                            site={localSite}
+                            onUpdate={(settings) => setLocalSite(prev => ({ 
+                                ...prev, 
+                                settings: { ...prev.settings, ...settings } 
+                            }))}
+                        />
+                    </div>
                     )}
                 </div>
             </div>
@@ -344,6 +366,31 @@ export const Editor: React.FC<EditorProps> = ({ site, onBack }) => {
                 onClose={() => setIsLibraryOpen(false)}
                 onAddSection={handleAddSection}
             />
-        </div>
+
+            <AIChatAssistant
+                currentSite={localSite}
+                onAction={(action) => {
+                    // Handle AI actions
+                    if (action.type === 'add_section') {
+                        // Implement add section logic from action data
+                        const newSection: SiteSection = {
+                            id: `section-${Date.now()}`,
+                            type: action.data.type,
+                            title: action.data.type,
+                            order: localSite.sections.length,
+                            props: {},
+                            content: action.data.content
+                        };
+                        setLocalSite(prev => ({
+                            ...prev,
+                            sections: [...prev.sections, newSection]
+                        }));
+                    }
+                    if (action.type === 'modify_section') {
+                        updateSection(action.target!, action.data);
+                    }
+                }}
+            />
+        </div >
     );
 };

@@ -79,18 +79,42 @@ export const sectionLibrary: SectionBlueprint[] = [
         }
     },
     {
-        type: 'contact',
-        name: 'Contact Form',
-        description: 'Get in touch form with contact info.',
+        type: 'form',
+        name: 'Contact Form (Advanced)',
+        description: 'Customizable contact form with multiple fields and validation.',
         icon: 'Mail',
         defaultContent: {
-            heading: 'Contact Us',
+            heading: 'Get in Touch',
             subheading: 'We would love to hear from you',
-            text: 'Fill out the form below or reach us at:',
-            items: [
-                { type: 'email', value: 'contact@example.com' },
-                { type: 'phone', value: '+1 (555) 000-0000' }
-            ]
+            form: {
+                id: 'new-form',
+                siteId: '',
+                name: 'Contact Form',
+                fields: [
+                    { id: 'f1', type: 'text', label: 'Name', name: 'name', required: true, order: 0, width: 'half', placeholder: 'Your Name' },
+                    { id: 'f2', type: 'email', label: 'Email', name: 'email', required: true, order: 1, width: 'half', placeholder: 'your@email.com' },
+                    { id: 'f3', type: 'textarea', label: 'Message', name: 'message', required: true, order: 2, width: 'full', placeholder: 'How can we help?' }
+                ],
+                settings: {
+                    submitButtonText: 'Send Message',
+                    submitButtonStyle: 'primary',
+                    successMessage: 'Thank you! We received your message and will get back to you soon.',
+                    errorMessage: 'Something went wrong. Please try again.',
+                    emailNotifications: {
+                        enabled: true,
+                        recipients: [],
+                        subject: 'New Contact Form Submission'
+                    },
+                    antiSpam: {
+                        honeypot: true
+                    },
+                    saveToDatabase: true,
+                    allowMultipleSubmissions: true
+                },
+                submissionCount: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }
         }
     }
 ];

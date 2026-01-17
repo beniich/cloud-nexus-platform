@@ -1,12 +1,15 @@
 export interface SEOConfig {
-    metaTitle: string;
-    metaDescription: string;
-    keywords?: string;
+    title: string;
+    description: string;
+    keywords: string[];
+    focusKeyword?: string;
     ogImage?: string;
     twitterCard?: 'summary' | 'summary_large_image';
     canonicalUrl?: string;
-    noIndex?: boolean;
-    noFollow?: boolean;
+    robotsMeta: {
+        index: boolean;
+        follow: boolean;
+    };
 }
 
 export interface SEOScore {

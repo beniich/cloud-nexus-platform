@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Globe, Settings, Eye, Trash2, BarChart3 } from 'lucide-react';
+import { Plus, Globe, Settings, Eye, Trash2, BarChart3, Sparkles } from 'lucide-react';
 import { Site } from '../../../types/site.types';
 import { useSites } from '../context/SiteContext';
 import { PreviewModal } from './PreviewModal';
@@ -8,9 +8,10 @@ interface DashboardViewProps {
     onCreateSite: () => void;
     onEditSite: (site: Site) => void;
     onViewInsights: (site: Site) => void;
+    onCreateWithAI?: () => void;
 }
 
-export const DashboardView: React.FC<DashboardViewProps> = ({ onCreateSite, onEditSite, onViewInsights }) => {
+export const DashboardView: React.FC<DashboardViewProps> = ({ onCreateSite, onEditSite, onViewInsights, onCreateWithAI }) => {
     const { sites, deleteSite, publishSite } = useSites();
     const [previewSite, setPreviewSite] = useState<Site | null>(null);
 
@@ -22,13 +23,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onCreateSite, onEd
                         <h1 className="text-4xl font-bold text-slate-900">My Sites</h1>
                         <p className="text-slate-600 mt-2">Create and manage your websites</p>
                     </div>
-                    <button
-                        onClick={onCreateSite}
-                        className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
-                    >
-                        <Plus size={20} />
-                        Create New Site
-                    </button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => onCreateWithAI?.()}
+                            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
+                        >
+                            <Sparkles size={20} />
+                            Create with AI
+                        </button>
+                        <button
+                            onClick={onCreateSite}
+                            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+                        >
+                            <Plus size={20} />
+                            Create New Site
+                        </button>
+                    </div>
                 </div>
 
                 {sites.length === 0 ? (

@@ -8,6 +8,9 @@ interface SiteContextType {
     deleteSite: (siteId: string) => void;
     publishSite: (siteId: string) => Promise<void>;
     getSite: (siteId: string) => Site | undefined;
+    addGeneratedSite: (siteData: any) => Site;
+    reorderSections: (siteId: string, sections: any[]) => void;
+    addSection: (siteId: string, sectionType: string, content: any) => void;
 }
 
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
@@ -35,6 +38,16 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
             theme: {
                 colors: { primary: '#3b82f6', secondary: '#64748b', background: '#ffffff', text: '#0f172a' },
                 fonts: { heading: 'Inter', body: 'Inter' }
+            },
+            seo: {
+                title: name,
+                description: `Website for ${name}`,
+                keywords: [],
+                robotsMeta: { index: true, follow: true }
+            },
+            settings: {
+                language: 'en',
+                timezone: 'UTC'
             }
         };
         setSites(prev => [newSite, ...prev]);
@@ -57,10 +70,64 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateSite(siteId, { status: 'published', url: `https://site-${siteId.slice(0, 8)}.lovable.app` });
     };
 
+    const reorderSections = (siteId: string, sections: any[]) => {
+        updateSite(siteId, { sections });
+    };
+
+    const addSection = (siteId: string, sectionType: string, content: any) => {
+        const site = getSite(siteId);
+        if (!site) return;
+
+        const newSection = {
+            id: `section-${Date.now()}`,
+            type: sectionType,
+            title: sectionType,
+            order: site.sections.length,
+            props: {},
+            content
+        };
+        // Ensure newSection matches SiteSection type roughly
+        updateSite(siteId, { sections: [...site.sections, newSection] as any[] });
+    };
+
     const getSite = (siteId: string) => sites.find(s => s.id === siteId);
 
+    const addGeneratedSite = (siteData: any) => {
+        const newSite: Site = {
+            id: crypto.randomUUID(),
+            name: siteData.siteName,
+            template: siteData.template.id,
+            thumbnail: siteData.template.preview?.thumbnail || '/templates/business.jpg', // Fallback
+            status: 'draft',
+            updatedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            sections: siteData.sections.map((s: any) => ({
+                id: `section-${Date.now()}-${s.order}`,
+                type: s.type,
+                title: s.type, // or s.content.heading
+                order: s.order,
+                props: {},
+                content: s.content
+            })),
+            theme: siteData.theme,
+            seo: {
+                title: siteData.seo.title || siteData.siteName,
+                description: siteData.seo.description || '',
+                keywords: siteData.seo.keywords || [],
+                robotsMeta: siteData.seo.robotsMeta || { index: true, follow: true },
+                ...siteData.seo
+            },
+            settings: {
+                language: 'en',
+                timezone: 'UTC'
+            }
+        };
+        setSites(prev => [newSite, ...prev]);
+        return newSite;
+    };
+
     return (
-        <SiteContext.Provider value={{ sites, addSite, updateSite, deleteSite, publishSite, getSite }}>
+        <SiteContext.Provider value={{ sites, addSite, updateSite, deleteSite, publishSite, getSite, addGeneratedSite, reorderSections, addSection }}>
             {children}
         </SiteContext.Provider>
     );

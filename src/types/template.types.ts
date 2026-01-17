@@ -14,7 +14,8 @@ export type SectionType =
     | 'footer'
     | 'blog-grid'
     | 'product-grid'
-    | 'newsletter';
+    | 'newsletter'
+    | 'form';
 
 export interface ColorTheme {
     primary: string;
@@ -55,6 +56,7 @@ export interface TemplateSection {
             link: string;
             style: 'primary' | 'secondary' | 'outline';
         };
+        form?: any; // Using any to avoid circular dependency with forms.types.ts
     };
 }
 

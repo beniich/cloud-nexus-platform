@@ -7,10 +7,12 @@ import { Site } from '../../types/site.types';
 
 import { SitesInsights } from './components/SitesInsights';
 
+import { AIGeneratorModal } from './components/AIGeneratorModal';
+
 const SiteBuilderApp: React.FC = () => {
-    const [view, setView] = useState<'dashboard' | 'templates' | 'editor' | 'insights'>('dashboard');
+    const [view, setView] = useState<'dashboard' | 'templates' | 'editor' | 'insights' | 'ai-generator'>('dashboard');
     const [editingSite, setEditingSite] = useState<Site | null>(null);
-    const { addSite } = useSites();
+    const { addSite, addGeneratedSite } = useSites();
 
     const handleCreateSite = () => {
         setView('templates');
@@ -43,6 +45,7 @@ const SiteBuilderApp: React.FC = () => {
                     onCreateSite={handleCreateSite}
                     onEditSite={handleEditSite}
                     onViewInsights={handleViewInsights}
+                    onCreateWithAI={() => setView('ai-generator')}
                 />
             )}
             {view === 'templates' && (
@@ -54,6 +57,15 @@ const SiteBuilderApp: React.FC = () => {
             {view === 'insights' && editingSite && (
                 <SitesInsights site={editingSite} onBack={handleBackToDashboard} />
             )}
+
+            <AIGeneratorModal
+                isOpen={view === 'ai-generator'}
+                onClose={() => setView('dashboard')}
+                onGenerate={(siteData) => {
+                    addGeneratedSite(siteData);
+                    setView('dashboard');
+                }}
+            />
         </>
     );
 };
