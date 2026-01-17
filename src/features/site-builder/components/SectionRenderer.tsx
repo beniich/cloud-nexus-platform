@@ -1,5 +1,6 @@
 import React from 'react';
 import { SiteSection } from '../../../types/site.types';
+import { FormRenderer } from './forms/FormRenderer';
 
 interface SectionRendererProps {
     section: SiteSection;
@@ -11,7 +12,6 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({ section, isPre
 
     const baseClass = "py-16 px-6";
 
-    import { FormRenderer } from './forms/FormRenderer';
 
     switch (type) {
         case 'form':
