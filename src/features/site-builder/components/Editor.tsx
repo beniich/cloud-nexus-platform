@@ -344,19 +344,20 @@ export const Editor: React.FC<EditorProps> = ({ site, onBack }) => {
                     )}
 
                     {activeTab === 'settings' && (
-                        <CustomDomainSettings
-                            site={localSite}
-                            onUpdate={(domain) => setLocalSite(prev => ({ ...prev, domain }))}
-                        />
-                        <div className="my-6 border-t border-slate-200" />
-                        <AccessSettings
-                            site={localSite}
-                            onUpdate={(settings) => setLocalSite(prev => ({ 
-                                ...prev, 
-                                settings: { ...prev.settings, ...settings } 
-                            }))}
-                        />
-                    </div>
+                        <div className="space-y-6">
+                            <CustomDomainSettings
+                                site={localSite}
+                                onUpdate={(domain) => setLocalSite(prev => ({ ...prev, domain }))}
+                            />
+                            <div className="my-6 border-t border-slate-200" />
+                            <AccessSettings
+                                site={localSite}
+                                onUpdate={(settings) => setLocalSite(prev => ({
+                                    ...prev,
+                                    settings: { ...prev.settings, ...settings }
+                                }))}
+                            />
+                        </div>
                     )}
                 </div>
             </div>

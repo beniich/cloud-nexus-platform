@@ -38,7 +38,6 @@ export interface ABMetrics {
     avgResponseTime: number;
     avgTokens: number;
     conversionRate: number;
-    confidenceLevel: number;
 }
 
 export interface ABTestResult {
@@ -269,7 +268,7 @@ export class ABTestingService {
         return {
             testId,
             winner,
-            confidence: statistical.confidenceLevel,
+            confidence: statistical.significanceLevel,
             improvement,
             metrics,
             recommendation,
@@ -411,8 +410,7 @@ export class ABTestingService {
             avgRating: 0,
             avgResponseTime: 0,
             avgTokens: 0,
-            conversionRate: 0,
-            confidenceLevel: 0
+            conversionRate: 0
         };
     }
 
