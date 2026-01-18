@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+// Entry point
 import App from "./App.tsx";
 import "./index.css";
 import i18n from "./lib/i18n"; // Assuming i18n instance is exported
