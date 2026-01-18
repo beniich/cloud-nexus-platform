@@ -18,7 +18,7 @@ interface PaymentConfigContextType {
     getTaxRate: (country: string) => number;
 }
 
-const PaymentConfigContext = createContext<PaymentConfigContextContextType | undefined>(undefined);
+const PaymentConfigContext = createContext<PaymentConfigContextType | undefined>(undefined);
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 

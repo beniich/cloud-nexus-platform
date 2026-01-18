@@ -14,6 +14,7 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 import { ProductProvider } from "./contexts/ProductContext";
 import { AIProvider } from "./features/ai-assistant/contexts/AIContext";
 import { MockModeBanner } from "./shared/components/MockModeBanner";
+import { PaymentConfigProvider } from "./contexts/PaymentConfigContext";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
@@ -45,175 +46,177 @@ function App() {
         <BrowserRouter>
           <MockModeBanner />
           <AuthProvider>
-            <AIProvider>
-              <ProductProvider>
-                <CartProvider>
-                  <NotificationProvider>
-                    <Toaster />
-                    <Sonner />
-                    <Routes>
-                      {/* Public Routes */}
-                      <Route path="/" element={<Index />} />
-                      <Route path="/login" element={<SecureLoginForm />} />
+            <PaymentConfigProvider>
+              <AIProvider>
+                <ProductProvider>
+                  <CartProvider>
+                    <NotificationProvider>
+                      <Toaster />
+                      <Sonner />
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<Index />} />
+                        <Route path="/login" element={<SecureLoginForm />} />
 
-                      {/* Protected Routes */}
-                      <Route element={<AppLayout />}>
-                        <Route
-                          path="/dashboard"
-                          element={
-                            <ProtectedRoute>
-                              <Dashboard />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/cloud-spaces/*"
-                          element={
-                            <ProtectedRoute requiredPermissions={[Permission.FILES_VIEW]}>
-                              <CloudSpaces />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/servers"
-                          element={
-                            <ProtectedRoute requiredPermissions={[Permission.SERVERS_VIEW]}>
-                              <Servers />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/products"
-                          element={
-                            <ProtectedRoute>
-                              <Products />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/crm/*"
-                          element={
-                            <ProtectedRoute>
-                              <CRM />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/crm/dashboard"
-                          element={
-                            <ProtectedRoute>
-                              <CrmDashboard />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/cms"
-                          element={
-                            <ProtectedRoute>
-                              <HeadlessCMS />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/service-request"
-                          element={
-                            <ProtectedRoute>
-                              <ServiceRequestForm />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/service-request/wizard"
-                          element={
-                            <ProtectedRoute>
-                              <ServiceRequestWizard />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/orders"
-                          element={
-                            <ProtectedRoute requiredPermissions={[Permission.ADMIN]}>
-                              <AdminOrdersValidation />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/users"
-                          element={
-                            <ProtectedRoute requiredPermissions={[Permission.USERS_VIEW]}>
-                              <Users />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/analytics"
-                          element={
-                            <ProtectedRoute requiredPermissions={[Permission.ANALYTICS_VIEW]}>
-                              <Analytics />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/hosting-request"
-                          element={
-                            <ProtectedRoute>
-                              <HostingRequest />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/invoices/:id"
-                          element={
-                            <ProtectedRoute>
-                              <InvoiceView />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/sites"
-                          element={
-                            <ProtectedRoute>
-                              <SitesDashboard />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/ai-optimization"
-                          element={
-                            <ProtectedRoute>
-                              <ABTestingDashboard />
-                            </ProtectedRoute>
-                          }
-                        />
+                        {/* Protected Routes */}
+                        <Route element={<AppLayout />}>
+                          <Route
+                            path="/dashboard"
+                            element={
+                              <ProtectedRoute>
+                                <Dashboard />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/cloud-spaces/*"
+                            element={
+                              <ProtectedRoute requiredPermissions={[Permission.FILES_VIEW]}>
+                                <CloudSpaces />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/servers"
+                            element={
+                              <ProtectedRoute requiredPermissions={[Permission.SERVERS_VIEW]}>
+                                <Servers />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/products"
+                            element={
+                              <ProtectedRoute>
+                                <Products />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/crm/*"
+                            element={
+                              <ProtectedRoute>
+                                <CRM />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/crm/dashboard"
+                            element={
+                              <ProtectedRoute>
+                                <CrmDashboard />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/cms"
+                            element={
+                              <ProtectedRoute>
+                                <HeadlessCMS />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/service-request"
+                            element={
+                              <ProtectedRoute>
+                                <ServiceRequestForm />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/service-request/wizard"
+                            element={
+                              <ProtectedRoute>
+                                <ServiceRequestWizard />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/orders"
+                            element={
+                              <ProtectedRoute requiredPermissions={[Permission.ADMIN]}>
+                                <AdminOrdersValidation />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/users"
+                            element={
+                              <ProtectedRoute requiredPermissions={[Permission.USERS_VIEW]}>
+                                <Users />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/analytics"
+                            element={
+                              <ProtectedRoute requiredPermissions={[Permission.ANALYTICS_VIEW]}>
+                                <Analytics />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/hosting-request"
+                            element={
+                              <ProtectedRoute>
+                                <HostingRequest />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/invoices/:id"
+                            element={
+                              <ProtectedRoute>
+                                <InvoiceView />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/sites"
+                            element={
+                              <ProtectedRoute>
+                                <SitesDashboard />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/ai-optimization"
+                            element={
+                              <ProtectedRoute>
+                                <ABTestingDashboard />
+                              </ProtectedRoute>
+                            }
+                          />
 
-                        <Route
-                          path="/settings"
-                          element={
-                            <ProtectedRoute>
-                              <Settings />
-                            </ProtectedRoute>
-                          }
-                        />
-                        {/* Payment & Admin Routes */}
-                        <Route
-                          path="/admin/payment-settings"
-                          element={
-                            <ProtectedRoute requiredPermissions={[Permission.ADMIN]}>
-                              <PaymentSettings />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route path="/checkout" element={<CheckoutPage />} />
-                      </Route>
+                          <Route
+                            path="/settings"
+                            element={
+                              <ProtectedRoute>
+                                <Settings />
+                              </ProtectedRoute>
+                            }
+                          />
+                          {/* Payment & Admin Routes */}
+                          <Route
+                            path="/admin/payment-settings"
+                            element={
+                              <ProtectedRoute requiredPermissions={[Permission.ADMIN]}>
+                                <PaymentSettings />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route path="/checkout" element={<CheckoutPage />} />
+                        </Route>
 
-                      {/* Fallback */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </NotificationProvider>
-                </CartProvider>
-              </ProductProvider>
-            </AIProvider>
+                        {/* Fallback */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </NotificationProvider>
+                  </CartProvider>
+                </ProductProvider>
+              </AIProvider>
+            </PaymentConfigProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
