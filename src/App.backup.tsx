@@ -25,14 +25,13 @@ import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import CRM from "./pages/CRM";
 import HostingRequest from "./pages/HostingRequest";
-import HeadlessCMS from "./features/cms/HeadlessCMS";
-import ServiceRequestForm from "./features/service-request/ServiceRequestForm";
-import ServiceRequestWizard from "./features/service-request/ServiceRequestWizard";
+// import HeadlessCMS from "./features/cms/HeadlessCMS";
+// import ServiceRequestForm from "./features/service-request/ServiceRequestForm";
+// import ServiceRequestWizard from "./features/service-request/ServiceRequestWizard";
 import CrmDashboard from "./features/crmhustel/routes/CrmDashboard";
 import AdminOrdersValidation from "./pages/admin/AdminOrdersValidation";
 import InvoiceView from "./pages/InvoiceView";
 import SitesDashboard from "./features/site-builder/SitesDashboard";
-import ABTestingDashboard from "./features/ai-assistant/components/ABTestingDashboard";
 
 const queryClient = new QueryClient();
 
@@ -104,30 +103,31 @@ function App() {
                             </ProtectedRoute>
                           }
                         />
-                        <Route
+                        {/* Temporarily commented out - causing React hooks error */}
+                        {/* <Route
                           path="/cms"
                           element={
                             <ProtectedRoute>
                               <HeadlessCMS />
                             </ProtectedRoute>
                           }
-                        />
-                        <Route
+                        /> */}
+                        {/* <Route
                           path="/service-request"
                           element={
                             <ProtectedRoute>
                               <ServiceRequestForm />
                             </ProtectedRoute>
                           }
-                        />
-                        <Route
+                        /\u003e */}
+                        {/* <Route
                           path="/service-request/wizard"
                           element={
                             <ProtectedRoute>
                               <ServiceRequestWizard />
                             </ProtectedRoute>
                           }
-                        />
+                        /> */}
                         <Route
                           path="/admin/orders"
                           element={
@@ -173,14 +173,6 @@ function App() {
                           element={
                             <ProtectedRoute>
                               <SitesDashboard />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/ai-optimization"
-                          element={
-                            <ProtectedRoute>
-                              <ABTestingDashboard />
                             </ProtectedRoute>
                           }
                         />

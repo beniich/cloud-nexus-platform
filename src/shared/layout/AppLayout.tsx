@@ -33,7 +33,9 @@ export default function AppLayout() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-6 flex-1">
                             {/* Logo Wrapper (Optional, kept simple for now) */}
-                            <div className="font-bold text-xl text-blue-600 hidden md:block">CloudNexus</div>
+                            <div className="hidden md:block">
+                                <img src="/logo.png" alt="CloudNexus" className="h-8 w-auto" />
+                            </div>
 
                             <div className="relative hidden lg:block w-64">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Form, FormField, SubmissionResult } from '../../../types/forms.types';
-import { FormService } from '../../../services/form-service';
+import { Form, FormField, SubmissionResult } from '../../../../types/forms.types';
+import { FormService } from '../../../../services/form-service';
 import { AlertCircle, CheckCircle, Send } from 'lucide-react';
 
 interface FormRendererProps {
@@ -103,7 +103,7 @@ export const FormRenderer: React.FC<FormRendererProps> = ({ form, previewMode = 
                     .sort((a, b) => a.order - b.order)
                     .map(field => (
                         <div key={field.id} className={`${field.width === 'half' ? 'w-1/2 inline-block px-2' :
-                                field.width === 'third' ? 'w-1/3 inline-block px-2' : 'w-full block'
+                            field.width === 'third' ? 'w-1/3 inline-block px-2' : 'w-full block'
                             } mb-4 align-top`}>
                             <RenderField
                                 field={field}
@@ -116,7 +116,7 @@ export const FormRenderer: React.FC<FormRendererProps> = ({ form, previewMode = 
             </div>
 
             <div className={`mt-8 ${form.settings.submitButtonStyle === 'outline' ? 'text-center' :
-                    form.settings.submitButtonStyle === 'secondary' ? 'text-right' : 'text-left'
+                form.settings.submitButtonStyle === 'secondary' ? 'text-right' : 'text-left'
                 }`}>
                 <button
                     type="submit"

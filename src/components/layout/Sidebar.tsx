@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -13,7 +14,7 @@ import { MenuItem } from '@/types/menu';
 // COMPONENTS HELPERS
 // ============================================
 
-const IconMap: any = {
+const IconMap: Record<string, React.ElementType> = {
     LayoutDashboard, ShoppingBag, Users, Settings, Package,
     TrendingUp, FileText, MessageSquare, Cloud, Server,
     Database, Upload, HardDrive
@@ -25,7 +26,7 @@ function DynamicIcon({ name, className = "w-5 h-5" }: { name: string, className?
 }
 
 function Badge({ count, variant = 'primary' }: { count: number | string, variant?: string }) {
-    const variants: any = {
+    const variants: Record<string, string> = {
         primary: 'bg-blue-500',
         success: 'bg-green-500',
         warning: 'bg-yellow-500',
@@ -55,8 +56,8 @@ function SidebarItem({ item, isActive, onClick, isCollapsed }: { item: MenuItem,
             <button
                 onClick={handleClick}
                 className={`w-full flex items-center justify-between px-4 py-3 text-sm transition-all ${isActive
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                     } rounded-lg mb-1`}
             >
                 <div className="flex items-center gap-3">
@@ -109,9 +110,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             {/* Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                 {!isCollapsed && (
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
-                        Dashboard Pro
-                    </h1>
+                    <img src="/logo.png" alt="Dashboard Pro" className="h-8 w-auto px-2" />
                 )}
                 <button onClick={onToggle} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
                     <Menu className="w-5 h-5" />
