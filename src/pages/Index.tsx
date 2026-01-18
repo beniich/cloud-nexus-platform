@@ -79,7 +79,7 @@ const Index = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-50 border-b border-orange-200 backdrop-blur-xl bg-white/80 sticky top-0">
+      <nav className="z-50 border-b border-orange-200 backdrop-blur-xl bg-white/80 sticky top-0">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -190,8 +190,8 @@ const Index = () => {
               <div
                 key={idx}
                 className={`group p-8 rounded-2xl border transition-all duration-500 cursor-pointer ${activeService === idx
-                    ? 'bg-white border-orange-300 scale-105 shadow-xl shadow-orange-200/50'
-                    : 'bg-white/70 border-orange-200 hover:bg-white hover:shadow-lg'
+                  ? 'bg-white border-orange-300 scale-105 shadow-xl shadow-orange-200/50'
+                  : 'bg-white/70 border-orange-200 hover:bg-white hover:shadow-lg'
                   }`}
                 onMouseEnter={() => setActiveService(idx)}
                 style={{

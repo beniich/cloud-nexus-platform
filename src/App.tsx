@@ -37,6 +37,9 @@ import SitesDashboard from "./features/site-builder/SitesDashboard";
 import ABTestingDashboard from "./features/ai-assistant/components/ABTestingDashboard";
 import PaymentSettings from "./pages/admin/PaymentSettings";
 import { CheckoutPage } from "./pages/CheckoutPage";
+import Services from "./pages/Services";
+import Pricing from "./pages/Pricing";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +62,9 @@ function App() {
                           {/* Public Routes */}
                           <Route path="/" element={<Index />} />
                           <Route path="/login" element={<SecureLoginForm />} />
+                          <Route path="/services" element={<Services />} />
+                          <Route path="/pricing" element={<Pricing />} />
+                          <Route path="/contact" element={<Contact />} />
 
                           {/* Protected Routes */}
                           <Route element={<AppLayout />}>
