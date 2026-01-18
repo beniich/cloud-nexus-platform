@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMenuConfig } from '@/hooks/useMenuConfig';
+import { usePlatformConfig } from '@/contexts/PlatformConfigContext';
 import { MenuItem } from '@/types/menu';
 import { DynamicMenu } from './DynamicMenu';
 
@@ -102,6 +103,7 @@ interface SidebarProps {
 export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     const { user } = useAuth();
     const { menu } = useMenuConfig();
+    const { settings } = usePlatformConfig();
     const location = useLocation();
     const navigate = useNavigate();
     const currentPath = location.pathname;
@@ -112,11 +114,16 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                 {!isCollapsed && (
                     <div className="px-2">
-                        <img src="/logo.png" alt="Dashboard Pro" className="h-8 w-auto mb-1" />
+                        <img
+                            src={settings.site_logo_url || "/logo.png"}
+                            alt={settings.site_name || "Dashboard Pro"}
+                            className="h-8 w-auto mb-1"
+                            onError={(e) => (e.currentTarget.src = '/logo.png')}
+                        />
                         {user && (
                             <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full border ${user.role === 'admin' ? 'bg-red-50 text-red-600 border-red-200' :
-                                    user.role === 'vendor' ? 'bg-green-50 text-green-600 border-green-200' :
-                                        'bg-blue-50 text-blue-600 border-blue-200'
+                                user.role === 'vendor' ? 'bg-green-50 text-green-600 border-green-200' :
+                                    'bg-blue-50 text-blue-600 border-blue-200'
                                 }`}>
                                 {user.role}
                             </span>
