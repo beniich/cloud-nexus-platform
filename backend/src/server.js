@@ -17,6 +17,7 @@ import featureFlagsRoutes from './routes/featureFlags.js';
 import usersRoutes from './routes/users.js';
 import vendorRoutes from './routes/vendor.js';
 import settingsRoutes from './routes/settings.js';
+import paymentConfigRoutes from './routes/paymentConfig.js';
 
 dotenv.config();
 
@@ -97,6 +98,7 @@ app.use('/api/feature-flags', featureFlagsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/vendor', vendorRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/payment', paymentConfigRoutes);
 
 // ============================================
 // ERROR HANDLING

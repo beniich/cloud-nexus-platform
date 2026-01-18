@@ -33,6 +33,8 @@ import AdminOrdersValidation from "./pages/admin/AdminOrdersValidation";
 import InvoiceView from "./pages/InvoiceView";
 import SitesDashboard from "./features/site-builder/SitesDashboard";
 import ABTestingDashboard from "./features/ai-assistant/components/ABTestingDashboard";
+import PaymentSettings from "./pages/admin/PaymentSettings";
+import { CheckoutPage } from "./pages/CheckoutPage";
 
 const queryClient = new QueryClient();
 
@@ -193,6 +195,16 @@ function App() {
                             </ProtectedRoute>
                           }
                         />
+                        {/* Payment & Admin Routes */}
+                        <Route
+                          path="/admin/payment-settings"
+                          element={
+                            <ProtectedRoute requiredPermissions={[Permission.ADMIN]}>
+                              <PaymentSettings />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route path="/checkout" element={<CheckoutPage />} />
                       </Route>
 
                       {/* Fallback */}

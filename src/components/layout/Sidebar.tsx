@@ -9,6 +9,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useMenuConfig } from '@/hooks/useMenuConfig';
 import { MenuItem } from '@/types/menu';
+import { DynamicMenu } from './DynamicMenu';
 
 // ============================================
 // COMPONENTS HELPERS
@@ -110,7 +111,17 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             {/* Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                 {!isCollapsed && (
-                    <img src="/logo.png" alt="Dashboard Pro" className="h-8 w-auto px-2" />
+                    <div className="px-2">
+                        <img src="/logo.png" alt="Dashboard Pro" className="h-8 w-auto mb-1" />
+                        {user && (
+                            <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full border ${user.role === 'admin' ? 'bg-red-50 text-red-600 border-red-200' :
+                                    user.role === 'vendor' ? 'bg-green-50 text-green-600 border-green-200' :
+                                        'bg-blue-50 text-blue-600 border-blue-200'
+                                }`}>
+                                {user.role}
+                            </span>
+                        )}
+                    </div>
                 )}
                 <button onClick={onToggle} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
                     <Menu className="w-5 h-5" />
@@ -118,17 +129,10 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             </div>
 
             {/* Menu */}
-            <nav className="flex-1 p-4 overflow-y-auto">
-                {menu.map(item => (
-                    <SidebarItem
-                        key={item.id}
-                        item={item}
-                        isActive={currentPath.startsWith(item.path)}
-                        onClick={(path) => navigate(path)}
-                        isCollapsed={isCollapsed}
-                    />
-                ))}
-            </nav>
+            {/* Menu */}
+            <div className="flex-1 overflow-y-auto">
+                <DynamicMenu />
+            </div>
 
             {/* User Profile */}
             <div className="p-4 border-t border-gray-200 dark:border-gray-800">
