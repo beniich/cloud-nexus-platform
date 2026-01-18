@@ -6,7 +6,8 @@ export type TabId =
     | "security"
     | "notifications"
     | "payments"
-    | "admin";
+    | "admin"
+    | "platform";
 
 export interface SettingsState {
     storeName: string;

@@ -18,6 +18,7 @@ import usersRoutes from './routes/users.js';
 import vendorRoutes from './routes/vendor.js';
 import settingsRoutes from './routes/settings.js';
 import paymentConfigRoutes from './routes/paymentConfig.js';
+import platformSettingsRoutes from './routes/platform.js';
 
 dotenv.config();
 
@@ -99,6 +100,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/vendor', vendorRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/payment', paymentConfigRoutes);
+app.use('/api/platform', platformSettingsRoutes);
 
 // ============================================
 // ERROR HANDLING

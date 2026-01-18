@@ -9,6 +9,7 @@ import SettingsAppearanceForm from "@/components/settings/SettingsAppearanceForm
 import SettingsNotificationsForm from "@/components/settings/SettingsNotificationsForm";
 import SettingsPaymentsForm from "@/components/settings/SettingsPaymentsForm";
 import SettingsAdminForm from "@/components/settings/SettingsAdminForm";
+import PlatformSettingsForm from "@/components/settings/PlatformSettingsForm";
 
 export default function SettingsPage() {
     // \ud83d\udc49 TODO: Injecter le rôle depuis le contexte d'authentification réel
@@ -57,6 +58,10 @@ export default function SettingsPage() {
                         <SettingsPaymentsForm settings={settings} update={update} />
                     )}
 
+                    {activeTab === "platform" && role === "admin" && (
+                        <PlatformSettingsForm />
+                    )}
+
                     {activeTab === "admin" && role === "admin" && (
                         <SettingsAdminForm
                             settings={settings as Settings}
@@ -68,7 +73,7 @@ export default function SettingsPage() {
                     )}
 
                     {/* Fallback for unauthorized access */}
-                    {((activeTab === "security" || activeTab === "payments" || activeTab === "admin") && role !== "admin") && (
+                    {((activeTab === "security" || activeTab === "payments" || activeTab === "platform" || activeTab === "admin") && role !== "admin") && (
                         <div className="flex flex-col items-center justify-center h-full text-center p-8">
                             <span className="text-4xl mb-4">🚫</span>
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Accès non autorisé</h3>

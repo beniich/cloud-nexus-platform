@@ -5,6 +5,7 @@ import {
     Shield,
     Bell,
     CreditCard,
+    Globe,
 } from "lucide-react";
 
 interface TabConfig {
@@ -20,6 +21,7 @@ const TABS: TabConfig[] = [
     { id: "security", label: "Sécurité", icon: Shield, roles: ["admin"] },
     { id: "notifications", label: "Notifications", icon: Bell, roles: ["admin", "vendor"] },
     { id: "payments", label: "Paiements", icon: CreditCard, roles: ["admin"] },
+    { id: "platform", label: "Plateforme (White Label)", icon: Globe, roles: ["admin"] },
     { id: "admin", label: "Administration", icon: Shield, roles: ["admin"] },
 ];
 
