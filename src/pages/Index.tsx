@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Cloud, Zap, Shield, Globe, ArrowRight, CheckCircle, Star, Users, TrendingUp, Sparkles, Code, Database, Lock, Rocket, Lightbulb } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
 
 const Index = () => {
+  const { t } = useTranslation();
   const [scrollY, setScrollY] = useState(0);
   const [activeService, setActiveService] = useState(0);
 
@@ -23,41 +27,41 @@ const Index = () => {
     {
       icon: <Cloud className="w-8 h-8" />,
       title: "Cloud Infrastructure",
-      description: "Déployez votre infrastructure en quelques clics",
+      description: "Deploy your infrastructure in a few clicks",
       color: "from-orange-400 to-amber-500"
     },
     {
       icon: <Code className="w-8 h-8" />,
       title: "Site Builder",
-      description: "Créez des sites web professionnels sans code",
+      description: "Create professional websites without code",
       color: "from-amber-500 to-orange-500"
     },
     {
       icon: <Database className="w-8 h-8" />,
       title: "Data Management",
-      description: "Gérez vos données en toute sécurité",
+      description: "Manage your data securely",
       color: "from-orange-500 to-red-500"
     },
     {
       icon: <Shield className="w-8 h-8" />,
       title: "Security First",
-      description: "Protection avancée de vos ressources",
+      description: "Advanced protection for your resources",
       color: "from-amber-400 to-yellow-500"
     }
   ];
 
   const stats = [
     { number: "99.9%", label: "Uptime", icon: <TrendingUp /> },
-    { number: "10K+", label: "Clients Actifs", icon: <Users /> },
+    { number: "10K+", label: "Active Clients", icon: <Users /> },
     { number: "24/7", label: "Support", icon: <Sparkles /> },
-    { number: "150+", label: "Pays", icon: <Globe /> }
+    { number: "150+", label: "Countries", icon: <Globe /> }
   ];
 
   const features = [
-    { icon: <Zap />, title: "Performance Maximale", desc: "Infrastructure optimisée pour des temps de réponse ultra-rapides" },
-    { icon: <Lock />, title: "Sécurité Renforcée", desc: "Chiffrement de bout en bout et conformité RGPD" },
-    { icon: <Rocket />, title: "Déploiement Rapide", desc: "Lancez vos projets en quelques minutes, pas en heures" },
-    { icon: <Globe />, title: "Présence Mondiale", desc: "Datacenters répartis sur 5 continents" }
+    { icon: <Zap />, title: "Maximum Performance", desc: "Infrastructure optimized for ultra-fast response times" },
+    { icon: <Lock />, title: "Reinforced Security", desc: "End-to-end encryption and GDPR compliance" },
+    { icon: <Rocket />, title: "Rapid Deployment", desc: "Launch your projects in minutes, not hours" },
+    { icon: <Globe />, title: "Global Presence", desc: "Datacenters distributed across 5 continents" }
   ];
 
   return (
@@ -78,32 +82,7 @@ const Index = () => {
         ></div>
       </div>
 
-      {/* Navigation */}
-      <nav className="z-50 border-b border-orange-200 backdrop-blur-xl bg-white/80 sticky top-0">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-300/50">
-                <Cloud className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                Cloud Nexus
-              </span>
-            </div>
-            <div className="hidden md:flex items-center gap-8">
-              <Link to="/services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Services</Link>
-              <a href="#features" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Fonctionnalités</a>
-              <Link to="/pricing" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Tarifs</Link>
-              <Link to="/login" className="px-6 py-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all border border-slate-200 font-medium">
-                Connexion
-              </Link>
-              <Link to="/login" className="px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-medium">
-                Démarrer
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative z-10 pt-32 pb-20 px-6">
@@ -117,31 +96,30 @@ const Index = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 border border-orange-200 rounded-full text-sm shadow-sm">
               <Lightbulb className="w-4 h-4 text-orange-600" />
-              <span className="text-slate-700 font-medium">Nouveau : Site Builder avec IA intégrée</span>
+              <span className="text-slate-700 font-medium">{t('translation.hero.new_badge', 'New: AI-Powered Site Builder')}</span>
             </div>
 
             <h1 className="text-6xl md:text-8xl font-bold leading-tight">
               <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
-                Propulsez votre
+                {t('translation.hero.title_prefix', 'Propel your')}
               </span>
               <br />
               <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
-                entreprise vers le cloud
+                {t('translation.hero.title_suffix', 'business to the cloud')}
               </span>
             </h1>
 
             <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              Infrastructure cloud puissante, outils de développement intuitifs et support expert.
-              Tout ce dont vous avez besoin pour réussir dans le digital.
+              {t('translation.hero.subtitle', 'Powerful cloud infrastructure, intuitive developer tools, and expert support. Everything you need to succeed in the digital age.')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
               <Link to="/login" className="group px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl hover:shadow-2xl hover:shadow-orange-400/50 transition-all transform hover:scale-105 flex items-center gap-2 font-semibold text-lg">
-                Commencer gratuitement
+                {t('translation.hero.cta_start', 'Start for free')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <button className="px-8 py-4 bg-white border-2 border-orange-300 text-orange-600 rounded-xl hover:bg-orange-50 transition-all font-semibold text-lg">
-                Voir la démo
+                {t('translation.hero.cta_demo', 'View Demo')}
               </button>
             </div>
 
@@ -180,9 +158,9 @@ const Index = () => {
             }}
           >
             <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-              Services Cloud Complets
+              {t('translation.nav.services', 'Complete Cloud Services')}
             </h2>
-            <p className="text-slate-600 text-xl">Une plateforme, des possibilités infinies</p>
+            <p className="text-slate-600 text-xl">One platform, infinite possibilities</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -205,7 +183,7 @@ const Index = () => {
                 <h3 className="text-2xl font-bold mb-3 text-slate-800">{service.title}</h3>
                 <p className="text-slate-600">{service.description}</p>
                 <div className="mt-6 flex items-center gap-2 text-orange-500 group-hover:gap-3 transition-all font-medium">
-                  <span>En savoir plus</span>
+                  <span>{t('translation.common.read_more', 'Read more')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>
@@ -227,11 +205,11 @@ const Index = () => {
             >
               <h2 className="text-5xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                  Pourquoi choisir
+                  Why choose
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                  Cloud Nexus ?
+                  Cloud Nexus?
                 </span>
               </h2>
 
@@ -266,27 +244,27 @@ const Index = () => {
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Infrastructure haute disponibilité</span>
+                    <span className="text-lg text-slate-700">High availability infrastructure</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Scaling automatique</span>
+                    <span className="text-lg text-slate-700">Auto-scaling</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Monitoring en temps réel</span>
+                    <span className="text-lg text-slate-700">Real-time monitoring</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Backup automatique quotidien</span>
+                    <span className="text-lg text-slate-700">Daily automated backups</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">API RESTful complète</span>
+                    <span className="text-lg text-slate-700">Full RESTful API</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Support prioritaire 24/7</span>
+                    <span className="text-lg text-slate-700">24/7 Priority Support</span>
                   </div>
                 </div>
 
@@ -299,9 +277,9 @@ const Index = () => {
                     <Star className="w-6 h-6 text-amber-500 fill-amber-500" />
                   </div>
                   <p className="text-slate-700 italic">
-                    "Cloud Nexus a transformé notre infrastructure. Performance exceptionnelle et support réactif !"
+                    "Cloud Nexus transformed our infrastructure. Exceptional performance and reactive support!"
                   </p>
-                  <p className="text-slate-600 text-sm mt-4 font-medium">— Sarah L., CTO chez TechStart</p>
+                  <p className="text-slate-600 text-sm mt-4 font-medium">— Sarah L., CTO at TechStart</p>
                 </div>
               </div>
             </div>
@@ -323,18 +301,18 @@ const Index = () => {
 
             <div className="relative text-center space-y-6">
               <h2 className="text-4xl md:text-5xl font-bold text-white">
-                Prêt à propulser votre business ?
+                Ready to boost your business?
               </h2>
               <p className="text-xl text-white/90 max-w-2xl mx-auto">
-                Rejoignez plus de 10 000 entreprises qui font confiance à Cloud Nexus
+                Join over 10,000 companies trusting Cloud Nexus
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                 <Link to="/login" className="group px-8 py-4 bg-white text-orange-600 rounded-xl hover:shadow-2xl transition-all transform hover:scale-105 flex items-center gap-2 font-semibold text-lg">
-                  Essai gratuit 14 jours
+                  14-day free trial
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <button className="px-8 py-4 bg-white/20 backdrop-blur-sm border-2 border-white/40 text-white rounded-xl hover:bg-white/30 transition-all font-semibold text-lg">
-                  Parler à un expert
+                  Talk to an expert
                 </button>
               </div>
             </div>
@@ -342,54 +320,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-orange-200 py-12 px-6 mt-20 bg-white/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-300/50">
-                  <Cloud className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl font-bold text-slate-800">Cloud Nexus</span>
-              </div>
-              <p className="text-slate-600">
-                La plateforme cloud nouvelle génération pour les entreprises ambitieuses.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-slate-800">Produits</h4>
-              <ul className="space-y-2 text-slate-600">
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Cloud Hosting</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Site Builder</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Databases</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Analytics</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-slate-800">Entreprise</h4>
-              <ul className="space-y-2 text-slate-600">
-                <li><Link to="/about" className="hover:text-orange-600 transition-colors">À propos</Link></li>
-                <li><Link to="/careers" className="hover:text-orange-600 transition-colors">Carrières</Link></li>
-                <li><Link to="/blog" className="hover:text-orange-600 transition-colors">Blog</Link></li>
-                <li><Link to="/contact" className="hover:text-orange-600 transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-slate-800">Légal</h4>
-              <ul className="space-y-2 text-slate-600">
-                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">Confidentialité</Link></li>
-                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">Conditions</Link></li>
-                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">Sécurité</Link></li>
-                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">RGPD</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-orange-200 pt-8 text-center text-slate-600">
-            <p>© 2025 Cloud Nexus Platform. Tous droits réservés.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

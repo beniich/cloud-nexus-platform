@@ -1,119 +1,121 @@
 import React, { useState } from 'react';
 import { Cloud, Calendar, User, Tag, ArrowRight, TrendingUp, BookOpen, Code, Shield, Zap, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
 
 const BlogPage = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
 
     const categories = [
-        { id: 'all', label: 'Tous les articles', icon: <BookOpen className="w-4 h-4" /> },
+        { id: 'all', label: 'All Articles', icon: <BookOpen className="w-4 h-4" /> },
         { id: 'cloud', label: 'Cloud Computing', icon: <Cloud className="w-4 h-4" /> },
-        { id: 'development', label: 'Développement', icon: <Code className="w-4 h-4" /> },
-        { id: 'security', label: 'Sécurité', icon: <Shield className="w-4 h-4" /> },
+        { id: 'development', label: 'Development', icon: <Code className="w-4 h-4" /> },
+        { id: 'security', label: 'Security', icon: <Shield className="w-4 h-4" /> },
         { id: 'performance', label: 'Performance', icon: <Zap className="w-4 h-4" /> }
     ];
 
     const articles = [
         {
             id: 1,
-            title: "Les tendances du Cloud Computing en 2025",
-            excerpt: "Découvrez les innovations qui vont révolutionner l'industrie du cloud cette année : IA générative, edge computing et serverless à grande échelle.",
+            title: "Cloud Computing Trends in 2025",
+            excerpt: "Discover the innovations that will revolutionize the cloud industry this year: Generative AI, Edge Computing, and large-scale Serverless.",
             category: "cloud",
             author: "Sophie Martin",
-            date: "15 Jan 2025",
-            readTime: "5 min",
+            date: "Jan 15, 2025",
+            readTime: "5 min read",
             image: "📊",
             featured: true,
-            tags: ["Cloud", "Tendances", "Innovation"]
+            tags: ["Cloud", "Trends", "Innovation"]
         },
         {
             id: 2,
-            title: "Optimiser les performances de vos applications React",
-            excerpt: "Guide complet pour améliorer les performances de vos applications React : lazy loading, code splitting, mémoisation et optimisation du rendu.",
+            title: "Optimizing React Application Performance",
+            excerpt: "Complete guide to improving your React apps performance: lazy loading, code splitting, memoization, and render optimization.",
             category: "development",
             author: "Thomas Dubois",
-            date: "12 Jan 2025",
-            readTime: "8 min",
+            date: "Jan 12, 2025",
+            readTime: "8 min read",
             image: "⚛️",
             featured: true,
             tags: ["React", "Performance", "JavaScript"]
         },
         {
             id: 3,
-            title: "Sécuriser votre infrastructure cloud : Guide complet",
-            excerpt: "Les meilleures pratiques pour protéger vos données et applications dans le cloud : chiffrement, gestion des accès, monitoring et conformité.",
+            title: "Securing Your Cloud Infrastructure: Complete Guide",
+            excerpt: "Best practices to protect your data and applications in the cloud: encryption, access management, monitoring, and compliance.",
             category: "security",
             author: "Marie Laurent",
-            date: "10 Jan 2025",
-            readTime: "10 min",
+            date: "Jan 10, 2025",
+            readTime: "10 min read",
             image: "🔒",
             featured: true,
-            tags: ["Sécurité", "DevSecOps", "Best Practices"]
+            tags: ["Security", "DevSecOps", "Best Practices"]
         },
         {
             id: 4,
-            title: "Kubernetes vs Docker Swarm : Quel orchestrateur choisir ?",
-            excerpt: "Comparaison détaillée des deux principales solutions d'orchestration de conteneurs pour vous aider à faire le bon choix.",
+            title: "Kubernetes vs Docker Swarm: Which Orchestrator to Choose?",
+            excerpt: "Detailed comparison of the two main container orchestration solutions to help you make the right choice.",
             category: "cloud",
             author: "Alexandre Chen",
-            date: "8 Jan 2025",
-            readTime: "7 min",
+            date: "Jan 8, 2025",
+            readTime: "7 min read",
             image: "🐳",
             tags: ["Kubernetes", "Docker", "DevOps"]
         },
         {
             id: 5,
-            title: "Serverless Architecture : Avantages et pièges à éviter",
-            excerpt: "Tout ce que vous devez savoir avant de migrer vers une architecture serverless : coûts, performances, limitations et cas d'usage.",
+            title: "Serverless Architecture: Benefits and Pitfalls",
+            excerpt: "Everything you need to know before migrating to a serverless architecture: costs, performance, limitations, and use cases.",
             category: "cloud",
             author: "Sophie Martin",
-            date: "5 Jan 2025",
-            readTime: "6 min",
+            date: "Jan 5, 2025",
+            readTime: "6 min read",
             image: "⚡",
             tags: ["Serverless", "AWS Lambda", "Architecture"]
         },
         {
             id: 6,
-            title: "TypeScript : Pourquoi votre équipe devrait l'adopter",
-            excerpt: "Les avantages concrets de TypeScript pour améliorer la qualité et la maintenabilité de votre code JavaScript.",
+            title: "TypeScript: Why Your Team Should Adopt It",
+            excerpt: "Concrete benefits of TypeScript for improving the quality and maintainability of your JavaScript code.",
             category: "development",
             author: "Thomas Dubois",
-            date: "3 Jan 2025",
-            readTime: "5 min",
+            date: "Jan 3, 2025",
+            readTime: "5 min read",
             image: "📘",
             tags: ["TypeScript", "JavaScript", "Code Quality"]
         },
         {
             id: 7,
-            title: "Zero Trust Security : Le nouveau paradigme de sécurité",
-            excerpt: "Comment implémenter une stratégie de sécurité Zero Trust dans votre organisation pour mieux protéger vos ressources.",
+            title: "Zero Trust Security: The New Security Paradigm",
+            excerpt: "How to implement a Zero Trust security strategy in your organization to better protect your resources.",
             category: "security",
             author: "Marie Laurent",
-            date: "1 Jan 2025",
-            readTime: "9 min",
+            date: "Jan 1, 2025",
+            readTime: "9 min read",
             image: "🛡️",
-            tags: ["Zero Trust", "Cybersécurité", "IAM"]
+            tags: ["Zero Trust", "Cybersecurity", "IAM"]
         },
         {
             id: 8,
-            title: "Monitoring et Observabilité : Guide pratique",
-            excerpt: "Mise en place d'une stratégie complète de monitoring et d'observabilité pour vos applications cloud avec Prometheus et Grafana.",
+            title: "Monitoring and Observability: Practical Guide",
+            excerpt: "Setting up a complete monitoring and observability strategy for your cloud applications with Prometheus and Grafana.",
             category: "performance",
             author: "Alexandre Chen",
-            date: "28 Déc 2024",
-            readTime: "11 min",
+            date: "Dec 28, 2024",
+            readTime: "11 min read",
             image: "📈",
             tags: ["Monitoring", "Observability", "DevOps"]
         },
         {
             id: 9,
-            title: "CI/CD : Automatiser vos déploiements avec GitHub Actions",
-            excerpt: "Tutorial complet pour mettre en place des pipelines CI/CD robustes et automatisés avec GitHub Actions.",
+            title: "CI/CD: Automating Deployments with GitHub Actions",
+            excerpt: "Complete tutorial to set up robust and automated CI/CD pipelines with GitHub Actions.",
             category: "development",
             author: "Thomas Dubois",
-            date: "25 Déc 2024",
-            readTime: "12 min",
+            date: "Dec 25, 2024",
+            readTime: "12 min read",
             image: "🚀",
             tags: ["CI/CD", "GitHub Actions", "Automation"]
         }
@@ -130,45 +132,22 @@ const BlogPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50">
-            {/* Navigation */}
-            <nav className="border-b border-orange-200 backdrop-blur-xl bg-white/80 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link to="/" className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-300/50">
-                                <Cloud className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                                Cloud Nexus
-                            </span>
-                        </Link>
-                        <div className="hidden md:flex items-center gap-8">
-                            <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Accueil</Link>
-                            <Link to="/services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Services</Link>
-                            <Link to="/blog" className="text-orange-600 font-semibold">Blog</Link>
-                            <Link to="/contact" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Contact</Link>
-                            <button className="px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-medium">
-                                S'abonner
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            <Navbar />
 
             {/* Hero Section */}
             <section className="py-20 px-6">
                 <div className="max-w-7xl mx-auto text-center">
                     <h1 className="text-6xl font-bold mb-6">
                         <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            Le Blog
+                            The Cloud Nexus
                         </span>
                         <br />
                         <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                            Cloud Nexus
+                            Blog
                         </span>
                     </h1>
                     <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                        Actualités, tutoriels et insights sur le cloud computing, le développement web et la sécurité
+                        News, tutorials, and insights on cloud computing, web development, and security.
                     </p>
                 </div>
             </section>
@@ -181,7 +160,7 @@ const BlogPage = () => {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                             <input
                                 type="text"
-                                placeholder="Rechercher un article..."
+                                placeholder="Search an article..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-12 pr-4 py-3 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
@@ -213,7 +192,7 @@ const BlogPage = () => {
                     <div className="max-w-7xl mx-auto">
                         <div className="flex items-center gap-3 mb-8">
                             <TrendingUp className="w-6 h-6 text-orange-500" />
-                            <h2 className="text-3xl font-bold text-slate-800">Articles à la une</h2>
+                            <h2 className="text-3xl font-bold text-slate-800">Featured Articles</h2>
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-8">
@@ -227,7 +206,7 @@ const BlogPage = () => {
                                             <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold uppercase">
                                                 {article.category}
                                             </span>
-                                            <span className="text-slate-500 text-sm">{article.readTime} de lecture</span>
+                                            <span className="text-slate-500 text-sm">{article.readTime}</span>
                                         </div>
                                         <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-orange-600 transition-colors line-clamp-2">
                                             {article.title}
@@ -255,7 +234,7 @@ const BlogPage = () => {
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto">
                     <h2 className="text-3xl font-bold text-slate-800 mb-8">
-                        {selectedCategory === 'all' ? 'Tous les articles' : categories.find(c => c.id === selectedCategory)?.label}
+                        {selectedCategory === 'all' ? 'All Articles' : categories.find(c => c.id === selectedCategory)?.label}
                     </h2>
 
                     <div className="space-y-6">
@@ -294,12 +273,12 @@ const BlogPage = () => {
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <BookOpen className="w-4 h-4 text-orange-500" />
-                                                <span>{article.readTime} de lecture</span>
+                                                <span>{article.readTime}</span>
                                             </div>
                                         </div>
 
                                         <button className="group/btn mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg transition-all font-medium">
-                                            Lire l'article
+                                            Read Article
                                             <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
@@ -310,7 +289,7 @@ const BlogPage = () => {
 
                     {filteredArticles.length === 0 && (
                         <div className="text-center py-12">
-                            <p className="text-slate-600 text-lg">Aucun article ne correspond à votre recherche.</p>
+                            <p className="text-slate-600 text-lg">No articles match your search.</p>
                         </div>
                     )}
                 </div>
@@ -321,34 +300,29 @@ const BlogPage = () => {
                 <div className="max-w-5xl mx-auto">
                     <div className="relative overflow-hidden p-12 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl shadow-2xl text-center">
                         <h2 className="text-4xl font-bold text-white mb-4">
-                            Restez informé des dernières actualités
+                            Stay updated with the latest news
                         </h2>
                         <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                            Recevez nos meilleurs articles directement dans votre boîte mail
+                            Receive our best articles directly in your inbox
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto">
                             <input
                                 type="email"
-                                placeholder="votre@email.com"
+                                placeholder="your@email.com"
                                 className="flex-1 px-6 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-white"
                             />
                             <button className="px-8 py-4 bg-white text-orange-600 rounded-xl hover:shadow-2xl transition-all transform hover:scale-105 font-semibold whitespace-nowrap">
-                                S'abonner
+                                Subscribe
                             </button>
                         </div>
                         <p className="text-white/80 text-sm mt-4">
-                            Pas de spam, désinscription en 1 clic
+                            No spam, unsubscribe in 1 click
                         </p>
                     </div>
                 </div>
             </section>
 
-            {/* Footer */}
-            <footer className="border-t border-orange-200 py-12 px-6 bg-white/50 backdrop-blur-sm">
-                <div className="max-w-7xl mx-auto text-center text-slate-600">
-                    <p>© 2025 Cloud Nexus Platform. Tous droits réservés.</p>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 };

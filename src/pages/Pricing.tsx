@@ -1,292 +1,189 @@
 import React, { useState } from 'react';
-import { Cloud, Check, X, Zap, Shield, Star, ArrowRight, HelpCircle } from 'lucide-react';
+import { Check, X, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
 
 const PricingPage = () => {
-    const [billingCycle, setBillingCycle] = useState('monthly');
-    const [showFAQ, setShowFAQ] = useState<number | null>(null);
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+    const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+    const toggleFaq = (index: number) => {
+        setOpenFaq(openFaq === index ? null : index);
+    };
 
     const plans = [
         {
             name: "Starter",
-            price: { monthly: 9, yearly: 90 },
-            description: "Pour les petits projets et sites personnels",
-            icon: <Zap className="w-8 h-8" />,
-            color: "from-orange-400 to-amber-500",
+            description: "Perfect for personal projects and prototypes",
+            price: billingCycle === 'monthly' ? "0" : "0",
             features: [
-                { text: "1 site web", included: true },
-                { text: "10 GB de stockage", included: true },
-                { text: "100 GB de bande passante", included: true },
-                { text: "SSL gratuit", included: true },
-                { text: "Support par email", included: true },
-                { text: "Backup hebdomadaire", included: true },
-                { text: "CDN de base", included: false },
-                { text: "Domaine personnalisé", included: false },
-                { text: "Support prioritaire", included: false }
+                "1 vCPU",
+                "1 GB RAM",
+                "25 GB SSD Storage",
+                "1 TB Transfer",
+                "Community Support",
+                "1 Project"
             ],
-            cta: "Commencer"
+            notIncluded: [
+                "Automated Backups",
+                "load Balancer",
+                "VPC Peering"
+            ],
+            cta: "Start Free",
+            highlight: false
         },
         {
-            name: "Professional",
-            price: { monthly: 29, yearly: 290 },
-            description: "Pour les entreprises en croissance",
-            icon: <Star className="w-8 h-8" />,
-            color: "from-orange-500 to-amber-600",
-            popular: true,
+            name: "Pro",
+            description: "For growing production applications",
+            price: billingCycle === 'monthly' ? "29" : "24",
             features: [
-                { text: "5 sites web", included: true },
-                { text: "50 GB de stockage", included: true },
-                { text: "500 GB de bande passante", included: true },
-                { text: "SSL gratuit", included: true },
-                { text: "Support par email & chat", included: true },
-                { text: "Backup quotidien", included: true },
-                { text: "CDN global", included: true },
-                { text: "3 domaines personnalisés", included: true },
-                { text: "Support prioritaire", included: false },
-                { text: "Staging environment", included: true },
-                { text: "Analytics avancés", included: true }
+                "2 vCPU",
+                "4 GB RAM",
+                "80 GB NVMe Storage",
+                "4 TB Transfer",
+                "Email Support",
+                "Unlimited Projects",
+                "Automated Backups",
+                "Free SSL Certificates"
             ],
-            cta: "Essai gratuit 14 jours"
+            notIncluded: [
+                "Dedicated Account Manager"
+            ],
+            cta: "Get Started",
+            highlight: true
         },
         {
-            name: "Enterprise",
-            price: { monthly: 99, yearly: 990 },
-            description: "Pour les grandes organisations",
-            icon: <Shield className="w-8 h-8" />,
-            color: "from-orange-600 to-red-600",
+            name: "Business",
+            description: "High performance for demanding workloads",
+            price: billingCycle === 'monthly' ? "99" : "89",
             features: [
-                { text: "Sites illimités", included: true },
-                { text: "500 GB de stockage", included: true },
-                { text: "Bande passante illimitée", included: true },
-                { text: "SSL gratuit", included: true },
-                { text: "Support 24/7 prioritaire", included: true },
-                { text: "Backup en temps réel", included: true },
-                { text: "CDN premium", included: true },
-                { text: "Domaines illimités", included: true },
-                { text: "Account manager dédié", included: true },
-                { text: "Environnements multiples", included: true },
-                { text: "Analytics entreprise", included: true },
-                { text: "SLA 99.99%", included: true },
-                { text: "White label", included: true }
+                "4 vCPU",
+                "16 GB RAM",
+                "320 GB NVMe Storage",
+                "8 TB Transfer",
+                "Priority Support 24/7",
+                "Unlimited Projects",
+                "Automated Backups",
+                "Load Balancer Included",
+                "VPC Peering",
+                "Team Management"
             ],
-            cta: "Contactez-nous"
+            notIncluded: [],
+            cta: "Contact Sales",
+            highlight: false
         }
-    ];
-
-    const addons = [
-        { name: "Domaine .com", price: "12€/an", icon: "🌐" },
-        { name: "Stockage additionnel", price: "5€/50GB", icon: "💾" },
-        { name: "Email professionnel", price: "4€/boîte/mois", icon: "📧" },
-        { name: "DDoS Protection", price: "25€/mois", icon: "🛡️" },
-        { name: "Backup premium", price: "15€/mois", icon: "☁️" },
-        { name: "Monitoring avancé", price: "19€/mois", icon: "📊" }
     ];
 
     const faqs = [
         {
-            question: "Puis-je changer de plan à tout moment ?",
-            answer: "Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements prennent effet immédiatement et nous calculons le prorata."
+            question: "Can I change plans at any time?",
+            answer: "Yes, you can upgrade or downgrade your resources at any time. Changes are applied instantly and billing is prorated to the second."
         },
         {
-            question: "Offrez-vous une garantie satisfait ou remboursé ?",
-            answer: "Absolument ! Nous offrons une garantie de remboursement de 30 jours sur tous nos plans. Si vous n'êtes pas satisfait, nous vous remboursons intégralement."
+            question: "What payment methods do you accept?",
+            answer: "We accept all major credit cards (Visa, Mastercard, Amex), PayPal, and SEPA bank transfers for business accounts."
         },
         {
-            question: "Quels moyens de paiement acceptez-vous ?",
-            answer: "Nous acceptons les cartes bancaires (Visa, Mastercard, Amex), PayPal, et les virements bancaires pour les forfaits Enterprise."
+            question: "Is there a commitment period?",
+            answer: "No, our services are non-binding. You can cancel your resources at any time and you will only pay for what you have used."
         },
         {
-            question: "Y a-t-il des frais cachés ?",
-            answer: "Non, nos prix sont transparents. Le seul coût additionnel possible serait les add-ons optionnels que vous choisissez d'ajouter."
-        },
-        {
-            question: "Que se passe-t-il si je dépasse mes limites ?",
-            answer: "Nous vous prévenons par email avant d'atteindre vos limites. Vous pouvez alors upgrader votre plan ou acheter des ressources supplémentaires."
-        },
-        {
-            question: "Proposez-vous des réductions pour les associations ?",
-            answer: "Oui ! Nous offrons des réductions de 50% pour les associations à but non lucratif et les projets open source. Contactez-nous pour plus d'informations."
+            question: "Do you offer discounts for startups / students?",
+            answer: "Yes! We offer €1000credits for eligible startups and special discounts for students. Contact us for more details."
         }
     ];
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50">
-            {/* Navigation */}
-            <nav className="border-b border-orange-200 backdrop-blur-xl bg-white/80 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link to="/" className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-300/50">
-                                <Cloud className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                                Cloud Nexus
-                            </span>
-                        </Link>
-                        <div className="hidden md:flex items-center gap-8">
-                            <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Accueil</Link>
-                            <Link to="/services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Services</Link>
-                            <Link to="/pricing" className="text-orange-600 font-semibold">Tarifs</Link>
-                            <Link to="/contact" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Contact</Link>
-                            <Link to="/login" className="px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-medium">
-                                Démarrer
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            <Navbar />
 
-            {/* Hero Section */}
-            <section className="py-20 px-6">
-                <div className="max-w-7xl mx-auto text-center">
-                    <h1 className="text-6xl font-bold mb-6">
-                        <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            Tarifs Simples
-                        </span>
-                        <br />
-                        <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                            et Transparents
-                        </span>
-                    </h1>
-                    <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-8">
-                        Choisissez le plan qui correspond à vos besoins. Changez ou annulez à tout moment.
-                    </p>
+            {/* Hero */}
+            <section className="py-20 px-6 text-center">
+                <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                    <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Simple Pricing,</span>
+                    <br />
+                    <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">No Surprises</span>
+                </h1>
+                <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-10">
+                    Transparent pricing. Pay only for what you verify. No setup fees, no hidden costs.
+                </p>
 
-                    {/* Billing Toggle */}
-                    <div className="inline-flex items-center gap-4 p-2 bg-white/80 backdrop-blur-sm border border-orange-200 rounded-xl shadow-lg">
-                        <button
-                            onClick={() => setBillingCycle('monthly')}
-                            className={`px-6 py-3 rounded-lg font-medium transition-all ${billingCycle === 'monthly'
-                                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
-                                : 'text-slate-700 hover:bg-orange-50'
-                                }`}
-                        >
-                            Mensuel
-                        </button>
-                        <button
-                            onClick={() => setBillingCycle('yearly')}
-                            className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2 ${billingCycle === 'yearly'
-                                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
-                                : 'text-slate-700 hover:bg-orange-50'
-                                }`}
-                        >
-                            Annuel
-                            <span className="px-2 py-1 bg-green-500 text-white text-xs rounded-full font-bold">
-                                -17%
-                            </span>
-                        </button>
-                    </div>
+                {/* Billing Toggle */}
+                <div className="flex items-center justify-center gap-4 mb-16">
+                    <span className={`text-sm font-bold ${billingCycle === 'monthly' ? 'text-slate-800' : 'text-slate-500'}`}>Monthly</span>
+                    <button
+                        onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
+                        className="w-16 h-8 bg-orange-100 rounded-full p-1 relative transition-colors duration-300"
+                    >
+                        <div className={`w-6 h-6 bg-orange-500 rounded-full shadow-md transform transition-transform duration-300 ${billingCycle === 'yearly' ? 'translate-x-8' : ''}`}></div>
+                    </button>
+                    <span className={`text-sm font-bold ${billingCycle === 'yearly' ? 'text-slate-800' : 'text-slate-500'}`}>
+                        Yearly <span className="text-orange-600 text-xs ml-1">(-20%)</span>
+                    </span>
                 </div>
             </section>
 
             {/* Pricing Cards */}
             <section className="px-6 pb-20">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {plans.map((plan, idx) => (
-                            <div
-                                key={idx}
-                                className={`relative p-8 bg-white/80 backdrop-blur-sm border-2 rounded-3xl transition-all hover:shadow-2xl ${plan.popular
-                                    ? 'border-orange-400 shadow-xl scale-105'
-                                    : 'border-orange-200 hover:border-orange-300'
-                                    }`}
-                            >
-                                {plan.popular && (
-                                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-full shadow-lg">
-                                        ⭐ Le plus populaire
-                                    </div>
-                                )}
-
-                                <div className={`w-16 h-16 rounded-xl bg-gradient-to-r ${plan.color} flex items-center justify-center mb-6 shadow-lg text-white`}>
-                                    {plan.icon}
+                <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
+                    {plans.map((plan, idx) => (
+                        <div key={idx} className={`relative rounded-3xl p-8 ${plan.highlight ? 'bg-white shadow-2xl border-2 border-orange-500 scale-105 z-10' : 'bg-white/60 backdrop-blur border border-orange-200'}`}>
+                            {plan.highlight && (
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+                                    Most Popular
                                 </div>
+                            )}
+                            <h3 className="text-2xl font-bold text-slate-800 mb-2">{plan.name}</h3>
+                            <p className="text-slate-500 text-sm mb-6">{plan.description}</p>
 
-                                <h3 className="text-3xl font-bold mb-2 text-slate-800">{plan.name}</h3>
-                                <p className="text-slate-600 mb-6">{plan.description}</p>
-
-                                <div className="mb-6">
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-5xl font-bold text-orange-600">
-                                            {billingCycle === 'monthly' ? plan.price.monthly : Math.round(plan.price.yearly / 12)}€
-                                        </span>
-                                        <span className="text-slate-600">/mois</span>
-                                    </div>
-                                    {billingCycle === 'yearly' && (
-                                        <p className="text-sm text-green-600 font-medium mt-2">
-                                            Soit {plan.price.yearly}€/an • Économisez {Math.round(plan.price.monthly * 12 - plan.price.yearly)}€
-                                        </p>
-                                    )}
-                                </div>
-
-                                <Link
-                                    to="/login"
-                                    className={`block w-full py-4 rounded-xl font-semibold text-lg mb-8 transition-all text-center ${plan.popular
-                                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:shadow-lg hover:shadow-orange-400/50'
-                                        : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                                        }`}>
-                                    {plan.cta}
-                                </Link>
-
-                                <ul className="space-y-4">
-                                    {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-start gap-3">
-                                            {feature.included ? (
-                                                <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                                            ) : (
-                                                <X className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" />
-                                            )}
-                                            <span className={feature.included ? 'text-slate-700' : 'text-slate-400'}>
-                                                {feature.text}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
+                            <div className="flex items-baseline gap-1 mb-8">
+                                <span className="text-4xl font-bold text-slate-900">€{plan.price}</span>
+                                <span className="text-slate-500">/mo</span>
                             </div>
-                        ))}
-                    </div>
+
+                            <ul className="space-y-4 mb-8">
+                                {plan.features.map((feature, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-700">
+                                        <Check className="w-5 h-5 text-green-500 shrink-0" />
+                                        {feature}
+                                    </li>
+                                ))}
+                                {plan.notIncluded.map((feature, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-slate-400">
+                                        <X className="w-5 h-5 shrink-0" />
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <button className={`w-full py-3 rounded-xl font-bold transition-all ${plan.highlight
+                                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:shadow-lg hover:shadow-orange-400/50'
+                                    : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                                }`}>
+                                {plan.cta}
+                            </button>
+                        </div>
+                    ))}
                 </div>
             </section>
 
-            {/* Add-ons Section */}
+            {/* FAQ */}
             <section className="px-6 pb-20">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4 text-slate-800">Options Supplémentaires</h2>
-                        <p className="text-slate-600 text-lg">Personnalisez votre plan avec nos add-ons</p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-6">
-                        {addons.map((addon, idx) => (
-                            <div key={idx} className="p-6 bg-white/80 backdrop-blur-sm border border-orange-200 rounded-2xl hover:shadow-lg transition-all text-center">
-                                <div className="text-4xl mb-3">{addon.icon}</div>
-                                <h4 className="font-bold text-slate-800 mb-2">{addon.name}</h4>
-                                <p className="text-orange-600 font-semibold">{addon.price}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* FAQ Section */}
-            <section className="px-6 pb-20">
-                <div className="max-w-4xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4 text-slate-800">Questions Fréquentes</h2>
-                        <p className="text-slate-600 text-lg">Tout ce que vous devez savoir sur nos tarifs</p>
-                    </div>
-
+                <div className="max-w-3xl mx-auto">
+                    <h2 className="text-3xl font-bold text-center mb-12 text-slate-800">Frequently Asked Questions</h2>
                     <div className="space-y-4">
                         {faqs.map((faq, idx) => (
-                            <div key={idx} className="bg-white/80 backdrop-blur-sm border border-orange-200 rounded-2xl overflow-hidden">
+                            <div key={idx} className="bg-white border border-orange-200 rounded-2xl overflow-hidden">
                                 <button
-                                    onClick={() => setShowFAQ(showFAQ === idx ? null : idx)}
-                                    className="w-full p-6 text-left flex items-center justify-between hover:bg-orange-50 transition-colors"
+                                    onClick={() => toggleFaq(idx)}
+                                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-orange-50/50 transition-colors"
                                 >
-                                    <span className="font-bold text-slate-800 text-lg">{faq.question}</span>
-                                    <HelpCircle className={`w-6 h-6 text-orange-500 transition-transform ${showFAQ === idx ? 'rotate-180' : ''}`} />
+                                    <span className="font-bold text-slate-800">{faq.question}</span>
+                                    {openFaq === idx ? <ChevronUp className="w-5 h-5 text-orange-500" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
                                 </button>
-                                {showFAQ === idx && (
-                                    <div className="px-6 pb-6 text-slate-600 leading-relaxed">
+                                {openFaq === idx && (
+                                    <div className="px-6 pb-4 text-slate-600 leading-relaxed border-t border-orange-100 pt-4 bg-orange-50/30">
                                         {faq.answer}
                                     </div>
                                 )}
@@ -296,30 +193,7 @@ const PricingPage = () => {
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="px-6 py-20">
-                <div className="max-w-5xl mx-auto">
-                    <div className="relative overflow-hidden p-12 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl shadow-2xl text-center">
-                        <h2 className="text-4xl font-bold text-white mb-4">
-                            Besoin d'un plan personnalisé ?
-                        </h2>
-                        <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                            Contactez notre équipe commerciale pour une offre sur mesure adaptée à vos besoins spécifiques
-                        </p>
-                        <Link to="/contact" className="group px-8 py-4 bg-white text-orange-600 rounded-xl hover:shadow-2xl transition-all transform hover:scale-105 font-semibold text-lg inline-flex items-center gap-2 mx-auto justify-center">
-                            Discuter avec un expert
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* Footer */}
-            <footer className="border-t border-orange-200 py-12 px-6 bg-white/50 backdrop-blur-sm">
-                <div className="max-w-7xl mx-auto text-center text-slate-600">
-                    <p>© 2025 Cloud Nexus Platform. Tous droits réservés.</p>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 };

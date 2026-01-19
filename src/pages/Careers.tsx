@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Cloud, MapPin, Clock, Briefcase, Users, Heart, Rocket, Coffee, Dumbbell, Plane, GraduationCap, TrendingUp, ArrowRight, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
 
 const CareersPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -10,33 +12,33 @@ const CareersPage = () => {
     const benefits = [
         {
             icon: <Heart className="w-8 h-8" />,
-            title: "Assurance Santé Premium",
-            description: "Couverture santé complète pour vous et votre famille"
+            title: "Premium Health Insurance",
+            description: "Comprehensive health coverage for you and your family"
         },
         {
             icon: <Plane className="w-8 h-8" />,
-            title: "5 Semaines de Congés",
-            description: "Plus RTT et jours fériés pour un bon équilibre vie pro/perso"
+            title: "5 Weeks Vacation",
+            description: "Plus bank holidays for a great work/life balance"
         },
         {
             icon: <Coffee className="w-8 h-8" />,
-            title: "Télétravail Flexible",
-            description: "Travaillez d'où vous voulez, quand vous voulez"
+            title: "Remote Flexible",
+            description: "Work from anywhere, anytime"
         },
         {
             icon: <GraduationCap className="w-8 h-8" />,
-            title: "Formation Continue",
-            description: "Budget annuel de 3000€ pour votre développement"
+            title: "Continuous Learning",
+            description: "€3000 annual budget for your development"
         },
         {
             icon: <Dumbbell className="w-8 h-8" />,
-            title: "Salle de Sport",
-            description: "Accès gratuit à notre salle de sport partenaire"
+            title: "Gym Access",
+            description: "Free access to our partner gyms"
         },
         {
             icon: <TrendingUp className="w-8 h-8" />,
             title: "Stock Options",
-            description: "Participez à la croissance de l'entreprise"
+            description: "Share in the growth of the company"
         }
     ];
 
@@ -46,8 +48,8 @@ const CareersPage = () => {
             title: "Senior Backend Engineer",
             department: "Engineering",
             location: "Paris, France",
-            type: "CDI",
-            description: "Nous recherchons un développeur backend senior pour rejoindre notre équipe infrastructure cloud.",
+            type: "Permanent",
+            description: "We are looking for a senior backend developer to join our cloud infrastructure team.",
             skills: ["Node.js", "PostgreSQL", "Docker", "Kubernetes"],
             salary: "65-85K€"
         },
@@ -56,8 +58,8 @@ const CareersPage = () => {
             title: "Frontend Developer React",
             department: "Engineering",
             location: "Paris, France / Remote",
-            type: "CDI",
-            description: "Créez des interfaces utilisateur exceptionnelles pour notre plateforme cloud.",
+            type: "Permanent",
+            description: "Build exceptional user interfaces for our cloud platform.",
             skills: ["React", "TypeScript", "TailwindCSS", "Vite"],
             salary: "55-75K€"
         },
@@ -66,8 +68,8 @@ const CareersPage = () => {
             title: "DevOps Engineer",
             department: "Engineering",
             location: "Lyon, France",
-            type: "CDI",
-            description: "Optimisez notre infrastructure cloud et nos pipelines de déploiement.",
+            type: "Permanent",
+            description: "Optimize our cloud infrastructure and deployment pipelines.",
             skills: ["AWS", "Terraform", "CI/CD", "Monitoring"],
             salary: "60-80K€"
         },
@@ -76,8 +78,8 @@ const CareersPage = () => {
             title: "Product Manager",
             department: "Product",
             location: "Paris, France",
-            type: "CDI",
-            description: "Définissez la vision produit et pilotez le développement de nouvelles fonctionnalités.",
+            type: "Permanent",
+            description: "Define product vision and drive development of new features.",
             skills: ["Product Strategy", "Analytics", "UX", "Agile"],
             salary: "70-90K€"
         },
@@ -86,8 +88,8 @@ const CareersPage = () => {
             title: "UX/UI Designer",
             department: "Design",
             location: "Remote",
-            type: "CDI",
-            description: "Concevez des expériences utilisateur intuitives et visuellement attrayantes.",
+            type: "Permanent",
+            description: "Design intuitive and visually stunning user experiences.",
             skills: ["Figma", "Design System", "User Research", "Prototyping"],
             salary: "50-70K€"
         },
@@ -96,9 +98,9 @@ const CareersPage = () => {
             title: "Sales Account Executive",
             department: "Sales",
             location: "Paris, France",
-            type: "CDI",
-            description: "Développez notre portefeuille clients et dépassez vos objectifs commerciaux.",
-            skills: ["SaaS Sales", "B2B", "Négociation", "CRM"],
+            type: "Permanent",
+            description: "Grow our client portfolio and exceed sales targets.",
+            skills: ["SaaS Sales", "B2B", "Negotiation", "CRM"],
             salary: "45K€ + Commission"
         },
         {
@@ -106,8 +108,8 @@ const CareersPage = () => {
             title: "Customer Success Manager",
             department: "Support",
             location: "Paris, France / Remote",
-            type: "CDI",
-            description: "Assurez la satisfaction et la fidélisation de nos clients entreprise.",
+            type: "Permanent",
+            description: "Ensure satisfaction and retention of our enterprise clients.",
             skills: ["Customer Support", "Cloud", "Communication", "Problem Solving"],
             salary: "40-55K€"
         },
@@ -116,8 +118,8 @@ const CareersPage = () => {
             title: "Data Scientist",
             department: "Data",
             location: "Paris, France",
-            type: "CDI",
-            description: "Exploitez nos données pour améliorer nos produits et services.",
+            type: "Permanent",
+            description: "Leverage our data to improve our products and services.",
             skills: ["Python", "Machine Learning", "SQL", "Data Visualization"],
             salary: "60-80K€"
         }
@@ -137,78 +139,55 @@ const CareersPage = () => {
     const values = [
         {
             title: "Innovation",
-            description: "Nous encourageons l'expérimentation et la prise de risques calculés"
+            description: "We encourage experimentation and calculated risk-taking"
         },
         {
             title: "Collaboration",
-            description: "Le travail d'équipe est au cœur de notre réussite"
+            description: "Teamwork is at the heart of our success"
         },
         {
             title: "Excellence",
-            description: "Nous visons l'excellence dans tout ce que nous faisons"
+            description: "We aim for excellence in everything we do"
         },
         {
-            title: "Diversité",
-            description: "Nous célébrons la diversité et l'inclusion"
+            title: "Diversity",
+            description: "We celebrate diversity and inclusion"
         }
     ];
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50">
-            {/* Navigation */}
-            <nav className="border-b border-orange-200 backdrop-blur-xl bg-white/80 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link to="/" className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-300/50">
-                                <Cloud className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                                Cloud Nexus
-                            </span>
-                        </Link>
-                        <div className="hidden md:flex items-center gap-8">
-                            <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Accueil</Link>
-                            <Link to="/about" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">À propos</Link>
-                            <Link to="/careers" className="text-orange-600 font-semibold">Carrières</Link>
-                            <Link to="/contact" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Contact</Link>
-                            <button className="px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-medium">
-                                Postuler
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            <Navbar />
 
             {/* Hero Section */}
             <section className="py-20 px-6">
                 <div className="max-w-7xl mx-auto text-center">
                     <h1 className="text-6xl font-bold mb-6">
                         <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            Rejoignez
+                            Join Our
                         </span>
                         <br />
                         <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                            Notre Équipe
+                            Team
                         </span>
                     </h1>
                     <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-8">
-                        Construisez l'avenir du cloud computing avec les meilleurs talents de l'industrie
+                        Build the future of cloud computing with the best talents in the industry
                     </p>
                     <div className="flex items-center justify-center gap-4">
                         <div className="flex items-center gap-2 text-slate-600">
                             <Users className="w-5 h-5 text-orange-500" />
-                            <span className="font-medium">200+ Employés</span>
+                            <span className="font-medium">200+ Employees</span>
                         </div>
                         <div className="w-1 h-1 rounded-full bg-slate-400"></div>
                         <div className="flex items-center gap-2 text-slate-600">
                             <MapPin className="w-5 h-5 text-orange-500" />
-                            <span className="font-medium">5 Bureaux</span>
+                            <span className="font-medium">5 Offices</span>
                         </div>
                         <div className="w-1 h-1 rounded-full bg-slate-400"></div>
                         <div className="flex items-center gap-2 text-slate-600">
                             <Rocket className="w-5 h-5 text-orange-500" />
-                            <span className="font-medium">En croissance</span>
+                            <span className="font-medium">Growing Fast</span>
                         </div>
                     </div>
                 </div>
@@ -218,8 +197,8 @@ const CareersPage = () => {
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4 text-slate-800">Avantages & Bénéfices</h2>
-                        <p className="text-slate-600 text-xl">Nous prenons soin de nos équipes</p>
+                        <h2 className="text-4xl font-bold mb-4 text-slate-800">Perks & Benefits</h2>
+                        <p className="text-slate-600 text-xl">We take care of our teams</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -240,7 +219,7 @@ const CareersPage = () => {
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto">
                     <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl p-12 shadow-2xl">
-                        <h2 className="text-4xl font-bold text-white mb-8 text-center">Nos Valeurs</h2>
+                        <h2 className="text-4xl font-bold text-white mb-8 text-center">Our Values</h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {values.map((value, idx) => (
                                 <div key={idx} className="p-6 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/30">
@@ -257,8 +236,8 @@ const CareersPage = () => {
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4 text-slate-800">Postes Ouverts</h2>
-                        <p className="text-slate-600 text-xl">{filteredJobs.length} opportunités disponibles</p>
+                        <h2 className="text-4xl font-bold mb-4 text-slate-800">Open Positions</h2>
+                        <p className="text-slate-600 text-xl">{filteredJobs.length} opportunities available</p>
                     </div>
 
                     {/* Filters */}
@@ -268,7 +247,7 @@ const CareersPage = () => {
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <input
                                     type="text"
-                                    placeholder="Rechercher un poste..."
+                                    placeholder="Search a job..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full pl-12 pr-4 py-3 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
@@ -281,7 +260,7 @@ const CareersPage = () => {
                             >
                                 {departments.map(dept => (
                                     <option key={dept} value={dept}>
-                                        {dept === 'all' ? 'Tous les départements' : dept}
+                                        {dept === 'all' ? 'All Departments' : dept}
                                     </option>
                                 ))}
                             </select>
@@ -292,7 +271,7 @@ const CareersPage = () => {
                             >
                                 {locations.map(loc => (
                                     <option key={loc} value={loc}>
-                                        {loc === 'all' ? 'Tous les emplacements' : loc}
+                                        {loc === 'all' ? 'All Locations' : loc}
                                     </option>
                                 ))}
                             </select>
@@ -341,7 +320,7 @@ const CareersPage = () => {
                                     </div>
 
                                     <button className="group/btn px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all flex items-center gap-2 font-medium whitespace-nowrap">
-                                        Postuler
+                                        Apply Now
                                         <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                     </button>
                                 </div>
@@ -351,7 +330,7 @@ const CareersPage = () => {
 
                     {filteredJobs.length === 0 && (
                         <div className="text-center py-12">
-                            <p className="text-slate-600 text-lg">Aucun poste ne correspond à vos critères de recherche.</p>
+                            <p className="text-slate-600 text-lg">No positions match your criteria.</p>
                         </div>
                     )}
                 </div>
@@ -362,24 +341,19 @@ const CareersPage = () => {
                 <div className="max-w-5xl mx-auto">
                     <div className="bg-white/80 backdrop-blur-sm border border-orange-200 rounded-3xl p-12 text-center shadow-xl">
                         <h2 className="text-4xl font-bold text-slate-800 mb-4">
-                            Vous ne trouvez pas le poste idéal ?
+                            Can't find the perfect role?
                         </h2>
                         <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-                            Envoyez-nous votre candidature spontanée. Nous sommes toujours à la recherche de talents exceptionnels !
+                            Send us a spontaneous application. We are always looking for exceptional talent!
                         </p>
                         <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl hover:shadow-2xl hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-semibold text-lg">
-                            Candidature spontanée
+                            Spontaneous Application
                         </button>
                     </div>
                 </div>
             </section>
 
-            {/* Footer */}
-            <footer className="border-t border-orange-200 py-12 px-6 bg-white/50 backdrop-blur-sm">
-                <div className="max-w-7xl mx-auto text-center text-slate-600">
-                    <p>© 2025 Cloud Nexus Platform. Tous droits réservés.</p>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 };
