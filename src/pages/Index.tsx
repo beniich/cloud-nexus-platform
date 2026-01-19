@@ -100,7 +100,7 @@ const Index = () => {
             </div>
 
             <h1 className="text-6xl md:text-8xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
                 {t('hero.title_prefix', 'Propel your')}
               </span>
               <br />
@@ -157,7 +157,7 @@ const Index = () => {
               opacity: Math.min(1, scrollY * 0.003)
             }}
           >
-            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
               {t('services.section_title', 'Complete Cloud Services')}
             </h2>
             <p className="text-slate-600 text-xl">{t('services.section_subtitle', 'One platform, infinite possibilities')}</p>
@@ -204,12 +204,12 @@ const Index = () => {
               }}
             >
               <h2 className="text-5xl font-bold leading-tight">
-                <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                  {t('home.why_choose_prefix', 'Why choose')}
+                <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  {t('hero.why_choose_prefix', 'Why choose')}
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                  {t('home.why_choose_suffix', 'Cloud Nexus?')}
+                  {t('hero.why_choose_suffix', 'Cloud Nexus?')}
                 </span>
               </h2>
 
