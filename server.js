@@ -209,6 +209,22 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
+app.get('/api/auth/me', authenticateToken, async (req, res) => {
+    try {
+        res.json({
+            user: {
+                id: req.user.id,
+                email: req.user.email,
+                name: req.user.name,
+                role: req.user.role,
+                teamId: req.user.teamId
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ==================== DROPLETS ENDPOINTS ====================
 app.get('/api/droplets', authenticateToken, async (req, res) => {
     try {

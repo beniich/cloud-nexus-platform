@@ -333,7 +333,7 @@ export class FormService {
      * Valide un numéro de téléphone
      */
     private isValidPhone(phone: string): boolean {
-        return /^[+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/.test(phone);
+        return /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/.test(phone);
     }
 
     /**

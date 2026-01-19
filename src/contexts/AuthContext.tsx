@@ -27,17 +27,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const checkAuth = async () => {
-        try {
-            // Dans une vraie implémentation, on vérifierait le cookie HttpOnly via l'API
-            // Ici, on vérifie si secureAuth a un token en mémoire ou on tente un refresh
-            // const refreshed = await secureAuth.refreshToken();
+        const token = localStorage.getItem('cnp_token');
+        if (!token) {
+            setIsLoading(false);
+            return;
+        }
 
-            // MOCK TEMPORAIRE POUR DEV: On simule une restauration de session si mock activé
-            if (import.meta.env.VITE_ENABLE_MOCK === 'true') {
-                // Nothing to do for now, user must login on refresh for high security (as requested)
+        try {
+            // Utiliser l'API pour récupérer les infos de l'utilisateur
+            const { api } = await import('../lib/api/secureAxios');
+            const response = await api.get('/auth/me');
+
+            if (response.data && response.data.user) {
+                setUser(response.data.user);
+                await permissionService.loadUserPermissions();
             }
         } catch (error) {
             console.error('Session restoration failed:', error);
+            localStorage.removeItem('cnp_token');
         } finally {
             setIsLoading(false);
         }

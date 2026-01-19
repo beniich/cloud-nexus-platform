@@ -10,7 +10,7 @@ class SecureAPIClient {
     private requestQueue: Set<string> = new Set();
 
     // URL de base peut venir de l'env
-    private baseURL = 'http://localhost:3002/api'; // Fallback dev
+    private baseURL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
     constructor() {
         this.instance = axios.create({
@@ -38,6 +38,12 @@ class SecureAPIClient {
 
                 // 2. Ajouter Request ID unique
                 secureConfig.headers['X-Request-ID'] = crypto.randomUUID();
+
+                // 3. Ajouter Token d'authentification
+                const token = localStorage.getItem('cnp_token');
+                if (token) {
+                    secureConfig.headers.Authorization = `Bearer ${token}`;
+                }
 
                 // 3. Prévenir les requêtes dupliquées (sauf si explicitement autorisé, TODO: ajouter option)
                 const requestKey = `${secureConfig.method}-${secureConfig.url}`;

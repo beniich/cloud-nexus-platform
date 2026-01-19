@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? '/cloud-nexus-platform.cc/' : '/',
   server: {
     host: "::",
-    port: 8080,
+    port: 2040,
   },
   plugins: [react()],
   resolve: {

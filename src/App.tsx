@@ -19,6 +19,7 @@ import { PaymentConfigProvider } from "./contexts/PaymentConfigContext";
 import { PlatformConfigProvider } from "./contexts/PlatformConfigContext";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 import CloudSpaces from "./pages/CloudSpaces";
 import Servers from "./pages/Servers";
@@ -68,6 +69,7 @@ function App() {
                           {/* Public Routes */}
                           <Route path="/" element={<Index />} />
                           <Route path="/login" element={<Login />} />
+                          <Route path="/auth/callback" element={<AuthCallback />} />
                           <Route path="/services" element={<Services />} />
                           <Route path="/pricing" element={<Pricing />} />
                           <Route path="/contact" element={<Contact />} />
