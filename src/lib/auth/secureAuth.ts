@@ -8,6 +8,40 @@ class SecureAuthService {
      * Login sécurisé avec rate limiting
      */
     async login(email: string, password: string): Promise<any> {
+        // --- BYPASS POUR DEMO LOCALE SANS BACKEND ---
+        // Sert à accéder au dashboard quand le npm run dev backend n'est pas lancé
+        const DEMO_EMAIL = "admin@cloudnexus.com";
+        const DEMO_PASS = "AdminPassword123!"; // Doit satisfaire: 12 chars, Maj, Min, Chiffre, Spécial.
+
+        if (email === DEMO_EMAIL && password === DEMO_PASS) {
+            console.warn("🔐 MOCK AUTH BYPASS ACTIVATED");
+            // Simuler un délai réseau
+            await new Promise(r => setTimeout(r, 800));
+
+            // Stocker une fausse session
+            localStorage.setItem('cnp_token', 'mock_token_demo_123');
+            localStorage.setItem('cnp_user', JSON.stringify({
+                id: 'admin_1',
+                email: DEMO_EMAIL,
+                name: 'Local Admin',
+                role: 'admin',
+                permissions: ['*']
+            }));
+
+            // Retourner structure user attendue
+            return {
+                user: {
+                    id: 'admin_1',
+                    email: DEMO_EMAIL,
+                    name: 'Local Admin',
+                    role: 'admin',
+                },
+                token: 'mock_token_demo_123'
+            };
+        }
+        // ---------------------------------------------
+
+
         // 1. Validation des entrées (Basique)
         if (!this.isValidEmail(email)) {
             throw new Error('Email invalide');
@@ -62,7 +96,10 @@ class SecureAuthService {
      */
     async logout(): Promise<void> {
         try {
-            await api.post('/auth/logout');
+            // Tenter logout API mais ne pas bloquer si fail (ex: backend down)
+            try { await api.post('/auth/logout'); } catch (e) { }
+            localStorage.removeItem('cnp_token');
+            localStorage.removeItem('cnp_user');
         } catch (error) {
             console.error('Logout error', error);
         } finally {

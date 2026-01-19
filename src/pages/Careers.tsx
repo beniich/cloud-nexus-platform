@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Cloud, MapPin, Clock, Briefcase, Users, Heart, Rocket, Coffee, Dumbbell, Plane, GraduationCap, TrendingUp, ArrowRight, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
 const CareersPage = () => {
+    const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('all');
     const [selectedLocation, setSelectedLocation] = useState('all');
@@ -12,114 +14,114 @@ const CareersPage = () => {
     const benefits = [
         {
             icon: <Heart className="w-8 h-8" />,
-            title: "Premium Health Insurance",
-            description: "Comprehensive health coverage for you and your family"
+            title: t('careers.benefits.items.health.title', "Premium Health Insurance"),
+            description: t('careers.benefits.items.health.desc', "Comprehensive health coverage for you and your family")
         },
         {
             icon: <Plane className="w-8 h-8" />,
-            title: "5 Weeks Vacation",
-            description: "Plus bank holidays for a great work/life balance"
+            title: t('careers.benefits.items.vacation.title', "5 Weeks Vacation"),
+            description: t('careers.benefits.items.vacation.desc', "Plus bank holidays for a great work/life balance")
         },
         {
             icon: <Coffee className="w-8 h-8" />,
-            title: "Remote Flexible",
-            description: "Work from anywhere, anytime"
+            title: t('careers.benefits.items.remote.title', "Remote Flexible"),
+            description: t('careers.benefits.items.remote.desc', "Work from anywhere, anytime")
         },
         {
             icon: <GraduationCap className="w-8 h-8" />,
-            title: "Continuous Learning",
-            description: "€3000 annual budget for your development"
+            title: t('careers.benefits.items.learning.title', "Continuous Learning"),
+            description: t('careers.benefits.items.learning.desc', "€3000 annual budget for your development")
         },
         {
             icon: <Dumbbell className="w-8 h-8" />,
-            title: "Gym Access",
-            description: "Free access to our partner gyms"
+            title: t('careers.benefits.items.gym.title', "Gym Access"),
+            description: t('careers.benefits.items.gym.desc', "Free access to our partner gyms")
         },
         {
             icon: <TrendingUp className="w-8 h-8" />,
-            title: "Stock Options",
-            description: "Share in the growth of the company"
+            title: t('careers.benefits.items.stock.title', "Stock Options"),
+            description: t('careers.benefits.items.stock.desc', "Share in the growth of the company")
         }
     ];
 
     const jobs = [
         {
             id: 1,
-            title: "Senior Backend Engineer",
+            title: t('careers.jobs.job1.title', "Senior Backend Engineer"),
             department: "Engineering",
             location: "Paris, France",
             type: "Permanent",
-            description: "We are looking for a senior backend developer to join our cloud infrastructure team.",
+            description: t('careers.jobs.job1.desc', "We are looking for a senior backend developer to join our cloud infrastructure team."),
             skills: ["Node.js", "PostgreSQL", "Docker", "Kubernetes"],
             salary: "65-85K€"
         },
         {
             id: 2,
-            title: "Frontend Developer React",
+            title: t('careers.jobs.job2.title', "Frontend Developer React"),
             department: "Engineering",
             location: "Paris, France / Remote",
             type: "Permanent",
-            description: "Build exceptional user interfaces for our cloud platform.",
+            description: t('careers.jobs.job2.desc', "Build exceptional user interfaces for our cloud platform."),
             skills: ["React", "TypeScript", "TailwindCSS", "Vite"],
             salary: "55-75K€"
         },
         {
             id: 3,
-            title: "DevOps Engineer",
+            title: t('careers.jobs.job3.title', "DevOps Engineer"),
             department: "Engineering",
             location: "Lyon, France",
             type: "Permanent",
-            description: "Optimize our cloud infrastructure and deployment pipelines.",
+            description: t('careers.jobs.job3.desc', "Optimize our cloud infrastructure and deployment pipelines."),
             skills: ["AWS", "Terraform", "CI/CD", "Monitoring"],
             salary: "60-80K€"
         },
         {
             id: 4,
-            title: "Product Manager",
+            title: t('careers.jobs.job4.title', "Product Manager"),
             department: "Product",
             location: "Paris, France",
             type: "Permanent",
-            description: "Define product vision and drive development of new features.",
+            description: t('careers.jobs.job4.desc', "Define product vision and drive development of new features."),
             skills: ["Product Strategy", "Analytics", "UX", "Agile"],
             salary: "70-90K€"
         },
         {
             id: 5,
-            title: "UX/UI Designer",
+            title: t('careers.jobs.job5.title', "UX/UI Designer"),
             department: "Design",
             location: "Remote",
             type: "Permanent",
-            description: "Design intuitive and visually stunning user experiences.",
+            description: t('careers.jobs.job5.desc', "Design intuitive and visually stunning user experiences."),
             skills: ["Figma", "Design System", "User Research", "Prototyping"],
             salary: "50-70K€"
         },
         {
             id: 6,
-            title: "Sales Account Executive",
+            title: t('careers.jobs.job6.title', "Sales Account Executive"),
             department: "Sales",
             location: "Paris, France",
             type: "Permanent",
-            description: "Grow our client portfolio and exceed sales targets.",
+            description: t('careers.jobs.job6.desc', "Grow our client portfolio and exceed sales targets."),
             skills: ["SaaS Sales", "B2B", "Negotiation", "CRM"],
             salary: "45K€ + Commission"
         },
         {
             id: 7,
-            title: "Customer Success Manager",
+            title: t('careers.jobs.job7.title', "Customer Success Manager"),
             department: "Support",
             location: "Paris, France / Remote",
             type: "Permanent",
-            description: "Ensure satisfaction and retention of our enterprise clients.",
+            description: t('careers.jobs.job7.desc', "Ensure satisfaction and retention of our enterprise clients."),
             skills: ["Customer Support", "Cloud", "Communication", "Problem Solving"],
             salary: "40-55K€"
         },
         {
             id: 8,
-            title: "Data Scientist",
+            title: t('careers.jobs.job8.title', "Data Scientist"),
             department: "Data",
             location: "Paris, France",
             type: "Permanent",
-            description: "Leverage our data to improve our products and services.",
+            description: t('careers.jobs.job8.desc', "Leverage our data to improve our products and services."),
             skills: ["Python", "Machine Learning", "SQL", "Data Visualization"],
             salary: "60-80K€"
         }
@@ -138,20 +140,20 @@ const CareersPage = () => {
 
     const values = [
         {
-            title: "Innovation",
-            description: "We encourage experimentation and calculated risk-taking"
+            title: t('careers.values.innovation.title', "Innovation"),
+            description: t('careers.values.innovation.desc', "We encourage experimentation and calculated risk-taking")
         },
         {
-            title: "Collaboration",
-            description: "Teamwork is at the heart of our success"
+            title: t('careers.values.collaboration.title', "Collaboration"),
+            description: t('careers.values.collaboration.desc', "Teamwork is at the heart of our success")
         },
         {
-            title: "Excellence",
-            description: "We aim for excellence in everything we do"
+            title: t('careers.values.excellence.title', "Excellence"),
+            description: t('careers.values.excellence.desc', "We aim for excellence in everything we do")
         },
         {
-            title: "Diversity",
-            description: "We celebrate diversity and inclusion"
+            title: t('careers.values.diversity.title', "Diversity"),
+            description: t('careers.values.diversity.desc', "We celebrate diversity and inclusion")
         }
     ];
 
@@ -164,30 +166,30 @@ const CareersPage = () => {
                 <div className="max-w-7xl mx-auto text-center">
                     <h1 className="text-6xl font-bold mb-6">
                         <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            Join Our
+                            {t('careers.hero.title_1', 'Join Our')}
                         </span>
                         <br />
                         <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                            Team
+                            {t('careers.hero.title_2', 'Team')}
                         </span>
                     </h1>
                     <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-8">
-                        Build the future of cloud computing with the best talents in the industry
+                        {t('careers.hero.subtitle', 'Build the future of cloud computing with the best talents in the industry')}
                     </p>
                     <div className="flex items-center justify-center gap-4">
                         <div className="flex items-center gap-2 text-slate-600">
                             <Users className="w-5 h-5 text-orange-500" />
-                            <span className="font-medium">200+ Employees</span>
+                            <span className="font-medium">{t('careers.stats.employees', '200+ Employees')}</span>
                         </div>
                         <div className="w-1 h-1 rounded-full bg-slate-400"></div>
                         <div className="flex items-center gap-2 text-slate-600">
                             <MapPin className="w-5 h-5 text-orange-500" />
-                            <span className="font-medium">5 Offices</span>
+                            <span className="font-medium">{t('careers.stats.offices', '5 Offices')}</span>
                         </div>
                         <div className="w-1 h-1 rounded-full bg-slate-400"></div>
                         <div className="flex items-center gap-2 text-slate-600">
                             <Rocket className="w-5 h-5 text-orange-500" />
-                            <span className="font-medium">Growing Fast</span>
+                            <span className="font-medium">{t('careers.stats.growth', 'Growing Fast')}</span>
                         </div>
                     </div>
                 </div>
@@ -197,8 +199,8 @@ const CareersPage = () => {
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4 text-slate-800">Perks & Benefits</h2>
-                        <p className="text-slate-600 text-xl">We take care of our teams</p>
+                        <h2 className="text-4xl font-bold mb-4 text-slate-800">{t('careers.benefits.title', 'Perks & Benefits')}</h2>
+                        <p className="text-slate-600 text-xl">{t('careers.benefits.subtitle', 'We take care of our teams')}</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -219,7 +221,7 @@ const CareersPage = () => {
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto">
                     <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl p-12 shadow-2xl">
-                        <h2 className="text-4xl font-bold text-white mb-8 text-center">Our Values</h2>
+                        <h2 className="text-4xl font-bold text-white mb-8 text-center">{t('careers.values.title', 'Our Values')}</h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {values.map((value, idx) => (
                                 <div key={idx} className="p-6 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/30">
@@ -236,8 +238,8 @@ const CareersPage = () => {
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4 text-slate-800">Open Positions</h2>
-                        <p className="text-slate-600 text-xl">{filteredJobs.length} opportunities available</p>
+                        <h2 className="text-4xl font-bold mb-4 text-slate-800">{t('careers.positions.title', 'Open Positions')}</h2>
+                        <p className="text-slate-600 text-xl">{filteredJobs.length} {t('careers.positions.count_suffix', 'opportunities available')}</p>
                     </div>
 
                     {/* Filters */}
@@ -247,7 +249,7 @@ const CareersPage = () => {
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <input
                                     type="text"
-                                    placeholder="Search a job..."
+                                    placeholder={t('careers.positions.search_placeholder', "Search a job...")}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full pl-12 pr-4 py-3 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
@@ -260,7 +262,7 @@ const CareersPage = () => {
                             >
                                 {departments.map(dept => (
                                     <option key={dept} value={dept}>
-                                        {dept === 'all' ? 'All Departments' : dept}
+                                        {dept === 'all' ? t('careers.positions.all_dept', 'All Departments') : dept}
                                     </option>
                                 ))}
                             </select>
@@ -271,7 +273,7 @@ const CareersPage = () => {
                             >
                                 {locations.map(loc => (
                                     <option key={loc} value={loc}>
-                                        {loc === 'all' ? 'All Locations' : loc}
+                                        {loc === 'all' ? t('careers.positions.all_loc', 'All Locations') : loc}
                                     </option>
                                 ))}
                             </select>
@@ -320,7 +322,7 @@ const CareersPage = () => {
                                     </div>
 
                                     <button className="group/btn px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all flex items-center gap-2 font-medium whitespace-nowrap">
-                                        Apply Now
+                                        {t('careers.positions.apply', 'Apply Now')}
                                         <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                     </button>
                                 </div>
@@ -330,7 +332,7 @@ const CareersPage = () => {
 
                     {filteredJobs.length === 0 && (
                         <div className="text-center py-12">
-                            <p className="text-slate-600 text-lg">No positions match your criteria.</p>
+                            <p className="text-slate-600 text-lg">{t('careers.positions.no_match', 'No positions match your criteria.')}</p>
                         </div>
                     )}
                 </div>
@@ -341,13 +343,13 @@ const CareersPage = () => {
                 <div className="max-w-5xl mx-auto">
                     <div className="bg-white/80 backdrop-blur-sm border border-orange-200 rounded-3xl p-12 text-center shadow-xl">
                         <h2 className="text-4xl font-bold text-slate-800 mb-4">
-                            Can't find the perfect role?
+                            {t('careers.cta.title', "Can't find the perfect role?")}
                         </h2>
                         <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-                            Send us a spontaneous application. We are always looking for exceptional talent!
+                            {t('careers.cta.subtitle', 'Send us a spontaneous application. We are always looking for exceptional talent!')}
                         </p>
                         <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl hover:shadow-2xl hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-semibold text-lg">
-                            Spontaneous Application
+                            {t('careers.cta.button', 'Spontaneous Application')}
                         </button>
                     </div>
                 </div>

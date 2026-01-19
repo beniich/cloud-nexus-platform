@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./shared/layout/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { SecureLoginForm } from "./features/auth/components/SecureLoginForm";
+import Login from "./pages/Login";
+
 import { Permission } from "./lib/permissions/permissionSystem";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
@@ -44,6 +45,7 @@ import About from "./pages/About";
 import Careers from "./pages/Careers";
 import Blog from "./pages/Blog";
 import Legal from "./pages/Legal";
+import TranslatorDemoPage from "./pages/TranslatorDemoPage";
 
 const queryClient = new QueryClient();
 
@@ -65,7 +67,7 @@ function App() {
                         <Routes>
                           {/* Public Routes */}
                           <Route path="/" element={<Index />} />
-                          <Route path="/login" element={<SecureLoginForm />} />
+                          <Route path="/login" element={<Login />} />
                           <Route path="/services" element={<Services />} />
                           <Route path="/pricing" element={<Pricing />} />
                           <Route path="/contact" element={<Contact />} />
@@ -73,6 +75,7 @@ function App() {
                           <Route path="/careers" element={<Careers />} />
                           <Route path="/blog" element={<Blog />} />
                           <Route path="/legal" element={<Legal />} />
+                          <Route path="/translator-demo" element={<TranslatorDemoPage />} />
 
                           {/* Protected Routes */}
                           <Route element={<AppLayout />}>

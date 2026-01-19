@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import { Cloud, Shield, FileText, Lock, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
 const LegalPage = () => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('privacy');
 
     const tabs = [
-        { id: 'privacy', label: 'Privacy', icon: <Shield className="w-5 h-5" /> },
-        { id: 'terms', label: 'Terms', icon: <FileText className="w-5 h-5" /> },
-        { id: 'security', label: 'Security', icon: <Lock className="w-5 h-5" /> },
-        { id: 'gdpr', label: 'GDPR', icon: <CheckCircle className="w-5 h-5" /> }
+        { id: 'privacy', label: t('legal.tabs.privacy', 'Privacy'), icon: <Shield className="w-5 h-5" /> },
+        { id: 'terms', label: t('legal.tabs.terms', 'Terms'), icon: <FileText className="w-5 h-5" /> },
+        { id: 'security', label: t('legal.tabs.security', 'Security'), icon: <Lock className="w-5 h-5" /> },
+        { id: 'gdpr', label: t('legal.tabs.gdpr', 'GDPR'), icon: <CheckCircle className="w-5 h-5" /> }
     ];
 
     const content: Record<string, { title: string; lastUpdate: string; sections: { title: string; content: string; list?: string[] }[] }> = {
         privacy: {
-            title: "Privacy Policy",
-            lastUpdate: "Last updated: January 15, 2025",
+            title: t('legal.tabs.privacy', "Privacy Policy"),
+            lastUpdate: `${t('legal.last_updated', 'Last updated:')} January 15, 2025`,
             sections: [
                 {
                     title: "1. Introduction",
@@ -61,8 +63,8 @@ const LegalPage = () => {
             ]
         },
         terms: {
-            title: "Terms of Service",
-            lastUpdate: "Last updated: January 15, 2025",
+            title: t('legal.tabs.terms', "Terms of Service"),
+            lastUpdate: `${t('legal.last_updated', 'Last updated:')} January 15, 2025`,
             sections: [
                 {
                     title: "1. Acceptance of Terms",
@@ -101,8 +103,8 @@ const LegalPage = () => {
             ]
         },
         security: {
-            title: "Security Policy",
-            lastUpdate: "Last updated: January 15, 2025",
+            title: t('legal.tabs.security', "Security Policy"),
+            lastUpdate: `${t('legal.last_updated', 'Last updated:')} January 15, 2025`,
             sections: [
                 {
                     title: "1. Our Commitment",
@@ -132,8 +134,8 @@ const LegalPage = () => {
             ]
         },
         gdpr: {
-            title: "GDPR Compliance",
-            lastUpdate: "Last updated: January 15, 2025",
+            title: t('legal.tabs.gdpr', "GDPR Compliance"),
+            lastUpdate: `${t('legal.last_updated', 'Last updated:')} January 15, 2025`,
             sections: [
                 {
                     title: "1. GDPR Commitment",
@@ -169,15 +171,15 @@ const LegalPage = () => {
                 <div className="max-w-7xl mx-auto text-center">
                     <h1 className="text-6xl font-bold mb-6">
                         <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            Legal
+                            {t('legal.hero.title_prefix', 'Legal')}
                         </span>
                         <br />
                         <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                            Information
+                            {t('legal.hero.title_suffix', 'Information')}
                         </span>
                     </h1>
                     <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                        Transparency and compliance: discover our commitments and your rights
+                        {t('legal.hero.subtitle', 'Transparency and compliance: discover our commitments and your rights')}
                     </p>
                 </div>
             </section>
@@ -191,8 +193,8 @@ const LegalPage = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${activeTab === tab.id
-                                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-400/50'
-                                        : 'bg-white/80 border border-orange-200 text-slate-700 hover:bg-orange-50'
+                                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-400/50'
+                                    : 'bg-white/80 border border-orange-200 text-slate-700 hover:bg-orange-50'
                                     }`}
                             >
                                 {tab.icon}
@@ -230,9 +232,9 @@ const LegalPage = () => {
                         </div>
 
                         <div className="mt-12 p-6 bg-orange-50 border border-orange-200 rounded-2xl">
-                            <h4 className="font-bold text-slate-800 mb-2">Any questions?</h4>
+                            <h4 className="font-bold text-slate-800 mb-2">{t('legal.questions.title', 'Any questions?')}</h4>
                             <p className="text-slate-600 mb-4">
-                                For any questions regarding this policy, contact us:
+                                {t('legal.questions.subtitle', 'For any questions regarding this policy, contact us:')}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <a href="mailto:legal@cloudnexus.com" className="text-orange-600 font-semibold hover:underline">
@@ -240,7 +242,7 @@ const LegalPage = () => {
                                 </a>
                                 <span className="text-slate-400">•</span>
                                 <Link to="/contact" className="text-orange-600 font-semibold hover:underline">
-                                    Contact Form
+                                    {t('nav.contact', 'Contact Form')}
                                 </Link>
                             </div>
                         </div>

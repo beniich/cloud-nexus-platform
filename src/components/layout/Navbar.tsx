@@ -10,12 +10,12 @@ const Navbar = () => {
 
     // Common links
     const links = [
-        { href: '/', label: t('translation.nav.home', 'Home') },
-        { href: '/services', label: t('translation.nav.services', 'Services') },
-        { href: '/pricing', label: t('translation.nav.pricing', 'Pricing') },
-        { href: '/about', label: t('translation.nav.about', 'About') },
-        { href: '/blog', label: t('translation.nav.blog', 'Blog') },
-        { href: '/contact', label: t('translation.nav.contact', 'Contact') }
+        { href: '/', label: t('nav.home', 'Home') },
+        { href: '/services', label: t('nav.services', 'Services') },
+        { href: '/pricing', label: t('nav.pricing', 'Pricing') },
+        { href: '/about', label: t('nav.about', 'About') },
+        { href: '/blog', label: t('nav.blog', 'Blog') },
+        { href: '/contact', label: t('nav.contact', 'Contact') }
     ];
 
     return (
@@ -52,13 +52,13 @@ const Navbar = () => {
                             to="/login"
                             className="px-4 py-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all border border-slate-200 font-medium text-sm"
                         >
-                            {t('translation.nav.login', 'Login')}
+                            {t('nav.login', 'Login')}
                         </Link>
                         <Link
                             to="/login"
                             className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-medium text-sm"
                         >
-                            {t('translation.nav.start', 'Get Started')}
+                            {t('nav.start', 'Get Started')}
                         </Link>
                     </div>
 
@@ -94,13 +94,13 @@ const Navbar = () => {
                                 to="/login"
                                 className="px-4 py-3 text-center bg-slate-100 rounded-lg font-medium"
                             >
-                                {t('translation.nav.login', 'Login')}
+                                {t('nav.login', 'Login')}
                             </Link>
                             <Link
                                 to="/login"
                                 className="px-4 py-3 text-center bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg font-medium shadow-lg"
                             >
-                                {t('translation.nav.start', 'Start')}
+                                {t('nav.start', 'Start')}
                             </Link>
                         </div>
                     </div>

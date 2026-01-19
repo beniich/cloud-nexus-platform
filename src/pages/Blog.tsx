@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Cloud, Calendar, User, Tag, ArrowRight, TrendingUp, BookOpen, Code, Shield, Zap, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
 const BlogPage = () => {
+    const { t } = useTranslation();
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
 
     const categories = [
-        { id: 'all', label: 'All Articles', icon: <BookOpen className="w-4 h-4" /> },
-        { id: 'cloud', label: 'Cloud Computing', icon: <Cloud className="w-4 h-4" /> },
-        { id: 'development', label: 'Development', icon: <Code className="w-4 h-4" /> },
-        { id: 'security', label: 'Security', icon: <Shield className="w-4 h-4" /> },
-        { id: 'performance', label: 'Performance', icon: <Zap className="w-4 h-4" /> }
+        { id: 'all', label: t('blog.categories.all', 'All Articles'), icon: <BookOpen className="w-4 h-4" /> },
+        { id: 'cloud', label: t('blog.categories.cloud', 'Cloud Computing'), icon: <Cloud className="w-4 h-4" /> },
+        { id: 'development', label: t('blog.categories.development', 'Development'), icon: <Code className="w-4 h-4" /> },
+        { id: 'security', label: t('blog.categories.security', 'Security'), icon: <Shield className="w-4 h-4" /> },
+        { id: 'performance', label: t('blog.categories.performance', 'Performance'), icon: <Zap className="w-4 h-4" /> }
     ];
 
     const articles = [
@@ -139,15 +141,15 @@ const BlogPage = () => {
                 <div className="max-w-7xl mx-auto text-center">
                     <h1 className="text-6xl font-bold mb-6">
                         <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            The Cloud Nexus
+                            {t('blog.hero.title_prefix', 'The Cloud Nexus')}
                         </span>
                         <br />
                         <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                            Blog
+                            {t('blog.hero.title_suffix', 'Blog')}
                         </span>
                     </h1>
                     <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                        News, tutorials, and insights on cloud computing, web development, and security.
+                        {t('blog.hero.subtitle', 'News, tutorials, and insights on cloud computing, web development, and security.')}
                     </p>
                 </div>
             </section>
@@ -160,7 +162,7 @@ const BlogPage = () => {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                             <input
                                 type="text"
-                                placeholder="Search an article..."
+                                placeholder={t('blog.search_placeholder', 'Search an article...')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-12 pr-4 py-3 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
@@ -173,8 +175,8 @@ const BlogPage = () => {
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === cat.id
-                                            ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
-                                            : 'bg-white border border-orange-200 text-slate-700 hover:bg-orange-50'
+                                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
+                                        : 'bg-white border border-orange-200 text-slate-700 hover:bg-orange-50'
                                         }`}
                                 >
                                     {cat.icon}
@@ -192,7 +194,7 @@ const BlogPage = () => {
                     <div className="max-w-7xl mx-auto">
                         <div className="flex items-center gap-3 mb-8">
                             <TrendingUp className="w-6 h-6 text-orange-500" />
-                            <h2 className="text-3xl font-bold text-slate-800">Featured Articles</h2>
+                            <h2 className="text-3xl font-bold text-slate-800">{t('blog.featured', 'Featured Articles')}</h2>
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-8">
@@ -234,7 +236,7 @@ const BlogPage = () => {
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto">
                     <h2 className="text-3xl font-bold text-slate-800 mb-8">
-                        {selectedCategory === 'all' ? 'All Articles' : categories.find(c => c.id === selectedCategory)?.label}
+                        {selectedCategory === 'all' ? t('blog.categories.all', 'All Articles') : categories.find(c => c.id === selectedCategory)?.label}
                     </h2>
 
                     <div className="space-y-6">
@@ -278,7 +280,7 @@ const BlogPage = () => {
                                         </div>
 
                                         <button className="group/btn mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg transition-all font-medium">
-                                            Read Article
+                                            {t('blog.read_more', 'Read Article')}
                                             <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
@@ -289,7 +291,7 @@ const BlogPage = () => {
 
                     {filteredArticles.length === 0 && (
                         <div className="text-center py-12">
-                            <p className="text-slate-600 text-lg">No articles match your search.</p>
+                            <p className="text-slate-600 text-lg">{t('blog.no_results', 'No articles match your search.')}</p>
                         </div>
                     )}
                 </div>
@@ -300,23 +302,23 @@ const BlogPage = () => {
                 <div className="max-w-5xl mx-auto">
                     <div className="relative overflow-hidden p-12 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl shadow-2xl text-center">
                         <h2 className="text-4xl font-bold text-white mb-4">
-                            Stay updated with the latest news
+                            {t('blog.newsletter.title', 'Stay updated with the latest news')}
                         </h2>
                         <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                            Receive our best articles directly in your inbox
+                            {t('blog.newsletter.subtitle', 'Receive our best articles directly in your inbox')}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto">
                             <input
                                 type="email"
-                                placeholder="your@email.com"
+                                placeholder={t('blog.newsletter.placeholder', 'your@email.com')}
                                 className="flex-1 px-6 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-white"
                             />
                             <button className="px-8 py-4 bg-white text-orange-600 rounded-xl hover:shadow-2xl transition-all transform hover:scale-105 font-semibold whitespace-nowrap">
-                                Subscribe
+                                {t('blog.newsletter.button', 'Subscribe')}
                             </button>
                         </div>
                         <p className="text-white/80 text-sm mt-4">
-                            No spam, unsubscribe in 1 click
+                            {t('blog.newsletter.disclaimer', 'No spam, unsubscribe in 1 click')}
                         </p>
                     </div>
                 </div>

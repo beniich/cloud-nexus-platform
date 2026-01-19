@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 import { Cloud, Database, Shield, Code, Zap, Globe, Cpu, Server, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
 const ServicesPage = () => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('all');
 
   const categories = [
-    { id: 'all', label: 'All Services' },
-    { id: 'compute', label: 'Compute' },
-    { id: 'storage', label: 'Storage' },
-    { id: 'network', label: 'Network' },
-    { id: 'security', label: 'Security' }
+    { id: 'all', label: t('services.categories.all', 'All Services') },
+    { id: 'compute', label: t('services.categories.compute', 'Compute') },
+    { id: 'storage', label: t('services.categories.storage', 'Storage') },
+    { id: 'network', label: t('services.categories.network', 'Network') },
+    { id: 'security', label: t('services.categories.security', 'Security') }
   ];
 
   const services = [
     {
       id: 1,
-      title: "Cloud Instances",
-      description: "Virtual machines available on demand with fully configurable CPU/RAM performance.",
+      title: t('services.items.instances.title', "Cloud Instances"),
+      description: t('services.items.instances.desc', "Virtual machines available on demand with fully configurable CPU/RAM performance."),
       icon: <Cpu className="w-8 h-8" />,
       category: "compute",
       price: "From €5/mo",
@@ -27,8 +29,8 @@ const ServicesPage = () => {
     },
     {
       id: 2,
-      title: "Managed Kubernetes",
-      description: "Orchestrate your containerized applications effortlessly with our managed K8s service.",
+      title: t('services.items.k8s.title', "Managed Kubernetes"),
+      description: t('services.items.k8s.desc', "Orchestrate your containerized applications effortlessly with our managed K8s service."),
       icon: <Cloud className="w-8 h-8" />,
       category: "compute",
       price: "From €20/mo",
@@ -36,8 +38,8 @@ const ServicesPage = () => {
     },
     {
       id: 3,
-      title: "Block Storage",
-      description: "High-performance persistent storage volumes for your instances.",
+      title: t('services.items.block_storage.title', "Block Storage"),
+      description: t('services.items.block_storage.desc', "High-performance persistent storage volumes for your instances."),
       icon: <Database className="w-8 h-8" />,
       category: "storage",
       price: "€0.05/GB/mo",
@@ -45,8 +47,8 @@ const ServicesPage = () => {
     },
     {
       id: 4,
-      title: "Object Storage",
-      description: "S3-compatible scalable storage specifically for your static data and backups.",
+      title: t('services.items.object_storage.title', "Object Storage"),
+      description: t('services.items.object_storage.desc', "S3-compatible scalable storage specifically for your static data and backups."),
       icon: <Server className="w-8 h-8" />,
       category: "storage",
       price: "€0.01/GB/mo",
@@ -54,8 +56,8 @@ const ServicesPage = () => {
     },
     {
       id: 5,
-      title: "Load Balancer",
-      description: "Distribute traffic across your instances to ensure performance and availability.",
+      title: t('services.items.load_balancer.title', "Load Balancer"),
+      description: t('services.items.load_balancer.desc', "Distribute traffic across your instances to ensure performance and availability."),
       icon: <Globe className="w-8 h-8" />,
       category: "network",
       price: "€10/mo",
@@ -63,8 +65,8 @@ const ServicesPage = () => {
     },
     {
       id: 6,
-      title: "Private Networks",
-      description: "Create isolated and secure networks between your cloud resources.",
+      title: t('services.items.private_network.title', "Private Networks"),
+      description: t('services.items.private_network.desc', "Create isolated and secure networks between your cloud resources."),
       icon: <Lock className="w-8 h-8" />,
       category: "network",
       price: "Free",
@@ -72,8 +74,8 @@ const ServicesPage = () => {
     },
     {
       id: 7,
-      title: "DDoS Protection",
-      description: "Advanced protection against volumetric and application-layer attacks included by default.",
+      title: t('services.items.ddos.title', "DDoS Protection"),
+      description: t('services.items.ddos.desc', "Advanced protection against volumetric and application-layer attacks included by default."),
       icon: <Shield className="w-8 h-8" />,
       category: "security",
       price: "Included",
@@ -81,8 +83,8 @@ const ServicesPage = () => {
     },
     {
       id: 8,
-      title: "Managed Databases",
-      description: "PostgreSQL, MySQL, and Redis databases managed, secured, and backed up automatically.",
+      title: t('services.items.db.title', "Managed Databases"),
+      description: t('services.items.db.desc', "PostgreSQL, MySQL, and Redis databases managed, secured, and backed up automatically."),
       icon: <Code className="w-8 h-8" />,
       category: "storage",
       price: "From €15/mo",
@@ -103,15 +105,15 @@ const ServicesPage = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-6xl font-bold mb-6">
             <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-              Our Cloud
+              {t('services.hero.title_prefix', 'Our Cloud')}
             </span>
             <br />
             <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-              Solutions
+              {t('services.hero.title_suffix', 'Solutions')}
             </span>
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Scalable infrastructure and powerful tools to build, deploy, and scale your applications globally.
+            {t('services.hero.subtitle', 'Scalable infrastructure and powerful tools to build, deploy, and scale your applications globally.')}
           </p>
         </div>
       </section>
@@ -124,8 +126,8 @@ const ServicesPage = () => {
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
               className={`px-6 py-3 rounded-full font-medium transition-all ${activeCategory === cat.id
-                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
-                  : 'bg-white border border-orange-200 text-slate-600 hover:bg-orange-50'
+                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
+                : 'bg-white border border-orange-200 text-slate-600 hover:bg-orange-50'
                 }`}
             >
               {cat.label}
@@ -159,7 +161,7 @@ const ServicesPage = () => {
                 <div className="flex items-center justify-between pt-6 border-t border-orange-100">
                   <div className="text-lg font-bold text-orange-600">{service.price}</div>
                   <Link to="/pricing" className="flex items-center gap-2 text-slate-600 hover:text-orange-600 font-medium transition-colors">
-                    Deploy
+                    {t('common.deploy', 'Deploy')}
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -175,13 +177,13 @@ const ServicesPage = () => {
           <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl p-12 text-center shadow-2xl relative overflow-hidden">
             <div className="relative z-10">
               <h2 className="text-4xl font-bold text-white mb-4">
-                Need a custom solution?
+                {t('services.cta.title', 'Need a custom solution?')}
               </h2>
               <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Our architects are here to help you design the perfect infrastructure for your needs.
+                {t('services.cta.subtitle', 'Our architects are here to help you design the perfect infrastructure for your needs.')}
               </p>
               <Link to="/contact" className="inline-block px-8 py-4 bg-white text-orange-600 rounded-xl hover:shadow-2xl transition-all transform hover:scale-105 font-semibold text-lg">
-                Contact Sales
+                {t('services.cta.button', 'Contact Sales')}
               </Link>
             </div>
           </div>

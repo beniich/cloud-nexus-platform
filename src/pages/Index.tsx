@@ -26,42 +26,42 @@ const Index = () => {
   const services = [
     {
       icon: <Cloud className="w-8 h-8" />,
-      title: "Cloud Infrastructure",
-      description: "Deploy your infrastructure in a few clicks",
+      title: t('services.cloud.title', "Cloud Infrastructure"),
+      description: t('services.cloud.desc', "Deploy your infrastructure in a few clicks"),
       color: "from-orange-400 to-amber-500"
     },
     {
       icon: <Code className="w-8 h-8" />,
-      title: "Site Builder",
-      description: "Create professional websites without code",
+      title: t('services.builder.title', "Site Builder"),
+      description: t('services.builder.desc', "Create professional websites without code"),
       color: "from-amber-500 to-orange-500"
     },
     {
       icon: <Database className="w-8 h-8" />,
-      title: "Data Management",
-      description: "Manage your data securely",
+      title: t('services.data.title', "Data Management"),
+      description: t('services.data.desc', "Manage your data securely"),
       color: "from-orange-500 to-red-500"
     },
     {
       icon: <Shield className="w-8 h-8" />,
-      title: "Security First",
-      description: "Advanced protection for your resources",
+      title: t('services.security.title', "Security First"),
+      description: t('services.security.desc', "Advanced protection for your resources"),
       color: "from-amber-400 to-yellow-500"
     }
   ];
 
   const stats = [
-    { number: "99.9%", label: "Uptime", icon: <TrendingUp /> },
-    { number: "10K+", label: "Active Clients", icon: <Users /> },
-    { number: "24/7", label: "Support", icon: <Sparkles /> },
-    { number: "150+", label: "Countries", icon: <Globe /> }
+    { number: "99.9%", label: t('stats.uptime', "Uptime"), icon: <TrendingUp /> },
+    { number: "10K+", label: t('stats.clients', "Active Clients"), icon: <Users /> },
+    { number: "24/7", label: t('stats.support', "Support"), icon: <Sparkles /> },
+    { number: "150+", label: t('stats.countries', "Countries"), icon: <Globe /> }
   ];
 
   const features = [
-    { icon: <Zap />, title: "Maximum Performance", desc: "Infrastructure optimized for ultra-fast response times" },
-    { icon: <Lock />, title: "Reinforced Security", desc: "End-to-end encryption and GDPR compliance" },
-    { icon: <Rocket />, title: "Rapid Deployment", desc: "Launch your projects in minutes, not hours" },
-    { icon: <Globe />, title: "Global Presence", desc: "Datacenters distributed across 5 continents" }
+    { icon: <Zap />, title: t('features.performance.title', "Maximum Performance"), desc: t('features.performance.desc', "Infrastructure optimized for ultra-fast response times") },
+    { icon: <Lock />, title: t('features.security.title', "Reinforced Security"), desc: t('features.security.desc', "End-to-end encryption and GDPR compliance") },
+    { icon: <Rocket />, title: t('features.deployment.title', "Rapid Deployment"), desc: t('features.deployment.desc', "Launch your projects in minutes, not hours") },
+    { icon: <Globe />, title: t('features.global.title', "Global Presence"), desc: t('features.global.desc', "Datacenters distributed across 5 continents") }
   ];
 
   return (
@@ -96,30 +96,30 @@ const Index = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 border border-orange-200 rounded-full text-sm shadow-sm">
               <Lightbulb className="w-4 h-4 text-orange-600" />
-              <span className="text-slate-700 font-medium">{t('translation.hero.new_badge', 'New: AI-Powered Site Builder')}</span>
+              <span className="text-slate-700 font-medium">{t('hero.new_badge', 'New: AI-Powered Site Builder')}</span>
             </div>
 
             <h1 className="text-6xl md:text-8xl font-bold leading-tight">
               <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent">
-                {t('translation.hero.title_prefix', 'Propel your')}
+                {t('hero.title_prefix', 'Propel your')}
               </span>
               <br />
               <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
-                {t('translation.hero.title_suffix', 'business to the cloud')}
+                {t('hero.title_suffix', 'business to the cloud')}
               </span>
             </h1>
 
             <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              {t('translation.hero.subtitle', 'Powerful cloud infrastructure, intuitive developer tools, and expert support. Everything you need to succeed in the digital age.')}
+              {t('hero.subtitle', 'Powerful cloud infrastructure, intuitive developer tools, and expert support. Everything you need to succeed in the digital age.')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
               <Link to="/login" className="group px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl hover:shadow-2xl hover:shadow-orange-400/50 transition-all transform hover:scale-105 flex items-center gap-2 font-semibold text-lg">
-                {t('translation.hero.cta_start', 'Start for free')}
+                {t('hero.cta_start', 'Start for free')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <button className="px-8 py-4 bg-white border-2 border-orange-300 text-orange-600 rounded-xl hover:bg-orange-50 transition-all font-semibold text-lg">
-                {t('translation.hero.cta_demo', 'View Demo')}
+                {t('hero.cta_demo', 'View Demo')}
               </button>
             </div>
 
@@ -158,9 +158,9 @@ const Index = () => {
             }}
           >
             <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-              {t('translation.nav.services', 'Complete Cloud Services')}
+              {t('services.section_title', 'Complete Cloud Services')}
             </h2>
-            <p className="text-slate-600 text-xl">One platform, infinite possibilities</p>
+            <p className="text-slate-600 text-xl">{t('services.section_subtitle', 'One platform, infinite possibilities')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -183,7 +183,7 @@ const Index = () => {
                 <h3 className="text-2xl font-bold mb-3 text-slate-800">{service.title}</h3>
                 <p className="text-slate-600">{service.description}</p>
                 <div className="mt-6 flex items-center gap-2 text-orange-500 group-hover:gap-3 transition-all font-medium">
-                  <span>{t('translation.common.read_more', 'Read more')}</span>
+                  <span>{t('common.read_more', 'Read more')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>
@@ -205,11 +205,11 @@ const Index = () => {
             >
               <h2 className="text-5xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                  Why choose
+                  {t('home.why_choose_prefix', 'Why choose')}
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                  Cloud Nexus?
+                  {t('home.why_choose_suffix', 'Cloud Nexus?')}
                 </span>
               </h2>
 
@@ -244,27 +244,27 @@ const Index = () => {
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">High availability infrastructure</span>
+                    <span className="text-lg text-slate-700">{t('features.list.availability', 'High availability infrastructure')}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Auto-scaling</span>
+                    <span className="text-lg text-slate-700">{t('features.list.scaling', 'Auto-scaling')}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Real-time monitoring</span>
+                    <span className="text-lg text-slate-700">{t('features.list.monitoring', 'Real-time monitoring')}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Daily automated backups</span>
+                    <span className="text-lg text-slate-700">{t('features.list.backups', 'Daily automated backups')}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">Full RESTful API</span>
+                    <span className="text-lg text-slate-700">{t('features.list.api', 'Full RESTful API')}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-orange-500" />
-                    <span className="text-lg text-slate-700">24/7 Priority Support</span>
+                    <span className="text-lg text-slate-700">{t('features.list.support', '24/7 Priority Support')}</span>
                   </div>
                 </div>
 
@@ -277,9 +277,9 @@ const Index = () => {
                     <Star className="w-6 h-6 text-amber-500 fill-amber-500" />
                   </div>
                   <p className="text-slate-700 italic">
-                    "Cloud Nexus transformed our infrastructure. Exceptional performance and reactive support!"
+                    "{t('testimonials.quote', 'Cloud Nexus transformed our infrastructure. Exceptional performance and reactive support!')}"
                   </p>
-                  <p className="text-slate-600 text-sm mt-4 font-medium">— Sarah L., CTO at TechStart</p>
+                  <p className="text-slate-600 text-sm mt-4 font-medium">— {t('testimonials.author', 'Sarah L., CTO at TechStart')}</p>
                 </div>
               </div>
             </div>
@@ -297,22 +297,22 @@ const Index = () => {
               opacity: Math.min(1, (scrollY - 600) * 0.002)
             }}
           >
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjIiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjIiLz48L2JhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
 
             <div className="relative text-center space-y-6">
               <h2 className="text-4xl md:text-5xl font-bold text-white">
-                Ready to boost your business?
+                {t('cta.title', 'Ready to boost your business?')}
               </h2>
               <p className="text-xl text-white/90 max-w-2xl mx-auto">
-                Join over 10,000 companies trusting Cloud Nexus
+                {t('cta.subtitle', 'Join over 10,000 companies trusting Cloud Nexus')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                 <Link to="/login" className="group px-8 py-4 bg-white text-orange-600 rounded-xl hover:shadow-2xl transition-all transform hover:scale-105 flex items-center gap-2 font-semibold text-lg">
-                  14-day free trial
+                  {t('cta.button_primary', '14-day free trial')}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <button className="px-8 py-4 bg-white/20 backdrop-blur-sm border-2 border-white/40 text-white rounded-xl hover:bg-white/30 transition-all font-semibold text-lg">
-                  Talk to an expert
+                  {t('cta.button_secondary', 'Talk to an expert')}
                 </button>
               </div>
             </div>

@@ -18,11 +18,11 @@ const Footer = () => {
                             <span className="text-xl font-bold text-slate-800">Cloud Nexus</span>
                         </div>
                         <p className="text-slate-600 text-sm">
-                            {t('translation.hero.subtitle', 'Powerful cloud infrastructure for ambitious companies.')}
+                            {t('hero.subtitle', 'Powerful cloud infrastructure for ambitious companies.')}
                         </p>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-4 text-slate-800">{t('translation.footer.products', 'Products')}</h4>
+                        <h4 className="font-bold mb-4 text-slate-800">{t('footer.products', 'Products')}</h4>
                         <ul className="space-y-2 text-slate-600 text-sm">
                             <li><Link to="/services" className="hover:text-orange-600 transition-colors">Cloud Hosting</Link></li>
                             <li><Link to="/services" className="hover:text-orange-600 transition-colors">Site Builder</Link></li>
@@ -31,26 +31,26 @@ const Footer = () => {
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-4 text-slate-800">{t('translation.footer.company', 'Company')}</h4>
+                        <h4 className="font-bold mb-4 text-slate-800">{t('footer.company', 'Company')}</h4>
                         <ul className="space-y-2 text-slate-600 text-sm">
-                            <li><Link to="/about" className="hover:text-orange-600 transition-colors">{t('translation.nav.about', 'About')}</Link></li>
-                            <li><Link to="/careers" className="hover:text-orange-600 transition-colors">{t('translation.nav.careers', 'Careers')}</Link></li>
-                            <li><Link to="/blog" className="hover:text-orange-600 transition-colors">{t('translation.nav.blog', 'Blog')}</Link></li>
-                            <li><Link to="/contact" className="hover:text-orange-600 transition-colors">{t('translation.nav.contact', 'Contact')}</Link></li>
+                            <li><Link to="/about" className="hover:text-orange-600 transition-colors">{t('nav.about', 'About')}</Link></li>
+                            <li><Link to="/careers" className="hover:text-orange-600 transition-colors">{t('nav.careers', 'Careers')}</Link></li>
+                            <li><Link to="/blog" className="hover:text-orange-600 transition-colors">{t('nav.blog', 'Blog')}</Link></li>
+                            <li><Link to="/contact" className="hover:text-orange-600 transition-colors">{t('nav.contact', 'Contact')}</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-4 text-slate-800">{t('translation.footer.legal', 'Legal')}</h4>
+                        <h4 className="font-bold mb-4 text-slate-800">{t('footer.legal', 'Legal')}</h4>
                         <ul className="space-y-2 text-slate-600 text-sm">
-                            <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('translation.footer.privacy', 'Privacy Policy')}</Link></li>
-                            <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('translation.footer.terms', 'Terms of Service')}</Link></li>
-                            <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('translation.footer.security', 'Security')}</Link></li>
-                            <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('translation.footer.gdpr', 'GDPR')}</Link></li>
+                            <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('footer.privacy', 'Privacy Policy')}</Link></li>
+                            <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('footer.terms', 'Terms of Service')}</Link></li>
+                            <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('footer.security', 'Security')}</Link></li>
+                            <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('footer.gdpr', 'GDPR')}</Link></li>
                         </ul>
                     </div>
                 </div>
                 <div className="border-t border-orange-200 pt-8 text-center text-slate-600 text-sm">
-                    <p>{t('translation.footer.rights', '© 2025 Cloud Nexus Platform. All rights reserved.')}</p>
+                    <p>{t('footer.rights', '© 2025 Cloud Nexus Platform. All rights reserved.')}</p>
                 </div>
             </div>
         </footer>

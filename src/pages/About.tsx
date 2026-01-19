@@ -1,63 +1,66 @@
 import React from 'react';
 import { Target, Users, Award, Globe, Rocket, Heart, Shield, Zap } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
 const AboutPage = () => {
+    const { t } = useTranslation();
+
     const stats = [
-        { number: "2018", label: "Founded" },
-        { number: "50+", label: "Experts" },
-        { number: "10k+", label: "Clients" },
-        { number: "5", label: "Datacenters" }
+        { number: "2018", label: t('about.stats.founded', "Founded") },
+        { number: "50+", label: t('about.stats.experts', "Experts") },
+        { number: "10k+", label: t('about.stats.clients', "Clients") },
+        { number: "5", label: t('about.stats.datacenters', "Datacenters") }
     ];
 
     const values = [
         {
             icon: <Target className="w-8 h-8" />,
-            title: "Mission",
-            description: "Democratize access to a high-performance, secure, and sovereign cloud for companies of all sizes."
+            title: t('about.values.mission.title', "Mission"),
+            description: t('about.values.mission.desc', "Democratize access to a high-performance, secure, and sovereign cloud for companies of all sizes.")
         },
         {
             icon: <Award className="w-8 h-8" />,
-            title: "Excellence",
-            description: "We strive for technical perfection in every line of code and every server we deploy."
+            title: t('about.values.excellence.title', "Excellence"),
+            description: t('about.values.excellence.desc', "We strive for technical perfection in every line of code and every server we deploy.")
         },
         {
             icon: <Users className="w-8 h-8" />,
-            title: "Community",
-            description: "We believe in open-source and active collaboration with our developer community."
+            title: t('about.values.community.title', "Community"),
+            description: t('about.values.community.desc', "We believe in open-source and active collaboration with our developer community.")
         },
         {
             icon: <Shield className="w-8 h-8" />,
-            title: "Privacy",
-            description: "Your data is yours. We guarantee total sovereignty and strict compliance with GDPR."
+            title: t('about.values.privacy.title', "Privacy"),
+            description: t('about.values.privacy.desc', "Your data is yours. We guarantee total sovereignty and strict compliance with GDPR.")
         }
     ];
 
     const team = [
         {
             name: "Thomas Anderson",
-            role: "CEO & Founder",
+            role: t('about.team.roles.ceo', "CEO & Founder"),
             image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
-            bio: "Former Google Engineer, Cloud Architecture Expert."
+            bio: t('about.team.bios.ceo', "Former Google Engineer, Cloud Architecture Expert.")
         },
         {
             name: "Sarah Connors",
-            role: "CTO",
+            role: t('about.team.roles.cto', "CTO"),
             image: "https://images.unsplash.com/photo-1573496359-0796d9552d00?auto=format&fit=crop&q=80&w=400",
-            bio: "Infrastructure security specialist and AI enthusiast."
+            bio: t('about.team.bios.cto', "Infrastructure security specialist and AI enthusiast.")
         },
         {
             name: "David Chen",
-            role: "Head of Product",
+            role: t('about.team.roles.head_product', "Head of Product"),
             image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
-            bio: "10 years experience in SaaS product development."
+            bio: t('about.team.bios.head_product', "10 years experience in SaaS product development.")
         },
         {
             name: "Elena Rodriguez",
-            role: "Head of Sales",
+            role: t('about.team.roles.head_sales', "Head of Sales"),
             image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
-            bio: "Focused on customer success and strategic partnerships."
+            bio: t('about.team.bios.head_sales', "Focused on customer success and strategic partnerships.")
         }
     ];
 
@@ -70,15 +73,15 @@ const AboutPage = () => {
                 <div className="max-w-7xl mx-auto text-center">
                     <h1 className="text-6xl font-bold mb-6">
                         <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            Building the Future
+                            {t('about.hero.title_1', 'Building the Future')}
                         </span>
                         <br />
                         <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                            of Cloud Computing
+                            {t('about.hero.title_2', 'of Cloud Computing')}
                         </span>
                     </h1>
                     <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-12">
-                        Cloud Nexus was born from a simple idea: complexity shouldn't be a barrier to innovation.
+                        {t('about.hero.subtitle', "Cloud Nexus was born from a simple idea: complexity shouldn't be a barrier to innovation.")}
                     </p>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
@@ -116,16 +119,16 @@ const AboutPage = () => {
                 <div className="max-w-7xl mx-auto">
                     <div className="bg-white/80 backdrop-blur-sm border border-orange-200 rounded-3xl p-8 md:p-12 shadow-xl flex flex-col md:flex-row gap-12 items-center">
                         <div className="md:w-1/2">
-                            <h2 className="text-3xl font-bold text-slate-800 mb-6">Our Story</h2>
+                            <h2 className="text-3xl font-bold text-slate-800 mb-6">{t('about.story.title', 'Our Story')}</h2>
                             <div className="space-y-4 text-slate-600 leading-relaxed">
                                 <p>
-                                    Founded in 2018 in Paris, Cloud Nexus started as a small team of passionate developers frustrated by the complexity of existing cloud solutions.
+                                    {t('about.story.p1', "Founded in 2018 in Paris, Cloud Nexus started as a small team of passionate developers frustrated by the complexity of existing cloud solutions.")}
                                 </p>
                                 <p>
-                                    We spent two years building our proprietary orchestration engine from scratch, focusing on performance, security, and developer experience.
+                                    {t('about.story.p2', "We spent two years building our proprietary orchestration engine from scratch, focusing on performance, security, and developer experience.")}
                                 </p>
                                 <p>
-                                    Today, we are proud to serve over 10,000 customers worldwide, from solo developers to large enterprises, helping them deploy their dreams to the cloud.
+                                    {t('about.story.p3', "Today, we are proud to serve over 10,000 customers worldwide, from solo developers to large enterprises, helping them deploy their dreams to the cloud.")}
                                 </p>
                             </div>
                         </div>
@@ -144,7 +147,7 @@ const AboutPage = () => {
             {/* Team Section */}
             <section className="px-6 pb-20">
                 <div className="max-w-7xl mx-auto text-center">
-                    <h2 className="text-3xl font-bold text-slate-800 mb-12">Leadership Team</h2>
+                    <h2 className="text-3xl font-bold text-slate-800 mb-12">{t('about.team.title', 'Leadership Team')}</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {team.map((member, idx) => (
                             <div key={idx} className="group">
