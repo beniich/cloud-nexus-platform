@@ -91,9 +91,9 @@ const Index = () => {
               </span>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Services</a>
+              <Link to="/services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Services</Link>
               <a href="#features" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Fonctionnalités</a>
-              <a href="#pricing" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Tarifs</a>
+              <Link to="/pricing" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Tarifs</Link>
               <Link to="/login" className="px-6 py-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all border border-slate-200 font-medium">
                 Connexion
               </Link>
@@ -369,19 +369,19 @@ const Index = () => {
             <div>
               <h4 className="font-bold mb-4 text-slate-800">Entreprise</h4>
               <ul className="space-y-2 text-slate-600">
-                <li><a href="#" className="hover:text-orange-600 transition-colors">À propos</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Carrières</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Contact</a></li>
+                <li><Link to="/about" className="hover:text-orange-600 transition-colors">À propos</Link></li>
+                <li><Link to="/careers" className="hover:text-orange-600 transition-colors">Carrières</Link></li>
+                <li><Link to="/blog" className="hover:text-orange-600 transition-colors">Blog</Link></li>
+                <li><Link to="/contact" className="hover:text-orange-600 transition-colors">Contact</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold mb-4 text-slate-800">Légal</h4>
               <ul className="space-y-2 text-slate-600">
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Confidentialité</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Conditions</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">Sécurité</a></li>
-                <li><a href="#" className="hover:text-orange-600 transition-colors">RGPD</a></li>
+                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">Confidentialité</Link></li>
+                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">Conditions</Link></li>
+                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">Sécurité</Link></li>
+                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">RGPD</Link></li>
               </ul>
             </div>
           </div>

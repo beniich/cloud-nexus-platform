@@ -40,6 +40,10 @@ import { CheckoutPage } from "./pages/CheckoutPage";
 import Services from "./pages/Services";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
+import About from "./pages/About";
+import Careers from "./pages/Careers";
+import Blog from "./pages/Blog";
+import Legal from "./pages/Legal";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +69,10 @@ function App() {
                           <Route path="/services" element={<Services />} />
                           <Route path="/pricing" element={<Pricing />} />
                           <Route path="/contact" element={<Contact />} />
+                          <Route path="/about" element={<About />} />
+                          <Route path="/careers" element={<Careers />} />
+                          <Route path="/blog" element={<Blog />} />
+                          <Route path="/legal" element={<Legal />} />
 
                           {/* Protected Routes */}
                           <Route element={<AppLayout />}>
