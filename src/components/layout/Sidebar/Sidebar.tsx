@@ -7,14 +7,15 @@ import { SidebarItem } from './SidebarItem';
 import { Button } from '@/shared/ui/button';
 
 interface SidebarProps {
-    activeSection: string;
-    onSectionChange: (section: string) => void;
+    activeSection?: string;
+    onSectionChange?: (section: string) => void;
     isCollapsed?: boolean;
     onToggleCollapse?: (collapsed: boolean) => void;
+    logoUrl?: string;
 }
 
-export function Sidebar({ activeSection, onSectionChange, isCollapsed: controlledCollapsed, onToggleCollapse }: SidebarProps) {
-    const { menu, loading } = useMenuConfig();
+export function Sidebar({ activeSection, onSectionChange, isCollapsed: controlledCollapsed, onToggleCollapse, logoUrl }: SidebarProps) {
+    const { menu } = useMenuConfig();
     const location = useLocation();
 
     // Local state for collapse if not controlled
@@ -35,20 +36,7 @@ export function Sidebar({ activeSection, onSectionChange, isCollapsed: controlle
         }
     };
 
-    if (loading) {
-        return (
-            <aside className={cn(
-                "bg-background border-r border-border min-h-[calc(100vh-73px)] p-4 transition-all duration-300 ease-in-out dark:bg-slate-900 dark:border-slate-800",
-                collapsed ? "w-20" : "w-64"
-            )}>
-                <div className="space-y-4">
-                    {[1, 2, 3, 4, 5].map(i => (
-                        <div key={i} className="h-10 bg-muted/50 rounded-lg animate-pulse" />
-                    ))}
-                </div>
-            </aside>
-        );
-    }
+
 
     return (
         <aside
@@ -57,17 +45,35 @@ export function Sidebar({ activeSection, onSectionChange, isCollapsed: controlle
                 collapsed ? "w-20" : "w-64"
             )}
         >
+
+            <div className={cn("flex items-center gap-3 mb-8 px-2", collapsed && "justify-center mb-6")}>
+                <div className="relative">
+                    {logoUrl ? (
+                        <img
+                            src={logoUrl}
+                            alt="Logo"
+                            className={cn("object-contain transition-all duration-300", collapsed ? "w-8 h-8" : "w-8 h-8")}
+                        />
+                    ) : (
+                        <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center">
+                            <span className="text-white dark:text-black font-bold text-xs">CN</span>
+                        </div>
+                    )}
+                </div>
+                {!collapsed && (
+                    <span className="font-bold text-lg whitespace-nowrap overflow-hidden transition-all duration-300">
+                        CloudNexus
+                    </span>
+                )}
+            </div>
+
             <nav className="space-y-2">
                 {menu.map((item) => (
                     <SidebarItem
                         key={item.id}
                         item={item}
                         collapsed={collapsed}
-                        isActive={
-                            item.type === 'internal'
-                                ? activeSection === item.section
-                                : location.pathname.startsWith(item.path)
-                        }
+                        isActive={location.pathname.startsWith(item.path)}
                         onInternalClick={onSectionChange}
                     />
                 ))}

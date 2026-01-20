@@ -15,6 +15,7 @@ export interface SettingsState {
     theme: "light" | "dark" | "system";
     twoFactorAuth: boolean;
     emailNotifications: boolean;
+    logoUrl?: string;
 }
 
 export interface Settings extends SettingsState {

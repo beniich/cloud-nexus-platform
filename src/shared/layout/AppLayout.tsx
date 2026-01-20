@@ -3,39 +3,62 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { HeaderNavigation } from './HeaderNavigation';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { STORAGE_KEYS } from '@/config/menu';
-import { Search, Bell, LogOut } from 'lucide-react';
+import { Sidebar } from '@/components/layout/Sidebar/Sidebar';
+import { useSettings } from '@/hooks/useSettings';
+import { Search, Bell, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
+
+import ProfessionalChat from '@/components/chat/ProfessionalChat';
 
 export default function AppLayout() {
     const [darkMode, setDarkMode] = useLocalStorage(STORAGE_KEYS.THEME, false);
-    const { logout } = useAuth();
-    const navigate = useNavigate();
+    // ... existing hooks
 
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    }, [darkMode]);
+    // ... useEffect ...
 
-    const handleLogout = async () => {
-        await logout();
-        navigate('/');
-    };
+    // ... handleLogout ...
 
     return (
         <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
+            {/* Desktop Sidebar */}
+            <div className="hidden md:block">
+                <Sidebar logoUrl={settings.logoUrl} />
+            </div>
+
+            {/* Mobile Sidebar (Drawer) */}
+            {mobileMenuOpen && (
+                <div className="fixed inset-0 z-50 flex md:hidden">
+                    <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
+                    <div className="relative z-50 h-full">
+                        <Sidebar
+                            logoUrl={settings.logoUrl}
+                            isCollapsed={false}
+                            onToggleCollapse={() => { }} // Always expanded on mobile
+                        />
+                        <button
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="absolute top-4 right-[-40px] p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg text-gray-600 dark:text-gray-300"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Main Content - Full Width now */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
                 {/* Header */}
                 <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex-shrink-0 z-10 relative shadow-sm">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-6 flex-1">
-                            {/* Logo Wrapper (Optional, kept simple for now) */}
-                            <div className="hidden md:block">
-                                <img src="/logo.png" alt="CloudNexus" className="h-8 w-auto" />
-                            </div>
+                        <div className="flex items-center gap-4 flex-1">
+                            {/* Mobile Menu Button */}
+                            <button
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 rounded-lg"
+                            >
+                                <Menu className="w-6 h-6" />
+                            </button>
 
                             <div className="relative hidden lg:block w-64">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -45,9 +68,6 @@ export default function AppLayout() {
                                     className="pl-9 pr-4 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-md border-none focus:ring-2 focus:ring-blue-500 w-full text-sm"
                                 />
                             </div>
-
-                            {/* Navigation Horizontal */}
-                            <HeaderNavigation />
                         </div>
 
                         <div className="flex items-center gap-3">
@@ -86,6 +106,9 @@ export default function AppLayout() {
                     </div>
                 </main>
             </div>
+
+            {/* Professional Chat Widget */}
+            <ProfessionalChat />
         </div>
     );
 }

@@ -6,7 +6,7 @@ export const DEFAULT_MENU_CONFIG: MenuItem[] = [
         label: 'Dashboard',
         icon: 'LayoutDashboard',
         path: '/dashboard',
-        roles: ['owner', 'admin', 'manager', 'user', 'client'], // Expanded roles for visibility
+        roles: ['owner', 'admin', 'seller', 'client'], // Expanded roles for visibility
         type: 'internal',
         badge: undefined
     },
@@ -37,7 +37,7 @@ export const DEFAULT_MENU_CONFIG: MenuItem[] = [
         label: 'Produits',
         icon: 'Package',
         path: '/products',
-        roles: ['owner', 'admin', 'manager'],
+        roles: ['owner', 'admin', 'seller'],
         type: 'internal'
     },
     {
@@ -53,7 +53,7 @@ export const DEFAULT_MENU_CONFIG: MenuItem[] = [
         label: 'Analytics',
         icon: 'TrendingUp',
         path: '/analytics',
-        roles: ['owner', 'admin', 'manager'],
+        roles: ['owner', 'admin', 'seller'],
         type: 'internal'
     },
     {
@@ -61,7 +61,7 @@ export const DEFAULT_MENU_CONFIG: MenuItem[] = [
         label: 'Demande Hébergement',
         icon: 'Server',
         path: '/hosting-request',
-        roles: ['owner', 'admin', 'manager', 'user', 'client'],
+        roles: ['owner', 'admin', 'seller', 'client'],
         type: 'internal'
     },
     {
@@ -69,7 +69,7 @@ export const DEFAULT_MENU_CONFIG: MenuItem[] = [
         label: 'CRM Hustel',
         icon: 'Users',
         path: '/crm',
-        roles: ['owner', 'admin', 'manager'],
+        roles: ['owner', 'admin', 'seller'],
         type: 'internal',
         children: [
             { id: 'live-pulse', label: 'Live Pulse', path: '/crm/live-pulse', icon: 'Activity', roles: ['owner', 'admin'], type: 'internal' },
@@ -78,11 +78,19 @@ export const DEFAULT_MENU_CONFIG: MenuItem[] = [
         ]
     },
     {
+        id: 'sites',
+        label: 'Site Builder',
+        icon: 'Layout',
+        path: '/sites',
+        roles: ['owner', 'admin', 'seller'],
+        type: 'internal'
+    },
+    {
         id: 'settings',
         label: 'Paramètres',
         icon: 'Settings',
         path: '/settings',
-        roles: ['owner', 'admin', 'manager', 'user'],
+        roles: ['owner', 'admin', 'seller', 'client'],
         type: 'internal'
     }
 ];
@@ -91,7 +99,7 @@ export const STORAGE_KEYS = {
     USER: 'app_user',
     SIDEBAR: 'sidebar_state',
     THEME: 'app_theme',
-    MENU_CONFIG: 'menu_config'
+    MENU_CONFIG: 'menu_config_v2'
 };
 
 // Aligning with existing UserRole type

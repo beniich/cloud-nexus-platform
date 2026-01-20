@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS: SettingsState = {
     theme: "light",
     twoFactorAuth: false,
     emailNotifications: true,
+    logoUrl: "",
 };
 
 export function useSettings() {
