@@ -13,11 +13,23 @@ import ProfessionalChat from '@/components/chat/ProfessionalChat';
 
 export default function AppLayout() {
     const [darkMode, setDarkMode] = useLocalStorage(STORAGE_KEYS.THEME, false);
-    // ... existing hooks
+    const { settings } = useSettings();
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    // ... useEffect ...
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [darkMode]);
 
-    // ... handleLogout ...
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     return (
         <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
