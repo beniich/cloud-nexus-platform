@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
     requiredPermissions?: Permission[];
     fallbackPath?: string;
     // Garder la compatibilité avec allowedRoles si nécessaire, ou le supprimer
-    allowedRoles?: any[];
+    allowedRoles?: string[];
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
