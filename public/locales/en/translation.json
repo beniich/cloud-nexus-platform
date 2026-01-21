@@ -251,6 +251,66 @@
             "btn_dashboard": "Access Dashboard"
         }
     },
+    "new_home": {
+        "hero": {
+            "update_badge": "Latest update available v2.4",
+            "title_prefix": "The future of",
+            "title_highlight": "Cloud Computing",
+            "description": "Deploy, manage, and scale your applications with ease. Robust infrastructure designed for ambitious businesses.",
+            "start_free": "Start for Free",
+            "view_services": "View Services",
+            "joined_by": "Joined by +10,000 developers"
+        },
+        "features": {
+            "security": {
+                "title": "Maximum Security",
+                "desc": "End-to-end protection with military-grade encryption and GDPR/HDS compliance."
+            },
+            "performance": {
+                "title": "Lightning Performance",
+                "desc": "Optimized architecture guaranteeing minimal latency and 99.99% availability."
+            },
+            "scalability": {
+                "title": "Infinite Scalability",
+                "desc": "Elastic resources that automatically adapt to your workload."
+            },
+            "why_choose": "Why choose",
+            "why_choose_subtitle": "A platform built for developers, optimized for performance and secure by default.",
+            "learn_more": "Learn more"
+        },
+        "stats": {
+            "availability": "Availability",
+            "clients": "Satisfied Clients",
+            "latency": "Avg Latency",
+            "support": "Tech Support"
+        },
+        "infrastructure": {
+            "title": "Manage your infrastructure",
+            "title_highlight": "without the complexity",
+            "deploy_click": {
+                "title": "1-Click Deployment",
+                "desc": "Connect your Git repo and we handle the rest."
+            },
+            "monitoring": {
+                "title": "Real-time Monitoring",
+                "desc": "Track your app performance to the millisecond."
+            },
+            "support": {
+                "title": "Enterprise Support",
+                "desc": "A team of experts dedicated to your success 24/7."
+            }
+        },
+        "cta": {
+            "title": "Ready to transform your infrastructure?",
+            "subtitle": "Join thousands of developers who trust Cloud Nexus for their critical applications.",
+            "start_trial": "Start Free Trial",
+            "talk_expert": "Talk to an Expert"
+        },
+        "dashboard_preview": {
+            "deployment_success": "Deployment Successful",
+            "server_optimized": "Server Optimized"
+        }
+    },
     "dashboard": {
         "title": "Dashboard",
         "welcome": "Welcome, {{name}}!",

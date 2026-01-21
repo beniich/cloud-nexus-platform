@@ -19,6 +19,8 @@ export interface FormField {
     required: boolean;
     validation?: FormFieldValidation;
     options?: FormFieldOption[];
+    // Form fields can have various default values (string, number, boolean, etc.)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     defaultValue?: any;
     order: number;
     width?: 'full' | 'half' | 'third';
@@ -72,6 +74,8 @@ export interface FormSettings {
 export interface FormSubmission {
     id: string;
     formId: string;
+    // Form submission data is dynamic based on form fields
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: Record<string, any>;
     submittedAt: string;
     ip?: string;

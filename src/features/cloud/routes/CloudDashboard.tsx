@@ -12,6 +12,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/utils';
 import { AuthService } from '../../auth/services/AuthService';
 import { DropletService, DomainService, DatabaseService } from '../services';
@@ -192,9 +193,8 @@ export default function CloudDashboard() {
             <header className="bg-background border-b border-border sticky top-0 z-20 shadow-sm dark:bg-slate-900 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-4">
-                        <Link to="/" className="flex items-center gap-2 group">
-                            <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
-                            {!isSidebarCollapsed && <span className="font-display font-bold text-xl hidden md:block">Cloud Console</span>}
+                        <Link to="/" className="flex items-center gap-2">
+                            {!isSidebarCollapsed && <Logo size="lg" />}
                         </Link>
                         <Button
                             variant="ghost"

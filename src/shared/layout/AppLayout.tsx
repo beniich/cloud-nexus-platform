@@ -5,6 +5,8 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { STORAGE_KEYS } from '@/config/menu';
 import { Search, Bell, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Logo } from '@/components/Logo';
+import { Link } from 'react-router-dom';
 
 export default function AppLayout() {
     const [darkMode, setDarkMode] = useLocalStorage(STORAGE_KEYS.THEME, false);
@@ -34,7 +36,9 @@ export default function AppLayout() {
                         <div className="flex items-center gap-6 flex-1">
                             {/* Logo Wrapper (Optional, kept simple for now) */}
                             <div className="hidden md:block">
-                                <img src="/logo.png" alt="CloudNexus" className="h-8 w-auto" />
+                                <Link to="/">
+                                    <Logo size="sm" />
+                                </Link>
                             </div>
 
                             <div className="relative hidden lg:block w-64">

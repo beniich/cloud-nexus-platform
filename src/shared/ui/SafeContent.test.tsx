@@ -5,7 +5,7 @@ import { SafeContent } from './SafeContent';
 describe('SafeContent', () => {
     it('renders trusted tags correctly', () => {
         const html = '<p>Hello <strong>World</strong></p>';
-        render(<SafeContent html={html} />);
+        render(<SafeContent content={html} />);
         expect(screen.getByText('Hello')).toBeInTheDocument();
         expect(screen.getByText('Hello')).toBeInTheDocument();
         // Check if the 'World' text is inside a strong tag
@@ -15,7 +15,7 @@ describe('SafeContent', () => {
 
     it('strips dangerous scripts', () => {
         const dangerousHtml = '<p>Safe<script>alert("XSS")</script></p>';
-        render(<SafeContent html={dangerousHtml} />);
+        render(<SafeContent content={dangerousHtml} />);
         expect(screen.getByText('Safe')).toBeInTheDocument();
         const script = screen.queryByText('alert("XSS")');
         expect(script).not.toBeInTheDocument();

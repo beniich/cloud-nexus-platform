@@ -44,11 +44,15 @@ export interface TemplateSection {
     type: SectionType;
     title: string;
     order: number;
+    // Section props are dynamic and vary by section type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props: Record<string, any>;
     content: {
         heading?: string;
         subheading?: string;
         text?: string;
+        // Items structure varies by section type (testimonials, products, etc.)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         items?: any[];
         image?: string;
         cta?: {
@@ -56,7 +60,9 @@ export interface TemplateSection {
             link: string;
             style: 'primary' | 'secondary' | 'outline';
         };
-        form?: any; // Using any to avoid circular dependency with forms.types.ts
+        // Using any to avoid circular dependency with forms.types.ts
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        form?: any;
     };
 }
 

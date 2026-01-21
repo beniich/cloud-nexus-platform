@@ -63,6 +63,12 @@ export interface DeploymentStep {
     error?: string;
 }
 
+interface NotificationPayload {
+    type: 'success' | 'failure';
+    message: string;
+    jobId: string;
+}
+
 export class CICDService {
     private pipelines: Map<string, DeploymentPipeline>;
     private jobs: Map<string, DeploymentJob>;
@@ -477,7 +483,7 @@ export class CICDService {
     /**
      * Envoie une notification Slack
      */
-    private async sendSlackNotification(webhookUrl: string, notification: any): Promise<void> {
+    private async sendSlackNotification(webhookUrl: string, notification: NotificationPayload): Promise<void> {
         const color = notification.type === 'success' ? '#10B981' : '#EF4444';
         const emoji = notification.type === 'success' ? '✅' : '❌';
 
@@ -509,7 +515,7 @@ export class CICDService {
     /**
      * Envoie une notification par email
      */
-    private async sendEmailNotification(emails: string[], notification: any): Promise<void> {
+    private async sendEmailNotification(emails: string[], notification: NotificationPayload): Promise<void> {
         console.log('Email notification sent to:', emails);
         console.log('Message:', notification.message);
     }

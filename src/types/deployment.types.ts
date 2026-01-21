@@ -56,8 +56,11 @@ export interface SSLStatus {
     status: 'active' | 'pending' | 'expired' | 'error';
 }
 
+// Import Site and BuildResult types from build.types if needed
 export interface DeploymentProvider {
     name: DeploymentProviderType;
+    // Site and build output can have flexible structures
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     deploy(site: any, buildOutput: any): Promise<DeploymentResult>;
     getStatus(deploymentId: string): Promise<DeploymentResult>;
     rollback(deploymentId: string): Promise<void>;

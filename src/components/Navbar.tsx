@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ShoppingCart, User, Cloud } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
+import { Logo } from '@/components/Logo';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,9 +12,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
-            <span className="font-display font-bold text-xl">Cloud Industrie</span>
+          <Link to="/" className="group">
+            <Logo size="md" />
           </Link>
 
           {/* Desktop Navigation */}

@@ -42,6 +42,8 @@ export interface AIGeneratedSection {
         heading?: string;
         subheading?: string;
         text?: string;
+        // Items can be various structures depending on section type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         items?: any[];
         cta?: {
             text: string;
@@ -75,6 +77,8 @@ export interface AIAssistantMessage {
 export interface AIAction {
     type: 'add_section' | 'modify_section' | 'delete_section' | 'change_theme' | 'update_content' | 'reorder_sections';
     target?: string; // section ID
+    // Action data structure varies by action type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
     description: string;
 }
@@ -82,6 +86,8 @@ export interface AIAction {
 export interface AICommand {
     intent: 'add' | 'modify' | 'delete' | 'change' | 'improve' | 'question';
     entity: 'section' | 'theme' | 'content' | 'layout' | 'seo';
+    // Command details vary by intent and entity
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     details: Record<string, any>;
     confidence: number;
 }
@@ -90,7 +96,10 @@ export interface AssistantContext {
     currentSite: {
         id: string;
         name: string;
+        // Sections and theme have dynamic structures
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         sections: any[];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         theme: any;
     };
     conversationHistory: AIAssistantMessage[];
@@ -165,6 +174,8 @@ export interface AIServiceConfig {
 
 export interface AIResponse {
     success: boolean;
+    // AI response data structure varies by request type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data?: any;
     error?: string;
     usage?: {

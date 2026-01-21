@@ -1,9 +1,13 @@
+// Site section can be any JSON-serializable object structure
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SiteSection = Record<string, any>;
+
 export interface Site {
     id: string;
     name: string;
     domain?: string;
     customDomain?: string;
-    sections: any[];
+    sections: SiteSection[];
     theme: {
         colors: Record<string, string>;
         fonts: Record<string, string>;

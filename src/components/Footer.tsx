@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Cloud, Mail, Phone, MapPin } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 
 export default function Footer() {
   return (
@@ -9,8 +10,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2 group">
-              <Cloud className="w-8 h-8 text-primary group-hover:text-accent transition-colors" />
-              <span className="font-display font-bold text-xl">Cloud Industrie</span>
+              <Logo size="lg" />
             </Link>
             <p className="text-sm text-muted-foreground">
               Solutions digitales et services cloud pour propulser votre entreprise vers l'avenir.

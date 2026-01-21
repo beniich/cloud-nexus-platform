@@ -35,6 +35,11 @@ export enum Permission {
     FILES_VIEW = 'files:view',
     FILES_MANAGE = 'files:manage',
 
+    // Sites (Paid Feature)
+    SITES_VIEW = 'sites:view',
+    SITES_CREATE = 'sites:create',
+    SITES_MANAGE = 'sites:manage',
+
     // CRM
     CRM_VIEW = 'crm:view',
 
@@ -57,12 +62,41 @@ class PermissionService {
      */
     async loadUserPermissions(): Promise<void> {
         try {
-            // Note: Utilisation de apiClient existant temporairement, sera remplacé par secureApi
-            const response = await apiClient.get<{ permissions: Permission[] }>('/auth/permissions');
-            this.userPermissions = new Set(response.data.permissions);
+            // Simulation d'appel API pour les permissions
+            // Dans un cas réel, ceci viendrait du backend basé sur le rôle et l'abonnement
+
+            // On simule des permissions de base pour tous (Plan Gratuit)
+            const basePermissions = [
+                Permission.DASHBOARD_VIEW,
+                Permission.PRODUCTS_VIEW,
+                Permission.CRM_VIEW,
+                Permission.FILES_VIEW, // Cloud spaces accessible
+                Permission.USERS_VIEW // Team view
+            ];
+
+            // On regarde si on a un flag "PREMIUM" dans le localStorage (pour simulation)
+            const isPremium = localStorage.getItem('cnp_simulation_plan') === 'premium';
+
+            const permissions = [...basePermissions];
+
+            if (isPremium) {
+                // Plan Payant : Accès Création Site Web
+                permissions.push(
+                    Permission.SITES_VIEW,
+                    Permission.SITES_CREATE,
+                    Permission.SITES_MANAGE,
+                    Permission.AI_USE_GENERAL,
+                    Permission.AI_USE_CODE
+                );
+            }
+
+            this.userPermissions = new Set(permissions);
+
+            // Fallback API call if exists (commented out for reliable simulation)
+            // const response = await apiClient.get<{ permissions: Permission[] }>('/auth/permissions');
+            // this.userPermissions = new Set(response.data.permissions);
         } catch (error) {
             console.error('Erreur lors du chargement des permissions:', error);
-            // En cas d'erreur ou de mock, on peut définir des permissions par défaut selon le rôle si disponible ailleurs
             this.userPermissions = new Set();
         }
     }

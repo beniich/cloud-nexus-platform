@@ -13,8 +13,16 @@ import { CartProvider } from "./contexts/CartContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { ProductProvider } from "./contexts/ProductContext";
 import { AIProvider } from "./features/ai-assistant/contexts/AIContext";
-import { MockModeBanner } from "./shared/components/MockModeBanner";
-import Index from "./pages/Index";
+
+import HomePage from "./pages/HomePage";
+import Services from "./pages/Services";
+import Pricing from "./pages/Pricing";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
+import Careers from "./pages/Careers";
+import Legal from "./pages/Legal";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import CloudSpaces from "./pages/CloudSpaces";
@@ -25,6 +33,7 @@ import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import CRM from "./pages/CRM";
 import HostingRequest from "./pages/HostingRequest";
+import Checkout from "./pages/Checkout";
 import HeadlessCMS from "./features/cms/HeadlessCMS";
 import ServiceRequestForm from "./features/service-request/ServiceRequestForm";
 import ServiceRequestWizard from "./features/service-request/ServiceRequestWizard";
@@ -41,7 +50,6 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
-          <MockModeBanner />
           <AuthProvider>
             <AIProvider>
               <ProductProvider>
@@ -51,8 +59,16 @@ function App() {
                     <Sonner />
                     <Routes>
                       {/* Public Routes */}
-                      <Route path="/" element={<Index />} />
-                      <Route path="/login" element={<SecureLoginForm />} />
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/services" element={<Services />} />
+                      <Route path="/pricing" element={<Pricing />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/careers" element={<Careers />} />
+                      <Route path="/legal" element={<Legal />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/register" element={<Login />} />
 
                       {/* Protected Routes */}
                       <Route element={<AppLayout />}>
@@ -161,6 +177,14 @@ function App() {
                           }
                         />
                         <Route
+                          path="/checkout"
+                          element={
+                            <ProtectedRoute>
+                              <Checkout />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/invoices/:id"
                           element={
                             <ProtectedRoute>
@@ -171,7 +195,7 @@ function App() {
                         <Route
                           path="/sites"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredPermissions={[Permission.SITES_CREATE]}>
                               <SitesDashboard />
                             </ProtectedRoute>
                           }

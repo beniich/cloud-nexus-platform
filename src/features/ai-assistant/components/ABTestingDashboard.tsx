@@ -323,7 +323,7 @@ const ABTestingDashboard = () => {
     useEffect(() => {
         // Initialize demo data if empty
         const initData = () => {
-            let orgs = localStorage.getItem('organizations');
+            const orgs = localStorage.getItem('organizations');
             let ownerId = '';
             let orgId = '';
 

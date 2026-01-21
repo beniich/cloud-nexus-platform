@@ -64,6 +64,7 @@ export class FormService {
     /**
      * Soumet un formulaire
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async submitForm(formId: string, data: Record<string, any>): Promise<SubmissionResult> {
         const form = await this.getForm(formId);
 
@@ -260,6 +261,7 @@ export class FormService {
     /**
      * Valide une soumission
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private validateSubmission(form: Form, data: Record<string, any>): FieldError[] {
         const errors: FieldError[] = [];
 
@@ -333,7 +335,7 @@ export class FormService {
      * Valide un numéro de téléphone
      */
     private isValidPhone(phone: string): boolean {
-        return /^[+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/.test(phone);
+        return /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/.test(phone);
     }
 
     /**

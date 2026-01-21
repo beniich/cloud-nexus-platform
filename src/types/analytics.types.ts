@@ -92,7 +92,7 @@ export interface AnalyticsEvent {
     };
     sessionId: string;
     visitorId: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
 }
 
 export interface SEOScore {

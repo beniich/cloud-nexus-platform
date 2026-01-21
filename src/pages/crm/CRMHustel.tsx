@@ -1,23 +1,155 @@
-import React, { useState } from 'react';
-import { Users, TrendingUp, DollarSign, Target, Phone, Mail, MapPin, Calendar, Plus, Search, Filter, MoreVertical, Edit, Trash2, Eye, Star, Clock, CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import {
+    Users,
+    TrendingUp,
+    DollarSign,
+    Target,
+    Phone,
+    Mail,
+    MapPin,
+    Calendar,
+    Plus,
+    Search,
+    Filter,
+    MoreVertical,
+    Edit,
+    Trash2,
+    Eye,
+    Star,
+    Clock,
+    CheckCircle,
+    XCircle,
+    AlertCircle,
+    X,
+} from 'lucide-react';
 
-const CRMHustel = () => {
-    const [activeTab, setActiveTab] = useState('leads');
-    const [selectedStage, setSelectedStage] = useState('all');
+// ────────────────────────────────────────────────
+// Types
+// ────────────────────────────────────────────────
+interface Lead {
+    id: number;
+    name: string;
+    company: string;
+    email: string;
+    phone: string;
+    stage: 'new' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
+    value: string;
+    priority: 'high' | 'medium' | 'low';
+    source: string;
+    lastContact: string;
+    tags: string[];
+}
+
+interface Client {
+    id: number;
+    name: string;
+    contact: string;
+    email: string;
+    phone: string;
+    since: string;
+    revenue: string;
+    status: 'active' | 'inactive' | 'pending';
+    plan: string;
+    servers: number;
+    tickets: number;
+}
+
+interface Activity {
+    id: number;
+    type: 'call' | 'email' | 'meeting' | 'note';
+    title: string;
+    lead: string;
+    time: string;
+    icon: React.ElementType;
+    color: string;
+}
+
+interface Stat {
+    label: string;
+    value: string;
+    change: string;
+    icon: React.ElementType;
+    color: 'blue' | 'green' | 'purple' | 'orange' | 'red';
+}
+
+interface PipelineStage {
+    stage: string;
+    label: string;
+    count: number;
+    value: string;
+    color: string;
+}
+
+// ────────────────────────────────────────────────
+// Données (demo)
+// ────────────────────────────────────────────────
+const STATS: Stat[] = [
+    { label: 'Total Leads', value: '2,847', change: '+12.5%', icon: Users, color: 'blue' },
+    { label: 'Conversions', value: '1,234', change: '+8.3%', icon: TrendingUp, color: 'green' },
+    { label: 'Revenus', value: '€458K', change: '+23.1%', icon: DollarSign, color: 'purple' },
+    { label: 'Taux de Conversion', value: '43.3%', change: '+5.2%', icon: Target, color: 'orange' },
+];
+
+const PIPELINE_STAGES: PipelineStage[] = [
+    { stage: 'new', label: 'Nouveaux Leads', count: 24, value: '€360K', color: 'bg-blue-600' },
+    { stage: 'qualified', label: 'Qualifiés', count: 18, value: '€450K', color: 'bg-indigo-600' },
+    { stage: 'proposal', label: 'Propositions', count: 12, value: '€540K', color: 'bg-purple-600' },
+    { stage: 'negotiation', label: 'Négociations', count: 8, value: '€280K', color: 'bg-pink-600' },
+    { stage: 'won', label: 'Gagnés', count: 15, value: '€825K', color: 'bg-green-600' },
+];
+
+const STAGE_LABELS: Record<string, string> = {
+    new: 'Nouveau',
+    qualified: 'Qualifié',
+    proposal: 'Proposition',
+    negotiation: 'Négociation',
+    won: 'Gagné',
+    lost: 'Perdu',
+};
+
+const PRIORITY_LABELS: Record<string, string> = {
+    high: 'Haute',
+    medium: 'Moyenne',
+    low: 'Basse',
+};
+
+// ────────────────────────────────────────────────
+// Styles réutilisables
+// ────────────────────────────────────────────────
+const stageBadgeStyles: Record<string, string> = {
+    new: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
+    qualified: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300',
+    proposal: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300',
+    negotiation: 'bg-pink-100 text-pink-800 dark:bg-pink-900/40 dark:text-pink-300',
+    won: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
+    lost: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
+};
+
+const priorityBadgeStyles: Record<string, string> = {
+    high: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
+    medium: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
+    low: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
+};
+
+const statusBadgeStyles: Record<string, string> = {
+    active: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
+    inactive: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+    pending: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
+};
+
+// ────────────────────────────────────────────────
+// Composant principal
+// ────────────────────────────────────────────────
+export default function CRMHustle() {
+    const [activeTab, setActiveTab] = useState<'leads' | 'clients' | 'activities'>('leads');
+    const [selectedStage, setSelectedStage] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const [modalType, setModalType] = useState('');
-    const [selectedItem, setSelectedItem] = useState<any>(null);
+    const [modalType, setModalType] = useState<'add-lead' | 'edit-lead'>('add-lead');
+    const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
-    // Données de démonstration
-    const stats = [
-        { label: 'Total Leads', value: '2,847', change: '+12.5%', icon: Users, color: 'blue' },
-        { label: 'Conversions', value: '1,234', change: '+8.3%', icon: TrendingUp, color: 'green' },
-        { label: 'Revenus', value: '€458K', change: '+23.1%', icon: DollarSign, color: 'purple' },
-        { label: 'Taux de Conversion', value: '43.3%', change: '+5.2%', icon: Target, color: 'orange' }
-    ];
-
-    const leads = [
+    // ─── Données démo ───
+    const leads = useMemo<Lead[]>(() => [
         {
             id: 1,
             name: 'Sophie Martin',
@@ -29,7 +161,7 @@ const CRMHustel = () => {
             priority: 'high',
             source: 'Website',
             lastContact: '2024-01-10',
-            tags: ['Enterprise', 'SaaS']
+            tags: ['Enterprise', 'SaaS'],
         },
         {
             id: 2,
@@ -83,9 +215,9 @@ const CRMHustel = () => {
             lastContact: '2024-01-08',
             tags: ['E-commerce', 'CDN']
         }
-    ];
+    ], []);
 
-    const clients = [
+    const clients = useMemo<Client[]>(() => [
         {
             id: 1,
             name: 'Global Tech SARL',
@@ -138,17 +270,9 @@ const CRMHustel = () => {
             servers: 18,
             tickets: 5
         }
-    ];
+    ], []);
 
-    const pipeline = [
-        { stage: 'new', label: 'Nouveaux Leads', count: 24, value: '€360K', color: 'bg-blue-500' },
-        { stage: 'qualified', label: 'Qualifiés', count: 18, value: '€450K', color: 'bg-indigo-500' },
-        { stage: 'proposal', label: 'Propositions', count: 12, value: '€540K', color: 'bg-purple-500' },
-        { stage: 'negotiation', label: 'Négociations', count: 8, value: '€280K', color: 'bg-pink-500' },
-        { stage: 'won', label: 'Gagnés', count: 15, value: '€825K', color: 'bg-green-500' }
-    ];
-
-    const activities = [
+    const activities = useMemo<Activity[]>(() => [
         {
             id: 1,
             type: 'call',
@@ -185,215 +309,210 @@ const CRMHustel = () => {
             icon: Edit,
             color: 'text-orange-500'
         }
-    ];
+    ], []);
 
-    const priorityColors: any = {
-        high: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-        medium: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-        low: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-    };
+    const filteredLeads = useMemo(() => {
+        const term = searchTerm.toLowerCase().trim();
+        return leads.filter(
+            (lead) =>
+                (lead.name.toLowerCase().includes(term) || lead.company.toLowerCase().includes(term)) &&
+                (selectedStage === 'all' || lead.stage === selectedStage)
+        );
+    }, [leads, searchTerm, selectedStage]);
 
-    const stageColors: any = {
-        new: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-        qualified: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
-        proposal: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-        negotiation: 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400',
-        won: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-        lost: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-    };
+    const filteredClients = useMemo(() => {
+        const term = searchTerm.toLowerCase().trim();
+        return clients.filter(
+            (client) =>
+                (client.name.toLowerCase().includes(term) || client.contact.toLowerCase().includes(term) || client.email.toLowerCase().includes(term))
+        );
+    }, [clients, searchTerm]);
 
-    const statusColors: any = {
-        active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-        inactive: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
-        pending: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-    };
-
-    const filteredLeads = leads.filter(lead => {
-        const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            lead.company.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStage = selectedStage === 'all' || lead.stage === selectedStage;
-        return matchesSearch && matchesStage;
-    });
-
-    const openModal = (type: any, item: any = null) => {
+    const openLeadModal = (type: 'add-lead' | 'edit-lead', lead?: Lead) => {
         setModalType(type);
-        setSelectedItem(item);
+        setSelectedLead(lead || null);
         setShowModal(true);
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
             {/* Header */}
-            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-                <div className="flex items-center justify-between">
+            <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 sticky top-0 z-10">
+                <div className="flex items-center justify-between max-w-7xl mx-auto">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">CRM Hustel</h1>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm">
-                            Gestion complète des clients et leads
-                        </p>
+                        <h1 className="text-2xl font-bold">CRM Hustle</h1>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Gestion des leads & clients</p>
                     </div>
                     <button
-                        onClick={() => openModal('add-lead')}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        onClick={() => openLeadModal('add-lead')}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm"
                     >
-                        <Plus className="w-5 h-5" />
+                        <Plus size={18} />
                         Nouveau Lead
                     </button>
                 </div>
-            </div>
+            </header>
 
-            <div className="max-w-7xl mx-auto px-6 py-8">
-                {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    {stats.map((stat, idx) => (
-                        <div key={idx} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <main className="max-w-7xl mx-auto px-6 py-8">
+                {/* Statistiques */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    {STATS.map((stat) => (
+                        <div
+                            key={stat.label}
+                            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm"
+                        >
                             <div className="flex items-center justify-between mb-4">
-                                <div className={`w-12 h-12 bg-${stat.color}-100 dark:bg-${stat.color}-900/30 text-${stat.color}-600 dark:text-${stat.color}-400 rounded-lg flex items-center justify-center`}>
-                                    <stat.icon className="w-6 h-6" />
+                                <div
+                                    className={`w-12 h-12 rounded-lg flex items-center justify-center bg-${stat.color}-100 dark:bg-${stat.color}-950/40 text-${stat.color}-600 dark:text-${stat.color}-400`}
+                                >
+                                    <stat.icon size={24} />
                                 </div>
-                                <span className="text-green-500 text-sm font-semibold">{stat.change}</span>
+                                <span className="text-green-600 dark:text-green-400 text-sm font-semibold">{stat.change}</span>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</h3>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm">{stat.label}</p>
+                            <div className="text-3xl font-bold mb-1">{stat.value}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</div>
                         </div>
                     ))}
                 </div>
 
                 {/* Pipeline */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Pipeline de Ventes</h2>
-                    <div className="grid grid-cols-5 gap-4">
-                        {pipeline.map((stage, idx) => (
-                            <div key={idx} className="text-center">
-                                <div className={`${stage.color} text-white rounded-lg p-4 mb-3`}>
-                                    <div className="text-2xl font-bold mb-1">{stage.count}</div>
-                                    <div className="text-sm opacity-90">{stage.label}</div>
+                <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 mb-10 shadow-sm">
+                    <h2 className="text-lg font-semibold mb-5">Pipeline de ventes</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                        {PIPELINE_STAGES.map((s) => (
+                            <div key={s.stage} className="text-center">
+                                <div className={`${s.color} text-white rounded-xl py-4 px-3 mb-3 shadow-sm`}>
+                                    <div className="text-3xl font-bold mb-1">{s.count}</div>
+                                    <div className="text-sm font-medium opacity-95">{s.label}</div>
                                 </div>
-                                <div className="text-lg font-semibold text-gray-900 dark:text-white">{stage.value}</div>
+                                <div className="text-xl font-semibold">{s.value}</div>
                             </div>
                         ))}
                     </div>
-                </div>
+                </section>
 
-                {/* Tabs */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-                    <div className="flex border-b border-gray-200 dark:border-gray-700">
-                        <button
-                            onClick={() => setActiveTab('leads')}
-                            className={`px-6 py-3 font-semibold ${activeTab === 'leads'
-                                    ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
-                                    : 'text-gray-500 dark:text-gray-400'
-                                }`}
-                        >
-                            Leads ({leads.length})
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('clients')}
-                            className={`px-6 py-3 font-semibold ${activeTab === 'clients'
-                                    ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
-                                    : 'text-gray-500 dark:text-gray-400'
-                                }`}
-                        >
-                            Clients ({clients.length})
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('activities')}
-                            className={`px-6 py-3 font-semibold ${activeTab === 'activities'
-                                    ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
-                                    : 'text-gray-500 dark:text-gray-400'
-                                }`}
-                        >
-                            Activités ({activities.length})
-                        </button>
+                {/* Onglets + contenu */}
+                <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+                    <div className="flex border-b border-gray-200 dark:border-gray-800">
+                        {(['leads', 'clients', 'activities'] as const).map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`flex-1 py-3.5 px-6 font-medium text-center transition-colors ${activeTab === tab
+                                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-500'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                                    }`}
+                            >
+                                {tab === 'leads'
+                                    ? `Leads (${leads.length})`
+                                    : tab === 'clients'
+                                        ? `Clients (${clients.length})`
+                                        : `Activités (${activities.length})`}
+                            </button>
+                        ))}
                     </div>
 
                     <div className="p-6">
-                        {/* Search and Filters */}
                         {(activeTab === 'leads' || activeTab === 'clients') && (
-                            <div className="flex gap-4 mb-6">
-                                <div className="flex-1 relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                     <input
-                                        type="text"
-                                        placeholder="Rechercher..."
+                                        type="search"
+                                        placeholder={activeTab === 'leads' ? "Rechercher un lead, une entreprise..." : "Rechercher un client..."}
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"
+                                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                                     />
                                 </div>
+
                                 {activeTab === 'leads' && (
                                     <select
                                         value={selectedStage}
                                         onChange={(e) => setSelectedStage(e.target.value)}
-                                        className="px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"
+                                        className="px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg min-w-[180px]"
                                     >
-                                        <option value="all">Tous les stages</option>
-                                        <option value="new">Nouveaux</option>
-                                        <option value="qualified">Qualifiés</option>
-                                        <option value="proposal">Propositions</option>
-                                        <option value="negotiation">Négociations</option>
-                                        <option value="won">Gagnés</option>
+                                        <option value="all">Tous les stades</option>
+                                        {Object.entries(STAGE_LABELS).map(([value, label]) => (
+                                            <option key={value} value={value}>
+                                                {label}
+                                            </option>
+                                        ))}
                                     </select>
                                 )}
                             </div>
                         )}
 
-                        {/* Leads Table */}
+                        {/* ─── Tableau Leads ─── */}
                         {activeTab === 'leads' && (
                             <div className="overflow-x-auto">
-                                <table className="w-full">
+                                <table className="w-full min-w-[900px]">
                                     <thead>
-                                        <tr className="border-b border-gray-200 dark:border-gray-700">
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Lead</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Contact</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Stage</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Valeur</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Priorité</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Source</th>
-                                            <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Actions</th>
+                                        <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/50">
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Lead</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Contact</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Stade</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Valeur</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Priorité</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Source</th>
+                                            <th className="text-center py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredLeads.map(lead => (
-                                            <tr key={lead.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                        {filteredLeads.map((lead) => (
+                                            <tr
+                                                key={lead.id}
+                                                className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
+                                            >
                                                 <td className="py-4 px-4">
-                                                    <div className="font-semibold text-gray-900 dark:text-white">{lead.name}</div>
+                                                    <div className="font-medium">{lead.name}</div>
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">{lead.company}</div>
                                                 </td>
-                                                <td className="py-4 px-4">
-                                                    <div className="flex flex-col gap-1">
-                                                        <span className="text-sm text-gray-600 dark:text-gray-400">{lead.email}</span>
-                                                        <span className="text-sm text-gray-600 dark:text-gray-400">{lead.phone}</span>
+                                                <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
+                                                    <div className="flex flex-col">
+                                                        <span>{lead.email}</span>
+                                                        <span className="text-xs text-gray-500">{lead.phone}</span>
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-4">
-                                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${stageColors[lead.stage]}`}>
-                                                        {pipeline.find(p => p.stage === lead.stage)?.label}
+                                                    <span
+                                                        className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full ${stageBadgeStyles[lead.stage]}`}
+                                                    >
+                                                        {STAGE_LABELS[lead.stage] ?? lead.stage}
                                                     </span>
                                                 </td>
+                                                <td className="py-4 px-4 font-medium">{lead.value}</td>
                                                 <td className="py-4 px-4">
-                                                    <span className="font-semibold text-gray-900 dark:text-white">{lead.value}</span>
-                                                </td>
-                                                <td className="py-4 px-4">
-                                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${priorityColors[lead.priority]}`}>
-                                                        {lead.priority === 'high' ? 'Haute' : lead.priority === 'medium' ? 'Moyenne' : 'Basse'}
+                                                    <span
+                                                        className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full ${priorityBadgeStyles[lead.priority]}`}
+                                                    >
+                                                        {PRIORITY_LABELS[lead.priority]}
                                                     </span>
                                                 </td>
+                                                <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">{lead.source}</td>
                                                 <td className="py-4 px-4">
-                                                    <span className="text-sm text-gray-600 dark:text-gray-400">{lead.source}</span>
-                                                </td>
-                                                <td className="py-4 px-4">
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <button className="p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded">
-                                                            <Eye className="w-4 h-4" />
+                                                    <div className="flex items-center justify-center gap-1.5">
+                                                        <button
+                                                            title="Voir"
+                                                            aria-label="Voir le lead"
+                                                            className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded"
+                                                        >
+                                                            <Eye size={16} />
                                                         </button>
                                                         <button
-                                                            onClick={() => openModal('edit-lead', lead)}
-                                                            className="p-1 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded">
-                                                            <Edit className="w-4 h-4" />
+                                                            title="Modifier"
+                                                            aria-label="Modifier le lead"
+                                                            onClick={() => openLeadModal('edit-lead', lead)}
+                                                            className="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded"
+                                                        >
+                                                            <Edit size={16} />
                                                         </button>
-                                                        <button className="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded">
-                                                            <Trash2 className="w-4 h-4" />
+                                                        <button
+                                                            title="Supprimer"
+                                                            aria-label="Supprimer le lead"
+                                                            className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded"
+                                                        >
+                                                            <Trash2 size={16} />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -404,60 +523,70 @@ const CRMHustel = () => {
                             </div>
                         )}
 
-                        {/* Clients Table */}
+                        {/* ─── Tableau Clients ─── */}
                         {activeTab === 'clients' && (
                             <div className="overflow-x-auto">
-                                <table className="w-full">
+                                <table className="w-full min-w-[900px]">
                                     <thead>
-                                        <tr className="border-b border-gray-200 dark:border-gray-700">
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Client</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Contact</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Plan</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Revenus</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Serveurs</th>
-                                            <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Statut</th>
-                                            <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Actions</th>
+                                        <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/50">
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Client</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Contact</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Plan</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Revenus</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Serveurs</th>
+                                            <th className="text-left py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Statut</th>
+                                            <th className="text-center py-3.5 px-4 font-semibold text-gray-600 dark:text-gray-300">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {clients.map(client => (
-                                            <tr key={client.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                        {filteredClients.map((client) => (
+                                            <tr
+                                                key={client.id}
+                                                className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
+                                            >
                                                 <td className="py-4 px-4">
-                                                    <div className="font-semibold text-gray-900 dark:text-white">{client.name}</div>
-                                                    <div className="text-sm text-gray-500 dark:text-gray-400">Client depuis {client.since}</div>
+                                                    <div className="font-medium">{client.name}</div>
+                                                    <div className="text-sm text-gray-500 dark:text-gray-400">Depuis {client.since}</div>
                                                 </td>
-                                                <td className="py-4 px-4">
-                                                    <div className="flex flex-col gap-1">
-                                                        <span className="text-sm font-medium text-gray-900 dark:text-white">{client.contact}</span>
-                                                        <span className="text-sm text-gray-600 dark:text-gray-400">{client.email}</span>
+                                                <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium text-gray-900 dark:text-gray-200">{client.contact}</span>
+                                                        <span className="text-xs text-gray-500">{client.email}</span>
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-4">
-                                                    <span className="px-2 py-1 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded text-xs font-semibold">
+                                                    <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">
                                                         {client.plan}
                                                     </span>
                                                 </td>
+                                                <td className="py-4 px-4 font-medium">{client.revenue}</td>
+                                                <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">{client.servers} serveurs</td>
                                                 <td className="py-4 px-4">
-                                                    <span className="font-semibold text-gray-900 dark:text-white">{client.revenue}</span>
-                                                </td>
-                                                <td className="py-4 px-4">
-                                                    <span className="text-sm text-gray-600 dark:text-gray-400">{client.servers} serveurs</span>
-                                                </td>
-                                                <td className="py-4 px-4">
-                                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${statusColors[client.status]}`}>
-                                                        {client.status === 'active' ? 'Actif' : 'Inactif'}
+                                                    <span
+                                                        className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full ${statusBadgeStyles[client.status]}`}
+                                                    >
+                                                        {client.status === 'active' ? 'Actif' : client.status === 'inactive' ? 'Inactif' : 'En attente'}
                                                     </span>
                                                 </td>
                                                 <td className="py-4 px-4">
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <button className="p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded">
-                                                            <Eye className="w-4 h-4" />
+                                                    <div className="flex items-center justify-center gap-1.5">
+                                                        <button
+                                                            title="Voir"
+                                                            className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded"
+                                                        >
+                                                            <Eye size={16} />
                                                         </button>
-                                                        <button className="p-1 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded">
-                                                            <Edit className="w-4 h-4" />
+                                                        <button
+                                                            title="Modifier"
+                                                            className="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded"
+                                                        >
+                                                            <Edit size={16} />
                                                         </button>
-                                                        <button className="p-1 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded">
-                                                            <MoreVertical className="w-4 h-4" />
+                                                        <button
+                                                            title="Plus"
+                                                            className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/30 rounded"
+                                                        >
+                                                            <MoreVertical size={16} />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -468,130 +597,135 @@ const CRMHustel = () => {
                             </div>
                         )}
 
-                        {/* Activities */}
+                        {/* ─── Liste Activités ─── */}
                         {activeTab === 'activities' && (
                             <div className="space-y-4">
                                 {activities.map(activity => (
-                                    <div key={activity.id} className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                        <div className={`p-2 ${activity.color} bg-opacity-10 rounded-lg`}>
-                                            <activity.icon className="w-5 h-5" />
+                                    <div key={activity.id} className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800 rounded-lg hover:border-blue-200 dark:hover:border-blue-900 transition-colors">
+                                        <div className={`p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm ${activity.color}`}>
+                                            <activity.icon size={20} />
                                         </div>
                                         <div className="flex-1">
-                                            <h4 className="font-semibold text-gray-900 dark:text-white">{activity.title}</h4>
+                                            <h4 className="font-semibold text-gray-900 dark:text-gray-100">{activity.title}</h4>
                                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                                Lead: {activity.lead}
+                                                Concerne: <span className="font-medium text-indigo-600 dark:text-indigo-400">{activity.lead}</span>
                                             </p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{activity.time}</p>
+                                            <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                                <Clock size={14} />
+                                                {activity.time}
+                                            </div>
                                         </div>
                                         <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded">
-                                            <MoreVertical className="w-4 h-4" />
+                                            <MoreVertical size={16} />
                                         </button>
                                     </div>
                                 ))}
                             </div>
                         )}
                     </div>
-                </div>
-            </div>
+                </section>
+            </main>
 
-            {/* Modal */}
+            {/* Modal Lead */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                {modalType === 'add-lead' ? 'Nouveau Lead' : 'Modifier Lead'}
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto border border-gray-200 dark:border-gray-800">
+                        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-between z-10">
+                            <h3 className="text-xl font-semibold">
+                                {modalType === 'add-lead' ? 'Nouveau Lead' : 'Modifier le Lead'}
                             </h3>
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                             >
-                                <X className="w-6 h-6" />
+                                <X size={24} className="text-gray-500" />
                             </button>
                         </div>
+
                         <div className="p-6">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
                                         Nom complet
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={selectedItem?.name}
-                                        className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"
+                                        defaultValue={selectedLead?.name}
+                                        className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                                        placeholder="Ex: Jean Dupont"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
                                         Entreprise
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={selectedItem?.company}
-                                        className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"
+                                        defaultValue={selectedLead?.company}
+                                        className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                                        placeholder="Ex: Acme Corp"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
                                         Email
                                     </label>
                                     <input
                                         type="email"
-                                        defaultValue={selectedItem?.email}
-                                        className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"
+                                        defaultValue={selectedLead?.email}
+                                        className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                                        placeholder="jean@example.com"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
                                         Téléphone
                                     </label>
                                     <input
                                         type="tel"
-                                        defaultValue={selectedItem?.phone}
-                                        className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"
+                                        defaultValue={selectedLead?.phone}
+                                        className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                                        placeholder="+33 6 00 00 00 00"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Source
-                                    </label>
-                                    <select className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                                        <option>Site Web</option>
-                                        <option>LinkedIn</option>
-                                        <option>Email</option>
-                                        <option>Téléphone</option>
-                                        <option>Partenaire</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
                                         Priorité
                                     </label>
-                                    <select className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                                        <option>Basse</option>
-                                        <option>Moyenne</option>
-                                        <option>Haute</option>
+                                    <select className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all">
+                                        <option value="low">Basse</option>
+                                        <option value="medium">Moyenne</option>
+                                        <option value="high">Haute</option>
                                     </select>
                                 </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Notes
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-gray-300">
+                                        Source
                                     </label>
-                                    <textarea className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg h-24" />
+                                    <select className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all">
+                                        <option value="website">Site Web</option>
+                                        <option value="linkedin">LinkedIn</option>
+                                        <option value="referral">Recommandation</option>
+                                        <option value="other">Autre</option>
+                                    </select>
                                 </div>
-                            </div>
-                            <div className="mt-8 flex justify-end gap-4">
-                                <button
-                                    onClick={() => setShowModal(false)}
-                                    className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                                >
-                                    Annuler
-                                </button>
-                                <button
-                                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                >
-                                    Enregistrer le Lead
-                                </button>
+
+                                <div className="md:col-span-2 mt-4 flex gap-3">
+                                    <button
+                                        onClick={() => setShowModal(false)}
+                                        className="flex-1 py-2.5 px-5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        Annuler
+                                    </button>
+                                    <button className="flex-1 py-2.5 px-5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm shadow-blue-500/20">
+                                        {modalType === 'add-lead' ? 'Créer le lead' : 'Enregistrer'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -599,6 +733,4 @@ const CRMHustel = () => {
             )}
         </div>
     );
-};
-
-export default CRMHustel;
+}
