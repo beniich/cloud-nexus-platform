@@ -42,7 +42,7 @@ export default function UserManagement() {
     const { data: users = [], isLoading } = useQuery({
         queryKey: ['users'],
         queryFn: async () => {
-            const response = await fetch('http://localhost:3000/users', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/users`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -55,7 +55,7 @@ export default function UserManagement() {
     // Create user mutation
     const createUserMutation = useMutation({
         mutationFn: async (userData: { email: string; name: string; role: string }) => {
-            const response = await fetch('http://localhost:3000/users', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export default function UserManagement() {
     // Update role mutation
     const updateRoleMutation = useMutation({
         mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
-            const response = await fetch(`http://localhost:3000/users/${userId}/role`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/users/${userId}/role`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ export default function UserManagement() {
     // Delete user mutation
     const deleteUserMutation = useMutation({
         mutationFn: async (userId: string) => {
-            const response = await fetch(`http://localhost:3000/users/${userId}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/users/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`

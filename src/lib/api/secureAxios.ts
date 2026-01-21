@@ -10,7 +10,7 @@ class SecureAPIClient {
     private requestQueue: Set<string> = new Set();
 
     // URL de base peut venir de l'env
-    private baseURL = 'http://localhost:3002/api'; // Fallback dev
+    private baseURL = 'http://localhost:4000/api'; // Fallback dev
 
     constructor() {
         this.instance = axios.create({

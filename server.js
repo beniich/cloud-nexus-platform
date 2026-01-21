@@ -18,7 +18,10 @@ const prisma = new PrismaClient();
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-    cors: { origin: process.env.CLIENT_URL || 'http://localhost:3000' }
+    cors: {
+        origin: [process.env.CLIENT_URL || 'http://localhost:3000', 'http://localhost:8080'],
+        credentials: true
+    }
 });
 
 // Session configuration
@@ -84,7 +87,12 @@ passport.use(new GoogleStrategy({
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
+app.use(cors({
+    origin: [process.env.CLIENT_URL || 'http://localhost:3000', 'http://localhost:8080'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'X-CSRF-Token', 'X-Request-ID']
+}));
 app.use(express.json());
 
 // ==================== MIDDLEWARE ====================

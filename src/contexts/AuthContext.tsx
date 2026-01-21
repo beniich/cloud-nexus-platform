@@ -47,7 +47,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(true);
         try {
             // 1. Authentification sécurisée
-            const response = await secureAuth.login(email, password || '');
+            if (import.meta.env.VITE_ENABLE_MOCK !== 'true') {
+                await secureAuth.login(email, password || '');
+            } else {
+                console.info('MOCK MODE: Skipping secureAuth.login');
+                await new Promise(r => setTimeout(r, 500)); // Simulate latency
+            }
 
             // 2. Mise à jour de l'utilisateur
             // Note: secureAuth.login retourne void ou un token dans l'implémentation actuelle,

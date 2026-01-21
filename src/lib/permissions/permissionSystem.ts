@@ -90,6 +90,17 @@ class PermissionService {
                 );
             }
 
+            // AUTO-ADMIN en mode MOCK pour faciliter le dev/démo
+            if (import.meta.env.VITE_ENABLE_MOCK === 'true') {
+                permissions.push(Permission.ADMIN_FULL);
+                // Ajout de toutes les autres pour être sûr
+                Object.values(Permission).forEach(p => {
+                    if (!permissions.includes(p as Permission)) {
+                        permissions.push(p as Permission);
+                    }
+                });
+            }
+
             this.userPermissions = new Set(permissions);
 
             // Fallback API call if exists (commented out for reliable simulation)

@@ -2,7 +2,7 @@ import { cryptoService } from '../../../lib/crypto/encryption';
 import { AIMessage } from '../types/ai.types';
 
 class AIService {
-    private readonly API_URL = import.meta.env.VITE_AI_API_URL || 'http://localhost:3002/api/ai'; // Fallback
+    private readonly API_URL = import.meta.env.VITE_AI_API_URL || 'http://localhost:4000/api/ai'; // Fallback
     private conversationHistory: Map<string, AIMessage[]> = new Map();
 
     // Rate limiting

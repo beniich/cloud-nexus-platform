@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { secureAuth } from '@/lib/auth/secureAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
@@ -8,6 +8,7 @@ import { Eye, EyeOff, Lock, Mail, Loader2 } from 'lucide-react';
 
 export const SecureLoginForm: React.FC = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -64,15 +65,11 @@ export const SecureLoginForm: React.FC = () => {
         setIsLoading(true);
 
         try {
-            await secureAuth.login(formData.email, formData.password);
-            // Force reload to ensure AuthContext picks up the new session immediately if needed, 
-            // or rely on context update if secureAuth triggers an event (not implemented yet, so simple navigate is best if context polls or re-checks)
-            // For now, simple navigate, assuming AuthContext in App checks auth state or we trigger it.
-            // Ideally, calling login() from AuthContext is better, but this component uses secureAuth directly as per snippet.
-            // We will ensure AuthContext exposes a way or checks session on mount/route change.
+            await login(formData.email, formData.password);
             navigate('/dashboard');
-        } catch (err: any) {
-            setError(err.message || 'Erreur de connexion');
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Erreur de connexion';
+            setError(message);
         } finally {
             setIsLoading(false);
         }

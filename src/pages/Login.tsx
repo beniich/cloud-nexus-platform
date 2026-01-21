@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Cloud, Mail, Lock, User, Eye, EyeOff, Github } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/Logo';
 
 const Login = () => {
@@ -31,9 +32,21 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /* New Hook Usage */
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setError(null);
+    try {
+      await login(formData.email, formData.password);
+      navigate('/dashboard');
+    } catch (err) {
+      setError("Échec de la connexion. Vérifiez vos identifiants.");
+      console.error(err);
+    }
   };
 
   return (
@@ -61,6 +74,12 @@ const Login = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Authentification</h2>
             <p className="text-gray-600">Accédez à votre espace Cloud Industrie</p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+              {error}
+            </div>
+          )}
 
           {/* Quick Login Roles - Demo Only */}
           {isLogin && (
