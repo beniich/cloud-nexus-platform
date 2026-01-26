@@ -141,7 +141,7 @@ export default function LivePulseLayout({ children, onNewSignal }: LivePulseLayo
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem>Mon profil</DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/">Retour à Cloud Industrie</Link>
+                <Link to="/">Retour à Cloud Nexus</Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="text-destructive">Déconnexion</DropdownMenuItem>
             </DropdownMenuContent>

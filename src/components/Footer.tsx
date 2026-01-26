@@ -87,7 +87,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Cloud Industrie. Tous droits réservés.</p>
+          <p>&copy; {new Date().getFullYear()} Cloud Nexus. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

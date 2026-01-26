@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Server as ServerIcon, Plus, Search, Filter, MoreVertical, Power, PowerOff, RefreshCw, Trash2, Edit, Activity, Cpu, HardDrive, Wifi, AlertCircle, CheckCircle, Clock, Database, Globe, Lock } from 'lucide-react';
+import { Server as ServerIcon, Plus, Search, Filter, MoreVertical, Power, PowerOff, RefreshCw, Trash2, Edit, Activity, Cpu, HardDrive, Wifi, AlertCircle, CheckCircle, Clock, Database, Globe, Lock, Terminal, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { DropletService } from '../../features/cloud/services/DropletService';
+import { toast } from 'sonner';
 
 // ============================================
-// DONNÉES INITIALES
+// DONNÉES & INTERFACES
 // ============================================
 
 interface ServerData {
     id: string;
     name: string;
     ip: string;
-    status: 'running' | 'stopped' | 'maintenance' | 'error';
+    status: 'running' | 'stopped' | 'maintenance' | 'error' | 'archive' | 'new';
     provider: string;
     region: string;
     os: string;
@@ -24,81 +27,6 @@ interface ServerData {
     tags: string[];
 }
 
-const INITIAL_SERVERS: ServerData[] = [
-    {
-        id: 'srv-001',
-        name: 'Production Web Server',
-        ip: '192.168.1.100',
-        status: 'running',
-        provider: 'DigitalOcean',
-        region: 'NYC3',
-        os: 'Ubuntu 22.04',
-        cpu: '4 vCPUs',
-        ram: '8 GB',
-        storage: '160 GB SSD',
-        bandwidth: '5 TB',
-        uptime: '99.99%',
-        lastBackup: '2025-01-12 08:30',
-        createdAt: '2024-12-01',
-        monthlyPrice: 48,
-        tags: ['production', 'web', 'critical']
-    },
-    {
-        id: 'srv-002',
-        name: 'Database Server',
-        ip: '192.168.1.101',
-        status: 'running',
-        provider: 'DigitalOcean',
-        region: 'NYC3',
-        os: 'Ubuntu 22.04',
-        cpu: '8 vCPUs',
-        ram: '16 GB',
-        storage: '320 GB SSD',
-        bandwidth: '6 TB',
-        uptime: '99.95%',
-        lastBackup: '2025-01-12 06:00',
-        createdAt: '2024-11-15',
-        monthlyPrice: 96,
-        tags: ['production', 'database']
-    },
-    {
-        id: 'srv-003',
-        name: 'Development Server',
-        ip: '192.168.1.102',
-        status: 'stopped',
-        provider: 'DigitalOcean',
-        region: 'NYC3',
-        os: 'Ubuntu 22.04',
-        cpu: '2 vCPUs',
-        ram: '4 GB',
-        storage: '80 GB SSD',
-        bandwidth: '4 TB',
-        uptime: '98.50%',
-        lastBackup: '2025-01-11 22:00',
-        createdAt: '2024-12-10',
-        monthlyPrice: 24,
-        tags: ['development', 'testing']
-    },
-    {
-        id: 'srv-004',
-        name: 'Staging Server',
-        ip: '192.168.1.103',
-        status: 'running',
-        provider: 'DigitalOcean',
-        region: 'NYC3',
-        os: 'Ubuntu 22.04',
-        cpu: '4 vCPUs',
-        ram: '8 GB',
-        storage: '160 GB SSD',
-        bandwidth: '5 TB',
-        uptime: '99.80%',
-        lastBackup: '2025-01-12 04:00',
-        createdAt: '2024-11-20',
-        monthlyPrice: 48,
-        tags: ['staging', 'testing']
-    }
-];
-
 const SERVER_PROVIDERS = ['DigitalOcean', 'AWS', 'Google Cloud', 'Azure', 'Linode'];
 const SERVER_REGIONS = ['NYC3', 'SFO3', 'AMS3', 'SGP1', 'LON1', 'FRA1'];
 const OS_OPTIONS = ['Ubuntu 22.04', 'Ubuntu 20.04', 'Debian 11', 'CentOS 8', 'Fedora 37'];
@@ -110,22 +38,35 @@ const OS_OPTIONS = ['Ubuntu 22.04', 'Ubuntu 20.04', 'Debian 11', 'CentOS 8', 'Fe
 interface ServerCardProps {
     server: ServerData;
     onAction: (action: string, server: ServerData) => void;
+    isProcessing?: boolean;
 }
 
-function ServerCard({ server, onAction }: ServerCardProps) {
+function ServerCard({ server, onAction, isProcessing }: ServerCardProps) {
     const [showMenu, setShowMenu] = useState(false);
 
     const statusConfig: Record<string, { color: string; icon: React.ElementType; label: string }> = {
         running: { color: 'green', icon: CheckCircle, label: 'En ligne' },
+        active: { color: 'green', icon: CheckCircle, label: 'En ligne' }, // API uses 'active' sometimes or 'running'
         stopped: { color: 'red', icon: PowerOff, label: 'Arrêté' },
+        off: { color: 'red', icon: PowerOff, label: 'Arrêté' },
         maintenance: { color: 'yellow', icon: Clock, label: 'Maintenance' },
-        error: { color: 'red', icon: AlertCircle, label: 'Erreur' }
+        error: { color: 'red', icon: AlertCircle, label: 'Erreur' },
+        archive: { color: 'gray', icon: Database, label: 'Archivé' },
+        new: { color: 'blue', icon: Activity, label: 'Création...' }
     };
 
-    const status = statusConfig[server.status] || statusConfig.running;
+    // Fallback for unknown status
+    const normalizedStatus = server.status === 'active' ? 'running' : (server.status === 'off' ? 'stopped' : server.status);
+    const status = statusConfig[normalizedStatus] || statusConfig.error;
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all border border-gray-200 dark:border-gray-700 relative">
+            {isProcessing && (
+                <div className="absolute inset-0 bg-white/50 dark:bg-gray-800/50 z-20 flex items-center justify-center rounded-xl backdrop-blur-sm">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -134,7 +75,7 @@ function ServerCard({ server, onAction }: ServerCardProps) {
                     </div>
                     <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white">{server.name}</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{server.ip}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{server.ip || 'IP en attente...'}</p>
                     </div>
                 </div>
 
@@ -149,6 +90,13 @@ function ServerCard({ server, onAction }: ServerCardProps) {
                     {showMenu && (
                         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-10">
                             <button
+                                onClick={() => { onAction('terminal', server); setShowMenu(false); }}
+                                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-blue-600 dark:text-blue-400"
+                            >
+                                <Terminal className="w-4 h-4" />
+                                Terminal
+                            </button>
+                            <button
                                 onClick={() => { onAction('edit', server); setShowMenu(false); }}
                                 className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                             >
@@ -156,11 +104,11 @@ function ServerCard({ server, onAction }: ServerCardProps) {
                                 Modifier
                             </button>
                             <button
-                                onClick={() => { onAction(server.status === 'running' ? 'stop' : 'start', server); setShowMenu(false); }}
+                                onClick={() => { onAction(normalizedStatus === 'running' ? 'stop' : 'start', server); setShowMenu(false); }}
                                 className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                             >
-                                {server.status === 'running' ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4" />}
-                                {server.status === 'running' ? 'Arrêter' : 'Démarrer'}
+                                {normalizedStatus === 'running' ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4" />}
+                                {normalizedStatus === 'running' ? 'Arrêter' : 'Démarrer'}
                             </button>
                             <button
                                 onClick={() => { onAction('restart', server); setShowMenu(false); }}
@@ -169,6 +117,7 @@ function ServerCard({ server, onAction }: ServerCardProps) {
                                 <RefreshCw className="w-4 h-4" />
                                 Redémarrer
                             </button>
+                            <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
                             <button
                                 onClick={() => { onAction('delete', server); setShowMenu(false); }}
                                 className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
@@ -210,7 +159,7 @@ function ServerCard({ server, onAction }: ServerCardProps) {
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-4">
-                {server.tags.map(tag => (
+                {server.tags && server.tags.map(tag => (
                     <span key={tag} className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded-full">
                         {tag}
                     </span>
@@ -235,39 +184,31 @@ interface CreateServerModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: Partial<ServerData>) => void;
+    isSubmitting?: boolean;
+    initialData?: ServerData | null;
+    mode?: 'create' | 'edit';
 }
 
-function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps) {
+function CreateServerModal({ isOpen, onClose, onSubmit, isSubmitting, initialData, mode = 'create' }: CreateServerModalProps) {
     const [formData, setFormData] = useState({
-        name: '',
-        provider: 'DigitalOcean',
-        region: 'NYC3',
-        os: 'Ubuntu 22.04',
-        cpu: '2 vCPUs',
-        ram: '4 GB',
-        storage: '80 GB SSD',
-        tags: [] as string[]
+        name: initialData?.name || '',
+        provider: initialData?.provider || 'DigitalOcean',
+        region: initialData?.region || 'NYC3',
+        os: initialData?.os || 'Ubuntu 22.04',
+        cpu: initialData?.cpu || '2v-4gb',
+        ram: initialData?.ram || '4 GB',
+        storage: initialData?.storage || '80 GB SSD',
+        tags: initialData?.tags || [] as string[]
     });
 
     const [tagInput, setTagInput] = useState('');
 
     const handleSubmit = () => {
         if (!formData.name) {
-            alert('Le nom du serveur est requis');
+            toast.error('Le nom du serveur est requis');
             return;
         }
         onSubmit(formData);
-        onClose();
-        setFormData({
-            name: '',
-            provider: 'DigitalOcean',
-            region: 'NYC3',
-            os: 'Ubuntu 22.04',
-            cpu: '2 vCPUs',
-            ram: '4 GB',
-            storage: '80 GB SSD',
-            tags: []
-        });
     };
 
     const addTag = () => {
@@ -287,8 +228,10 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Créer un nouveau serveur</h2>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {mode === 'create' ? 'Créer un nouveau serveur' : 'Modifier le serveur'}
+                    </h2>
+                    <button onClick={onClose} disabled={isSubmitting} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                         <Power className="w-5 h-5" />
                     </button>
                 </div>
@@ -305,111 +248,83 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
                             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                             placeholder="ex: Production Web Server"
+                            disabled={isSubmitting}
                         />
                     </div>
 
-                    {/* Provider et Région */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Fournisseur
-                            </label>
-                            <select
-                                value={formData.provider}
-                                onChange={(e) => setFormData(prev => ({ ...prev, provider: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                            >
-                                {SERVER_PROVIDERS.map(p => (
-                                    <option key={p} value={p}>{p}</option>
-                                ))}
-                            </select>
-                        </div>
+                    {mode === 'create' && (
+                        <>
+                            {/* Provider et Région */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Fournisseur
+                                    </label>
+                                    <select
+                                        value={formData.provider}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, provider: e.target.value }))}
+                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                        disabled={isSubmitting}
+                                    >
+                                        {SERVER_PROVIDERS.map(p => (
+                                            <option key={p} value={p}>{p}</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Région
-                            </label>
-                            <select
-                                value={formData.region}
-                                onChange={(e) => setFormData(prev => ({ ...prev, region: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                            >
-                                {SERVER_REGIONS.map(r => (
-                                    <option key={r} value={r}>{r}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Région
+                                    </label>
+                                    <select
+                                        value={formData.region}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, region: e.target.value }))}
+                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                        disabled={isSubmitting}
+                                    >
+                                        {SERVER_REGIONS.map(r => (
+                                            <option key={r} value={r}>{r}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
 
-                    {/* OS */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Système d'exploitation
-                        </label>
-                        <select
-                            value={formData.os}
-                            onChange={(e) => setFormData(prev => ({ ...prev, os: e.target.value }))}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                        >
-                            {OS_OPTIONS.map(os => (
-                                <option key={os} value={os}>{os}</option>
-                            ))}
-                        </select>
-                    </div>
+                            {/* OS */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Système d'exploitation
+                                </label>
+                                <select
+                                    value={formData.os}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, os: e.target.value }))}
+                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                    disabled={isSubmitting}
+                                >
+                                    {OS_OPTIONS.map(os => (
+                                        <option key={os} value={os}>{os}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                    {/* Spécifications */}
-                    <div className="grid grid-cols-3 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                CPU
-                            </label>
-                            <select
-                                value={formData.cpu}
-                                onChange={(e) => setFormData(prev => ({ ...prev, cpu: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                            >
-                                <option>1 vCPU</option>
-                                <option>2 vCPUs</option>
-                                <option>4 vCPUs</option>
-                                <option>8 vCPUs</option>
-                                <option>16 vCPUs</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                RAM
-                            </label>
-                            <select
-                                value={formData.ram}
-                                onChange={(e) => setFormData(prev => ({ ...prev, ram: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                            >
-                                <option>2 GB</option>
-                                <option>4 GB</option>
-                                <option>8 GB</option>
-                                <option>16 GB</option>
-                                <option>32 GB</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Stockage
-                            </label>
-                            <select
-                                value={formData.storage}
-                                onChange={(e) => setFormData(prev => ({ ...prev, storage: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                            >
-                                <option>50 GB SSD</option>
-                                <option>80 GB SSD</option>
-                                <option>160 GB SSD</option>
-                                <option>320 GB SSD</option>
-                                <option>640 GB SSD</option>
-                            </select>
-                        </div>
-                    </div>
+                            {/* Spécifications (Simplifié pour l'exemple) */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Configuration (Size)
+                                </label>
+                                <select
+                                    value={formData.cpu}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, cpu: e.target.value }))}
+                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                    disabled={isSubmitting}
+                                >
+                                    <option value="s-1vcpu-1gb">1 vCPU / 1 GB RAM / 25 GB Disk ($6/mo)</option>
+                                    <option value="s-1vcpu-2gb">1 vCPU / 2 GB RAM / 50 GB Disk ($12/mo)</option>
+                                    <option value="s-2vcpu-2gb">2 vCPUs / 2 GB RAM / 60 GB Disk ($18/mo)</option>
+                                    <option value="s-2vcpu-4gb">2 vCPUs / 4 GB RAM / 80 GB Disk ($24/mo)</option>
+                                </select>
+                            </div>
+                        </>
+                    )}
 
                     {/* Tags */}
                     <div>
@@ -424,10 +339,12 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
                                 onKeyPress={(e) => e.key === 'Enter' && addTag()}
                                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                 placeholder="Ajouter un tag..."
+                                disabled={isSubmitting}
                             />
                             <button
                                 onClick={addTag}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                disabled={isSubmitting}
+                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
                             >
                                 Ajouter
                             </button>
@@ -446,15 +363,24 @@ function CreateServerModal({ isOpen, onClose, onSubmit }: CreateServerModalProps
                     <div className="flex gap-3 pt-4">
                         <button
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            disabled={isSubmitting}
+                            className="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                         >
                             Annuler
                         </button>
                         <button
                             onClick={handleSubmit}
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
+                            disabled={isSubmitting}
+                            className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-50"
                         >
-                            Créer le serveur
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                    {mode === 'create' ? 'Création...' : 'Enregistrement...'}
+                                </>
+                            ) : (
+                                mode === 'create' ? 'Créer le serveur' : 'Enregistrer'
+                            )}
                         </button>
                     </div>
                 </div>
@@ -472,72 +398,96 @@ interface ServersManagementProps {
 }
 
 export default function ServersManagement({ role = 'admin' }: ServersManagementProps) {
-    const [servers, setServers] = useState<ServerData[]>(INITIAL_SERVERS);
+    const navigate = useNavigate();
+    const [servers, setServers] = useState<ServerData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
-    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [serverToEdit, setServerToEdit] = useState<ServerData | null>(null);
 
-    const filteredServers = servers.filter(server => {
-        const matchesSearch = server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            server.ip.includes(searchQuery);
-        const matchesStatus = filterStatus === 'all' || server.status === filterStatus;
-        return matchesSearch && matchesStatus;
-    });
+    // ... existing loadServers ...
 
-    const handleServerAction = (action: string, server: ServerData) => {
-        switch (action) {
-            case 'start':
-                setServers(prev => prev.map(s =>
-                    s.id === server.id ? { ...s, status: 'running' } : s
-                ));
-                break;
-            case 'stop':
-                setServers(prev => prev.map(s =>
-                    s.id === server.id ? { ...s, status: 'stopped' } : s
-                ));
-                break;
-            case 'restart':
-                setServers(prev => prev.map(s =>
-                    s.id === server.id ? { ...s, status: 'running' } : s
-                ));
-                break;
-            case 'delete':
-                if (confirm(`Supprimer le serveur ${server.name} ?`)) {
-                    setServers(prev => prev.filter(s => s.id !== server.id));
-                }
-                break;
-            case 'edit':
-                console.log('Edit server:', server);
-                break;
+    const handleServerAction = async (action: string, server: ServerData) => {
+        setProcessingServerId(server.id);
+
+        try {
+            switch (action) {
+                case 'terminal':
+                    navigate(`/servers/${server.id}/terminal`);
+                    break;
+                case 'start':
+                case 'restart':
+                    await DropletService.reboot(server.id);
+                    toast.success('Redémarrage du serveur initié...');
+                    setTimeout(loadServers, 5000);
+                    break;
+                case 'stop':
+                    toast.info('Arrêt non supporté via cette API pour le moment');
+                    break;
+                case 'delete':
+                    if (confirm(`Êtes-vous sûr de vouloir SUPPRIMER le serveur ${server.name} ? Cette action est irréversible.`)) {
+                        await DropletService.delete(server.id);
+                        toast.success('Serveur supprimé avec succès');
+                        setServers(prev => prev.filter(s => s.id !== server.id));
+                    }
+                    break;
+                case 'edit':
+                    setServerToEdit(server);
+                    setShowEditModal(true);
+                    break;
+            }
+        } catch (err: any) {
+            console.error('Erreur action serveur:', err);
+            toast.error(`Erreur: ${err.message || 'Action échouée'}`);
+        } finally {
+            setProcessingServerId(null);
         }
     };
 
-    const handleCreateServer = (formData: Partial<ServerData>) => {
-        const newServer: ServerData = {
-            id: `srv-${Date.now()}`,
-            name: formData.name || 'Server',
-            ip: `192.168.1.${100 + servers.length}`,
-            status: 'running',
-            provider: formData.provider || 'DigitalOcean',
-            region: formData.region || 'NYC3',
-            os: formData.os || 'Ubuntu 22.04',
-            cpu: formData.cpu || '2 vCPUs',
-            ram: formData.ram || '4 GB',
-            storage: formData.storage || '80 GB SSD',
-            bandwidth: formData.bandwidth || '4 TB',
-            uptime: '100%',
-            lastBackup: new Date().toISOString().slice(0, 16).replace('T', ' '),
-            createdAt: new Date().toISOString().split('T')[0],
-            monthlyPrice: 24,
-            tags: formData.tags || []
-        };
-        setServers(prev => [...prev, newServer]);
+    const handleEditServer = async (formData: Partial<ServerData>) => {
+        if (!serverToEdit) return;
+        setIsSubmitting(true);
+        try {
+            // Mock update since API might not have rename
+            // await DropletService.update(serverToEdit.id, formData); 
+            // For now, assume success and update local state
+            toast.success(`Serveur renommé en "${formData.name}" (Simulation)`);
+
+            setServers(prev => prev.map(s =>
+                s.id === serverToEdit.id ? { ...s, ...formData } : s
+            ));
+            setShowEditModal(false);
+            setServerToEdit(null);
+        } catch (err: any) {
+            toast.error(`Erreur modification: ${err.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+    // ... existing code ...
+
+    {/* Edit Modal */ }
+    {
+        showEditModal && serverToEdit && (
+            <CreateServerModal
+                isOpen={showEditModal}
+                onClose={() => { setShowEditModal(false); setServerToEdit(null); }}
+                onSubmit={handleEditServer}
+                isSubmitting={isSubmitting}
+                initialData={serverToEdit}
+                mode="edit"
+            />
+        )
+    }
+
 
     const stats = {
         total: servers.length,
-        running: servers.filter(s => s.status === 'running').length,
-        stopped: servers.filter(s => s.status === 'stopped').length,
+        running: servers.filter(s => s.status === 'running' || s.status === 'active').length,
+        stopped: servers.filter(s => s.status === 'stopped' || s.status === 'off').length,
         totalCost: servers.reduce((acc, s) => acc + s.monthlyPrice, 0)
     };
 
@@ -570,7 +520,7 @@ export default function ServersManagement({ role = 'admin' }: ServersManagementP
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Total Serveurs</p>
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white">{isLoading ? '-' : stats.total}</p>
                         </div>
                         <ServerIcon className="w-10 h-10 text-blue-500" />
                     </div>
@@ -580,7 +530,7 @@ export default function ServersManagement({ role = 'admin' }: ServersManagementP
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">En ligne</p>
-                            <p className="text-3xl font-bold text-green-600">{stats.running}</p>
+                            <p className="text-3xl font-bold text-green-600">{isLoading ? '-' : stats.running}</p>
                         </div>
                         <CheckCircle className="w-10 h-10 text-green-500" />
                     </div>
@@ -590,7 +540,7 @@ export default function ServersManagement({ role = 'admin' }: ServersManagementP
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Arrêtés</p>
-                            <p className="text-3xl font-bold text-red-600">{stats.stopped}</p>
+                            <p className="text-3xl font-bold text-red-600">{isLoading ? '-' : stats.stopped}</p>
                         </div>
                         <PowerOff className="w-10 h-10 text-red-500" />
                     </div>
@@ -600,7 +550,7 @@ export default function ServersManagement({ role = 'admin' }: ServersManagementP
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Coût mensuel</p>
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">${stats.totalCost}</p>
+                            <p className="text-3xl font-bold text-gray-900 dark:text-white">${isLoading ? '-' : stats.totalCost}</p>
                         </div>
                         <Activity className="w-10 h-10 text-purple-500" />
                     </div>
@@ -633,22 +583,50 @@ export default function ServersManagement({ role = 'admin' }: ServersManagementP
                         <option value="stopped">Arrêtés</option>
                         <option value="maintenance">Maintenance</option>
                     </select>
+
+                    <button
+                        onClick={() => loadServers()}
+                        className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Rafraîchir"
+                    >
+                        <RefreshCw className={`w-5 h-5 text-gray-600 dark:text-gray-400 ${isLoading ? 'animate-spin' : ''}`} />
+                    </button>
                 </div>
             </div>
 
+            {/* Loading State */}
+            {isLoading && servers.length === 0 && (
+                <div className="text-center py-24">
+                    <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
+                    <p className="text-gray-500">Chargement de vos serveurs...</p>
+                </div>
+            )}
+
+            {/* Error State */}
+            {!isLoading && error && (
+                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 p-6 rounded-xl flex items-center justify-center gap-4">
+                    <AlertCircle className="w-6 h-6" />
+                    <p>{error}</p>
+                    <button onClick={() => loadServers()} className="underline hover:no-underline font-semibold">Réessayer</button>
+                </div>
+            )}
+
             {/* Servers Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredServers.map(server => (
-                    <ServerCard
-                        key={server.id}
-                        server={server}
-                        onAction={handleServerAction}
-                    />
-                ))}
-            </div>
+            {!isLoading && !error && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredServers.map(server => (
+                        <ServerCard
+                            key={server.id}
+                            server={server}
+                            onAction={handleServerAction}
+                            isProcessing={processingServerId === server.id}
+                        />
+                    ))}
+                </div>
+            )}
 
             {/* Empty State */}
-            {filteredServers.length === 0 && (
+            {!isLoading && !error && filteredServers.length === 0 && (
                 <div className="text-center py-12">
                     <ServerIcon className="w-16 h-16 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
                     <p className="text-gray-500 dark:text-gray-400">
@@ -662,6 +640,7 @@ export default function ServersManagement({ role = 'admin' }: ServersManagementP
                 isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
                 onSubmit={handleCreateServer}
+                isSubmitting={isSubmitting}
             />
         </div>
     );

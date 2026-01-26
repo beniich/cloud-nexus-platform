@@ -24,7 +24,7 @@ export const InvoiceTemplate = React.forwardRef<HTMLDivElement, InvoiceTemplateP
                         <Cloud className="w-8 h-8" strokeWidth={1.5} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Cloud Industrie</h1>
+                        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Cloud Nexus</h1>
                         <p className="text-slate-500 text-sm">Solutions Digitales & Cloud</p>
                     </div>
                 </div>
@@ -40,7 +40,7 @@ export const InvoiceTemplate = React.forwardRef<HTMLDivElement, InvoiceTemplateP
                 <div>
                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Émetteur</h3>
                     <address className="not-italic text-sm text-slate-600 leading-relaxed">
-                        <strong className="text-slate-900 block mb-1">Cloud Industrie SAS</strong>
+                        <strong className="text-slate-900 block mb-1">Cloud Nexus SAS</strong>
                         123 Avenue de l'Innovation<br />
                         75001 Paris, France<br />
                         SIRET: 888 888 888 00012<br />

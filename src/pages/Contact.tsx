@@ -3,7 +3,10 @@ import { Cloud, Mail, Phone, MapPin, Send, CheckCircle, Clock, MessageSquare, He
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 
+import { useTranslation } from 'react-i18next';
+
 const Contact = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -30,54 +33,54 @@ const Contact = () => {
   const contactMethods = [
     {
       icon: <Mail className="w-6 h-6" />,
-      title: "Email",
+      title: t('contactPage.methods.email.title'),
       value: "contact@cloudnexus.com",
-      description: "Réponse sous 24h"
+      description: t('contactPage.methods.email.desc')
     },
     {
       icon: <Phone className="w-6 h-6" />,
-      title: "Téléphone",
+      title: t('contactPage.methods.phone.title'),
       value: "+33 1 23 45 67 89",
-      description: "Lun-Ven 9h-18h"
+      description: t('contactPage.methods.phone.desc')
     },
     {
       icon: <MessageSquare className="w-6 h-6" />,
-      title: "Chat en direct",
-      value: "Disponible maintenant",
-      description: "Réponse immédiate"
+      title: t('contactPage.methods.chat.title'),
+      value: t('contactPage.methods.chat.value'),
+      description: t('contactPage.methods.chat.desc')
     },
     {
       icon: <MapPin className="w-6 h-6" />,
-      title: "Adresse",
+      title: t('contactPage.methods.address.title'),
       value: "123 Avenue des Champs-Élysées",
       description: "75008 Paris, France"
     }
   ];
 
   const subjects = [
-    { value: 'general', label: 'Question générale' },
-    { value: 'sales', label: 'Ventes & Devis' },
-    { value: 'support', label: 'Support technique' },
-    { value: 'partnership', label: 'Partenariat' },
-    { value: 'billing', label: 'Facturation' },
-    { value: 'other', label: 'Autre' }
+    { value: 'general', label: t('contactPage.form.subjects.general') },
+    { value: 'sales', label: t('contactPage.form.subjects.sales') },
+    { value: 'support', label: t('contactPage.form.subjects.support') },
+    { value: 'partnership', label: t('contactPage.form.subjects.partnership') },
+    { value: 'billing', label: t('contactPage.form.subjects.billing') },
+    { value: 'other', label: t('contactPage.form.subjects.other') }
   ];
 
   const reasons = [
     {
       icon: <Headphones className="w-12 h-12" />,
-      title: "Support Expert",
-      description: "Notre équipe technique répond à toutes vos questions"
+      title: t('contactPage.reasons.expert.title'),
+      description: t('contactPage.reasons.expert.desc')
     },
     {
       icon: <Clock className="w-12 h-12" />,
-      title: "Réponse Rapide",
-      description: "Nous nous engageons à répondre sous 24h maximum"
+      title: t('contactPage.reasons.fast.title'),
+      description: t('contactPage.reasons.fast.desc')
     },
     {
       icon: <CheckCircle className="w-12 h-12" />,
-      title: "Solutions Sur Mesure",
-      description: "Des recommandations adaptées à vos besoins"
+      title: t('contactPage.reasons.custom.title'),
+      description: t('contactPage.reasons.custom.desc')
     }
   ];
 
@@ -91,12 +94,12 @@ const Contact = () => {
               <Logo size="lg" />
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Accueil</Link>
-              <Link to="/services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Services</Link>
-              <Link to="/pricing" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Tarifs</Link>
-              <Link to="/contact" className="text-orange-600 font-semibold">Contact</Link>
+              <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.home')}</Link>
+              <Link to="/services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.services')}</Link>
+              <Link to="/pricing" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.pricing')}</Link>
+              <Link to="/contact" className="text-orange-600 font-semibold">{t('navbar.contact')}</Link>
               <button className="px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-medium">
-                Démarrer
+                {t('contactPage.nav.start')}
               </button>
             </div>
           </div>
@@ -108,15 +111,15 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-6xl font-bold mb-6">
             <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-              Contactez
+              {t('contactPage.hero.titlePrefix')}
             </span>
             <br />
             <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-              Notre Équipe
+              {t('contactPage.hero.titleSuffix')}
             </span>
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Une question ? Un projet ? Notre équipe est là pour vous accompagner dans votre transformation digitale.
+            {t('contactPage.hero.desc')}
           </p>
         </div>
       </section>
@@ -145,22 +148,22 @@ const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div className="bg-white/80 backdrop-blur-sm border border-orange-200 rounded-3xl p-8 shadow-xl">
-              <h2 className="text-3xl font-bold mb-6 text-slate-800">Envoyez-nous un message</h2>
+              <h2 className="text-3xl font-bold mb-6 text-slate-800">{t('contactPage.form.title')}</h2>
 
               {submitted ? (
                 <div className="py-12 text-center">
                   <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="w-12 h-12 text-green-500" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-800 mb-3">Message envoyé !</h3>
+                  <h3 className="text-2xl font-bold text-slate-800 mb-3">{t('contactPage.form.success.title')}</h3>
                   <p className="text-slate-600 mb-6">
-                    Nous avons bien reçu votre message et nous vous répondrons dans les plus brefs délais.
+                    {t('contactPage.form.success.message')}
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
                     className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg font-medium hover:shadow-lg transition-all"
                   >
-                    Envoyer un autre message
+                    {t('contactPage.form.success.button')}
                   </button>
                 </div>
               ) : (
@@ -168,7 +171,7 @@ const Contact = () => {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-slate-700 font-medium mb-2">
-                        Nom complet *
+                        {t('contactPage.form.labels.name')} *
                       </label>
                       <input
                         type="text"
@@ -177,12 +180,12 @@ const Contact = () => {
                         onChange={handleChange}
                         required
                         className="w-full px-4 py-3 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all"
-                        placeholder="John Doe"
+                        placeholder={t('contactPage.form.placeholders.name')}
                       />
                     </div>
                     <div>
                       <label className="block text-slate-700 font-medium mb-2">
-                        Email *
+                        {t('contactPage.form.labels.email')} *
                       </label>
                       <input
                         type="email"
@@ -191,14 +194,14 @@ const Contact = () => {
                         onChange={handleChange}
                         required
                         className="w-full px-4 py-3 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all"
-                        placeholder="john@exemple.com"
+                        placeholder={t('contactPage.form.placeholders.email')}
                       />
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-slate-700 font-medium mb-2">
-                      Entreprise
+                      {t('contactPage.form.labels.company')}
                     </label>
                     <input
                       type="text"
@@ -206,13 +209,13 @@ const Contact = () => {
                       value={formData.company}
                       onChange={handleChange}
                       className="w-full px-4 py-3 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all"
-                      placeholder="Votre entreprise"
+                      placeholder={t('contactPage.form.placeholders.company')}
                     />
                   </div>
 
                   <div>
                     <label className="block text-slate-700 font-medium mb-2">
-                      Sujet *
+                      {t('contactPage.form.labels.subject')} *
                     </label>
                     <select
                       name="subject"
@@ -231,7 +234,7 @@ const Contact = () => {
 
                   <div>
                     <label className="block text-slate-700 font-medium mb-2">
-                      Message *
+                      {t('contactPage.form.labels.message')} *
                     </label>
                     <textarea
                       name="message"
@@ -240,7 +243,7 @@ const Contact = () => {
                       required
                       rows={6}
                       className="w-full px-4 py-3 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all resize-none"
-                      placeholder="Décrivez votre projet ou votre question..."
+                      placeholder={t('contactPage.form.placeholders.message')}
                     />
                   </div>
 
@@ -248,12 +251,12 @@ const Contact = () => {
                     type="submit"
                     className="w-full py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg font-semibold text-lg hover:shadow-xl hover:shadow-orange-400/50 transition-all flex items-center justify-center gap-2 group"
                   >
-                    Envoyer le message
+                    {t('contactPage.form.button')}
                     <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </button>
 
                   <p className="text-slate-600 text-sm text-center">
-                    En soumettant ce formulaire, vous acceptez notre politique de confidentialité.
+                    {t('contactPage.form.privacy')}
                   </p>
                 </form>
               )}
@@ -263,7 +266,7 @@ const Contact = () => {
             <div className="space-y-8">
               {/* Why Contact Us */}
               <div className="bg-white/80 backdrop-blur-sm border border-orange-200 rounded-3xl p-8 shadow-xl">
-                <h3 className="text-2xl font-bold mb-6 text-slate-800">Pourquoi nous contacter ?</h3>
+                <h3 className="text-2xl font-bold mb-6 text-slate-800">{t('contactPage.reasons.title')}</h3>
                 <div className="space-y-6">
                   {reasons.map((reason, idx) => (
                     <div key={idx} className="flex gap-4">
@@ -281,24 +284,24 @@ const Contact = () => {
 
               {/* Office Hours */}
               <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl p-8 shadow-2xl text-white">
-                <h3 className="text-2xl font-bold mb-6">Horaires d'ouverture</h3>
+                <h3 className="text-2xl font-bold mb-6">{t('contactPage.hours.title')}</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between pb-3 border-b border-white/30">
-                    <span className="font-medium">Lundi - Vendredi</span>
+                    <span className="font-medium">{t('contactPage.hours.weekdays')}</span>
                     <span className="font-bold">9h00 - 18h00</span>
                   </div>
                   <div className="flex justify-between pb-3 border-b border-white/30">
-                    <span className="font-medium">Samedi</span>
+                    <span className="font-medium">{t('contactPage.hours.saturday')}</span>
                     <span className="font-bold">10h00 - 16h00</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium">Dimanche</span>
-                    <span className="font-bold">Fermé</span>
+                    <span className="font-medium">{t('contactPage.hours.sunday')}</span>
+                    <span className="font-bold">{t('contactPage.hours.closed')}</span>
                   </div>
                 </div>
                 <div className="mt-6 p-4 bg-white/20 backdrop-blur-sm rounded-xl">
                   <p className="text-sm">
-                    ⚡ Support d'urgence disponible 24/7 pour les clients Enterprise
+                    {t('contactPage.hours.emergency')}
                   </p>
                 </div>
               </div>
@@ -323,17 +326,17 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto">
           <div className="bg-orange-100 border border-orange-200 rounded-3xl p-8 text-center">
             <h3 className="text-2xl font-bold text-slate-800 mb-4">
-              Vous n'avez pas trouvé la réponse à votre question ?
+              {t('contactPage.faq.title')}
             </h3>
             <p className="text-slate-600 mb-6">
-              Consultez notre centre d'aide ou notre FAQ pour trouver rapidement des réponses
+              {t('contactPage.faq.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-6 py-3 bg-white text-orange-600 rounded-lg font-semibold hover:shadow-lg transition-all border border-orange-200">
-                Centre d'aide
+                {t('contactPage.faq.helpCenter')}
               </button>
               <button className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all">
-                Consulter la FAQ
+                {t('contactPage.faq.faqButton')}
               </button>
             </div>
           </div>
@@ -343,7 +346,7 @@ const Contact = () => {
       {/* Footer */}
       <footer className="border-t border-orange-200 py-12 px-6 bg-white/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto text-center text-slate-600">
-          <p>© 2025 Cloud Nexus Platform. Tous droits réservés.</p>
+          <p>© 2025 Cloud Nexus Platform. {t('footer.allRightsReserved')}</p>
         </div>
       </footer>
     </div>

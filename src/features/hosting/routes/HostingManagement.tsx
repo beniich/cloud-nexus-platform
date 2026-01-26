@@ -33,7 +33,7 @@ const HostingManagement: React.FC = () => {
     return (
         <div className="min-h-screen bg-background">
             <Helmet>
-                <title>Hébergement Cloud Premium | Cloud Industrie</title>
+                <title>Hébergement Cloud Premium | Cloud Nexus</title>
                 <meta name="description" content="Découvrez nos plans d'hébergement cloud haute performance. Serveurs NVMe, uptime 99.9%, support 24/7 et configurations sur mesure." />
             </Helmet>
 

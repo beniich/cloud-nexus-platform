@@ -11,6 +11,7 @@ interface SecureAuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password?: string) => Promise<void>;
+    register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
     logout: () => Promise<void>;
     hasPermission: (permission: Permission) => boolean;
 }
@@ -84,6 +85,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const register = async (email: string, password: string, firstName: string, lastName: string) => {
+        setIsLoading(true);
+        try {
+            if (import.meta.env.VITE_ENABLE_MOCK !== 'true') {
+                await secureAuth.register(email, password, firstName, lastName);
+                // Auto-login after register
+                await secureAuth.login(email, password);
+            } else {
+                console.info('MOCK MODE: Skipping secureAuth.register');
+                await new Promise(r => setTimeout(r, 500));
+            }
+
+            const mockUser: User = {
+                id: Math.random().toString(36).substring(2, 9),
+                email,
+                name: `${firstName} ${lastName}`,
+                role: 'owner',
+                teamId: 'team-1'
+            };
+            setUser(mockUser);
+            await permissionService.loadUserPermissions();
+
+            toast.success(t('auth.registerSuccess', 'Inscription réussie'));
+        } catch (error: any) {
+            console.error('Register error:', error);
+            toast.error(error.message || t('auth.registerError', "Echec de l'inscription"));
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const logout = async () => {
         try {
             await secureAuth.logout();
@@ -106,6 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             isAuthenticated: !!user,
             isLoading,
             login,
+            register,
             logout,
             hasPermission
         }}>

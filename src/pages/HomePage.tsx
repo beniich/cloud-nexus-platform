@@ -44,24 +44,36 @@ const HomePage = () => {
             {/* Navbar with floating effect */}
             {/* Navbar with floating effect */}
 
-            // ... (inside the component return)
 
-            <nav className={`fixed w-full z-50 transition-all duration-300 ${scrollY > 50 ? 'bg-white/90 backdrop-blur-md shadow-lg py-4' : 'bg-transparent py-6'}`}>
-                <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-                    <Link to="/" className="flex items-center gap-2">
-                        <Logo size="md" variant={scrollY > 50 ? 'light' : 'light'} />
-                    </Link>
 
-                    <div className="hidden md:flex items-center gap-8">
-                        <Link to="/" className="text-slate-600 hover:text-orange-600 font-medium transition-colors">Home</Link>
-                        <Link to="/services" className="text-slate-600 hover:text-orange-600 font-medium transition-colors">Services</Link>
-                        <Link to="/pricing" className="text-slate-600 hover:text-orange-600 font-medium transition-colors">Pricing</Link>
-                        <Link to="/about" className="text-slate-600 hover:text-orange-600 font-medium transition-colors">About</Link>
-                        <Link to="/contact" className="px-5 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium">
-                            Contact
+            <nav className={`fixed w-full z-50 transition-all duration-300 ${scrollY > 50 ? 'bg-white/90 backdrop-blur-md shadow-lg py-2' : 'bg-transparent py-4'}`}>
+                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative">
+                    {/* Left: Logo & Phrase */}
+                    <div className="flex items-center gap-6">
+                        <Link to="/" className="flex items-center gap-2">
+                            <Logo size="md" variant={scrollY > 50 ? 'light' : 'light'} />
                         </Link>
-                        <Link to="/login" className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 font-medium">
-                            Client Area
+                        <div className="hidden xl:block w-px h-8 bg-slate-200"></div>
+                        <span className="hidden xl:block text-xs font-medium text-slate-500 max-w-[150px] leading-tight">
+                            Solutions digitales et services cloud
+                        </span>
+                    </div>
+
+                    {/* Center: Navigation Links */}
+                    <div className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <Link to="/" className="text-sm text-slate-600 hover:text-orange-600 font-medium transition-colors">{t('navbar.home')}</Link>
+                        <Link to="/services" className="text-sm text-slate-600 hover:text-orange-600 font-medium transition-colors">{t('navbar.services')}</Link>
+                        <Link to="/pricing" className="text-sm text-slate-600 hover:text-orange-600 font-medium transition-colors">{t('navbar.pricing')}</Link>
+                        <Link to="/about" className="text-sm text-slate-600 hover:text-orange-600 font-medium transition-colors">{t('navbar.about')}</Link>
+                    </div>
+
+                    {/* Right: CTA Buttons */}
+                    <div className="hidden md:flex items-center gap-4">
+                        <Link to="/contact" className="px-5 py-2 text-sm bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium">
+                            {t('navbar.contact')}
+                        </Link>
+                        <Link to="/login" className="px-5 py-2 text-sm bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 font-medium">
+                            {t('navbar.clientArea')}
                         </Link>
                     </div>
                 </div>
@@ -317,22 +329,22 @@ const HomePage = () => {
                         </div>
 
                         <div>
-                            <h4 className="font-bold text-slate-900 mb-6">Product</h4>
+                            <h4 className="font-bold text-slate-900 mb-6">{t('footer.product')}</h4>
                             <ul className="space-y-4 text-slate-600">
-                                <li><Link to="/services" className="hover:text-orange-600 transition-colors">Services</Link></li>
-                                <li><Link to="/pricing" className="hover:text-orange-600 transition-colors">Pricing</Link></li>
+                                <li><Link to="/services" className="hover:text-orange-600 transition-colors">{t('navbar.services')}</Link></li>
+                                <li><Link to="/pricing" className="hover:text-orange-600 transition-colors">{t('navbar.pricing')}</Link></li>
                                 <li><Link to="/careers" className="hover:text-orange-600 transition-colors">{t('footer.careers')}</Link></li>
-                                <li><Link to="/blog" className="hover:text-orange-600 transition-colors">Blog</Link></li>
+                                <li><Link to="/blog" className="hover:text-orange-600 transition-colors">{t('footer.blog')}</Link></li>
                             </ul>
                         </div>
 
                         <div>
                             <h4 className="font-bold text-slate-900 mb-6">{t('footer.legal')}</h4>
                             <ul className="space-y-4 text-slate-600">
-                                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">Legal Notice</Link></li>
+                                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('footer.legalNotice')}</Link></li>
                                 <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('footer.privacy')}</Link></li>
                                 <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('footer.terms')}</Link></li>
-                                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">Security</Link></li>
+                                <li><Link to="/legal" className="hover:text-orange-600 transition-colors">{t('footer.security')}</Link></li>
                             </ul>
                         </div>
 

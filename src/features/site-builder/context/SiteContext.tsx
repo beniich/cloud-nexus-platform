@@ -67,7 +67,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const publishSite = async (siteId: string) => {
-        updateSite(siteId, { status: 'published', url: `https://site-${siteId.slice(0, 8)}.lovable.app` });
+        updateSite(siteId, { status: 'published', url: `https://site-${siteId.slice(0, 8)}.cloudnexus.app` });
     };
 
     const reorderSections = (siteId: string, sections: any[]) => {

@@ -42,8 +42,26 @@ import AdminOrdersValidation from "./pages/admin/AdminOrdersValidation";
 import InvoiceView from "./pages/InvoiceView";
 import SitesDashboard from "./features/site-builder/SitesDashboard";
 import ABTestingDashboard from "./features/ai-assistant/components/ABTestingDashboard";
+import TestParallax from "./pages/TestParallax";
 
 const queryClient = new QueryClient();
+
+// Imports updated
+import ModernLogin from "./features/auth/components/ModernLogin";
+import Storefront from "./features/billing/Storefront";
+import Marketplace from "./features/billing/Marketplace";
+import InvoiceTemplate from "./features/billing/InvoiceTemplate";
+import ProductInventory from "./features/products/ProductInventory";
+import UserManagement from "./features/users/UserManagement";
+import AIChatInterface from "./features/ai-assistant/AIChatInterface";
+import AIDesignOverlay from "./features/ai-assistant/AIDesignOverlay";
+import SiteEditor from "./features/site-builder/SiteEditor";
+import TemplateGallery from "./features/site-builder/TemplateGallery";
+import APIKeysManager from "./features/settings/APIKeysManager";
+import UserProfile from "./features/settings/UserProfile";
+import ServerTerminal from "./components/dashboard/ServerTerminal";
+
+// ... existing imports ...
 
 function App() {
   return (
@@ -67,8 +85,14 @@ function App() {
                       <Route path="/blog" element={<Blog />} />
                       <Route path="/careers" element={<Careers />} />
                       <Route path="/legal" element={<Legal />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/register" element={<Login />} />
+                      <Route path="/login" element={<ModernLogin />} />
+                      <Route path="/register" element={<ModernLogin />} />
+                      <Route path="/test-parallax" element={<TestParallax />} />
+
+                      {/* New Public/Standalone Routes (for demo purposes) */}
+                      <Route path="/store" element={<Storefront />} />
+                      <Route path="/invoice-demo" element={<InvoiceTemplate />} />
+                      <Route path="/chat-demo" element={<AIChatInterface />} />
 
                       {/* Protected Routes */}
                       <Route element={<AppLayout />}>
@@ -80,6 +104,83 @@ function App() {
                             </ProtectedRoute>
                           }
                         />
+                        {/* ... existing protected routes ... */}
+
+                        {/* New Integrated Routes */}
+                        <Route
+                          path="/marketplace"
+                          element={
+                            <ProtectedRoute>
+                              <Marketplace />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/servers/:id/terminal"
+                          element={
+                            <ProtectedRoute>
+                              <ServerTerminal />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/inventory"
+                          element={
+                            <ProtectedRoute>
+                              <ProductInventory />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/api-keys"
+                          element={
+                            <ProtectedRoute>
+                              <APIKeysManager />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/profile"
+                          element={
+                            <ProtectedRoute>
+                              <UserProfile />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/users"
+                          element={
+                            <ProtectedRoute requiredPermissions={[Permission.USERS_VIEW]}>
+                              <UserManagement />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/site-builder/editor"
+                          element={
+                            <ProtectedRoute>
+                              <SiteEditor />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/site-builder/templates"
+                          element={
+                            <ProtectedRoute>
+                              <TemplateGallery />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/ai-chat"
+                          element={
+                            <ProtectedRoute>
+                              <AIChatInterface />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        {/* Existing Routes Mapped */}
                         <Route
                           path="/cloud-spaces/*"
                           element={
@@ -153,14 +254,6 @@ function App() {
                           }
                         />
                         <Route
-                          path="/users"
-                          element={
-                            <ProtectedRoute requiredPermissions={[Permission.USERS_VIEW]}>
-                              <Users />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
                           path="/analytics"
                           element={
                             <ProtectedRoute requiredPermissions={[Permission.ANALYTICS_VIEW]}>
@@ -208,7 +301,6 @@ function App() {
                             </ProtectedRoute>
                           }
                         />
-
                         <Route
                           path="/settings"
                           element={

@@ -41,7 +41,7 @@ export const ExecutiveSlide = React.forwardRef<HTMLDivElement, ExecutiveSlidePro
                 </div>
                 <div className="flex items-center gap-2 text-primary">
                     <Cloud className="w-8 h-8" />
-                    <span className="font-bold text-xl tracking-tight">Cloud Industrie</span>
+                    <span className="font-bold text-xl tracking-tight">Cloud Nexus</span>
                 </div>
             </header>
 

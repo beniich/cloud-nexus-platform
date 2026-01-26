@@ -57,6 +57,7 @@
         "home": "Home",
         "dashboard": "Dashboard",
         "shop": "Shop",
+        "pricing": "Pricing",
         "services": "Services",
         "products": "Products",
         "contact": "Contact",
@@ -67,59 +68,436 @@
         "notifications": "Notifications",
         "cms": "CMS",
         "hosting": "Hosting",
-        "customOffer": "Custom Offer"
+        "customOffer": "Custom Offer",
+        "about": "About",
+        "clientArea": "Client Area"
     },
     "servicesPage": {
         "title": "Our Services",
-        "subtitle": "Complete solutions to accelerate your digital transformation and optimize your IT infrastructure",
-        "items": {
-            "cloudInfrastructure": {
-                "title": "Cloud Infrastructure",
-                "desc": "Migrate your infrastructure to the cloud with our scalable and secure solutions."
+        "subtitle": "Complete Cloud Solutions",
+        "desc": "Powerful and flexible cloud solutions to propel your business to digital success",
+        "categories": {
+            "all": "All Services",
+            "infrastructure": "Infrastructure",
+            "development": "Development",
+            "security": "Security",
+            "data": "Data"
+        },
+        "services": {
+            "cloudHosting": {
+                "title": "Cloud Hosting",
+                "desc": "High-performance cloud hosting with 99.9% uptime guarantee",
+                "features": [
+                    "Ultra-fast SSD Servers",
+                    "Automatic Scaling",
+                    "Global CDN Included",
+                    "Daily Auto Backup",
+                    "24/7 Support"
+                ]
             },
-            "digitalTransformation": {
-                "title": "Digital Transformation",
-                "desc": "Complete support in your digital transition."
+            "dedicatedServers": {
+                "title": "Dedicated Servers",
+                "desc": "Customizable dedicated servers for maximum performance",
+                "features": [
+                    "100% Dedicated Resources",
+                    "Custom Configuration",
+                    "Full Root Access",
+                    "RAID for Data Security",
+                    "Dedicated IP"
+                ]
             },
-            "cybersecurity": {
-                "title": "Cybersecurity",
-                "desc": "Advanced protection against cyber threats."
+            "siteBuilder": {
+                "title": "Site Builder",
+                "desc": "Create professional sites without coding with our AI editor",
+                "features": [
+                    "Intuitive Drag & Drop Editor",
+                    "100+ Premium Templates",
+                    "AI Content Generation",
+                    "Auto-optimized SEO",
+                    "Responsive Design"
+                ]
             },
-            "cloudBackup": {
-                "title": "Cloud Backup",
-                "desc": "Automated and secure backup solutions."
+            "apiManagement": {
+                "title": "API Management",
+                "desc": "Manage and secure your APIs with our complete platform",
+                "features": [
+                    "High Performance API Gateway",
+                    "Advanced Authentication",
+                    "Rate Limiting & Throttling",
+                    "Real-time Analytics",
+                    "Auto Documentation"
+                ]
             },
-            "devops": {
-                "title": "DevOps & CI/CD",
-                "desc": "Optimize your development and deployment processes."
+            "databases": {
+                "title": "Databases",
+                "desc": "Managed and optimized database solutions",
+                "features": [
+                    "PostgreSQL, MySQL, MongoDB",
+                    "Automatic Replication",
+                    "Continuous Backups",
+                    "Vertical & Horizontal Scaling",
+                    "Advanced Monitoring"
+                ]
             },
-            "consulting": {
-                "title": "IT Consulting",
-                "desc": "Technical and strategic expertise for your IT projects."
+            "objectStorage": {
+                "title": "Object Storage",
+                "desc": "Unlimited storage for your files and media",
+                "features": [
+                    "99.99% Durability",
+                    "S3 Compatible",
+                    "Integrated CDN",
+                    "File Versioning",
+                    "Auto Encryption"
+                ]
+            },
+            "ddosProtection": {
+                "title": "DDoS Protection",
+                "desc": "Advanced protection against DDoS attacks",
+                "features": [
+                    "Real-time Detection",
+                    "Auto Mitigation",
+                    "Up to 10 Tbps Protection",
+                    "Threat Analytics",
+                    "Free SSL Certificates"
+                ]
+            },
+            "managedFirewall": {
+                "title": "Managed Firewall",
+                "desc": "Intelligent firewall with customizable rules",
+                "features": [
+                    "Custom Rules",
+                    "IP Whitelisting/Blacklisting",
+                    "WAF Protection",
+                    "Detailed Logs",
+                    "Instant Alerts"
+                ]
+            },
+            "loadBalancing": {
+                "title": "Load Balancing",
+                "desc": "Intelligent load distribution across your servers",
+                "features": [
+                    "Multiple Algorithms",
+                    "Auto Health Checks",
+                    "SSL/TLS Termination",
+                    "Session Persistence",
+                    "Geo-routing"
+                ]
+            },
+            "analytics": {
+                "title": "Analytics & Monitoring",
+                "desc": "Complete monitoring of your infrastructure",
+                "features": [
+                    "Real-time Metrics",
+                    "Customizable Alerts",
+                    "Interactive Dashboards",
+                    "Centralized Logs",
+                    "Auto Reports"
+                ]
+            },
+            "serverless": {
+                "title": "Serverless Functions",
+                "desc": "Run code without managing servers",
+                "features": [
+                    "Instant Auto-scaling",
+                    "Per-millisecond Billing",
+                    "Multi-language Support",
+                    "Integrated Git Deployment",
+                    "Edge Computing"
+                ]
+            },
+            "cdn": {
+                "title": "Global CDN",
+                "desc": "Ultra-fast content delivery network",
+                "features": [
+                    "150+ Points of Presence",
+                    "Smart Cache",
+                    "Auto Compression",
+                    "HTTP/3 & QUIC",
+                    "Real-time Purging"
+                ]
             }
         },
+        "pricing": {
+            "from": "From {{price}}",
+            "perMonth": "/month",
+            "perGbMonth": "€0.02/GB/month",
+            "payAsYouGo": "Pay-as-you-go",
+            "unit": "€"
+        },
+        "labels": {
+            "popular": "Popular",
+            "price": "Price",
+            "choose": "Choose"
+        },
         "cta": {
-            "title": "Need a custom service?",
-            "subtitle": "Contact our team to discuss your specific needs",
+            "title": "Need a custom solution?",
+            "subtitle": "Our team of experts is here to design a custom infrastructure tailored to your needs",
             "button": "Contact Us"
         }
     },
-    "shopPage": {
-        "title": "Shop",
-        "subtitle": "Professional hardware and equipment for your IT infrastructure",
-        "filters": {
-            "category": "Category",
-            "allCategories": "All categories",
-            "sortBy": "Sort by",
-            "popularity": "Popularity",
-            "priceAsc": "Price ascending",
-            "priceDesc": "Price descending",
-            "name": "Name"
+    "aboutPage": {
+        "hero": {
+            "badge": "Our Story",
+            "title": "Democratizing access to",
+            "titleHighlight": "Tomorrow's Cloud",
+            "desc": "Founded in 2023, Cloud Nexus was born from a simple vision: to make cloud power accessible to all businesses, with unmatched simplicity and security.",
+            "cta": "View our openings"
         },
-        "productsCount": "{{count}} product",
-        "productsCount_other": "{{count}} products",
-        "noProducts": "No products available in this category."
+        "stats": {
+            "clients": "Active Clients",
+            "countries": "Countries",
+            "team": "Team Members",
+            "uptime": "Uptime"
+        },
+        "values": {
+            "title": "Our Values",
+            "subtitle": "What guides us daily to serve our clients and build our products.",
+            "innovation": {
+                "title": "Innovation",
+                "desc": "We constantly push the boundaries of cloud technology."
+            },
+            "engagement": {
+                "title": "Client Engagement",
+                "desc": "Your success is our absolute priority."
+            },
+            "transparency": {
+                "title": "Transparency",
+                "desc": "Clear and honest communication at every step."
+            },
+            "sustainability": {
+                "title": "Sustainability",
+                "desc": "Commitment to eco-responsible cloud computing."
+            }
+        },
+        "team": {
+            "title": "Leadership Team",
+            "subtitle": "Experts passionate about technological innovation."
+        },
+        "nav": {
+            "join": "Join Us",
+            "pricing": "Pricing",
+            "services": "Services",
+            "about": "About",
+            "contact": "Contact",
+            "home": "Home"
+        },
+        "cert": {
+            "title": "Certified Excellence",
+            "desc": "ISO 27001 & HDS"
+        }
     },
+    "pricingPage": {
+        "hero": {
+            "title": "Simple Pricing",
+            "titleHighlight": "and Transparent",
+            "subtitle": "Choose the plan that fits your needs. Change or cancel anytime."
+        },
+        "toggle": {
+            "monthly": "Monthly",
+            "yearly": "Yearly",
+            "discount": "Save {{amount}}€"
+        },
+        "plans": {
+            "starter": {
+                "name": "Starter",
+                "desc": "For small projects and personal sites",
+                "cta": "Start",
+                "features": {
+                    "site": "1 website",
+                    "storage": "10 GB storage",
+                    "bandwidth": "100 GB bandwidth",
+                    "ssl": "Free SSL",
+                    "support": "Email support",
+                    "backup": "Weekly backup",
+                    "cdn": "Basic CDN",
+                    "domain": "Custom domain",
+                    "priority": "Priority support"
+                }
+            },
+            "professional": {
+                "name": "Professional",
+                "desc": "For growing businesses",
+                "cta": "14-day free trial",
+                "features": {
+                    "sites": "5 websites",
+                    "storage": "50 GB storage",
+                    "bandwidth": "500 GB bandwidth",
+                    "emailChat": "Email & chat support",
+                    "backup": "Daily backup",
+                    "cdn": "Global CDN",
+                    "domains": "3 custom domains",
+                    "staging": "Staging environment",
+                    "analytics": "Advanced analytics"
+                }
+            },
+            "enterprise": {
+                "name": "Enterprise",
+                "desc": "For large organizations",
+                "cta": "Contact Us",
+                "features": {
+                    "unlimited": "Unlimited websites",
+                    "storage": "500 GB storage",
+                    "bandwidth": "Unlimited bandwidth",
+                    "support": "24/7 priority support",
+                    "realtime": "Real-time backup",
+                    "cdn": "Premium CDN",
+                    "domains": "Unlimited domains",
+                    "manager": "Dedicated account manager",
+                    "envs": "Multiple environments",
+                    "analytics": "Enterprise analytics",
+                    "sla": "99.99% SLA",
+                    "whiteLabel": "White label"
+                }
+            }
+        },
+        "addons": {
+            "title": "Additional Options",
+            "subtitle": "Customize your plan with our add-ons",
+            "items": {
+                "domain": "Domain .com",
+                "storage": "Additional Storage",
+                "email": "Professional Email",
+                "ddos": "DDoS Protection",
+                "backup": "Premium Backup",
+                "monitoring": "Advanced Monitoring"
+            }
+        },
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "subtitle": "Everything you need to know about our pricing",
+            "items": {
+                "changePlan": {
+                    "q": "Can I change my plan anytime?",
+                    "a": "Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately and we prorate the cost."
+                },
+                "refund": {
+                    "q": "Do you offer a money-back guarantee?",
+                    "a": "Absolutely! We offer a 30-day money-back guarantee on all plans. If you are not satisfied, we will refund you in full."
+                },
+                "payment": {
+                    "q": "What payment methods do you accept?",
+                    "a": "We accept credit cards (Visa, Mastercard, Amex), PayPal, and bank transfers for Enterprise plans."
+                },
+                "hiddenFees": {
+                    "q": "Are there hidden fees?",
+                    "a": "No, our prices are transparent. The only possible additional cost would be the optional add-ons you choose to add."
+                },
+                "limits": {
+                    "q": "What happens if I exceed my limits?",
+                    "a": "We notify you by email before you reach your limits. You can then upgrade your plan or purchase additional resources."
+                },
+                "nonprofit": {
+                    "q": "Do you offer discounts for non-profits?",
+                    "a": "Yes! We offer 50% discounts for non-profit organizations and open source projects. Contact us for more information."
+                }
+            }
+        },
+        "cta": {
+            "title": "Need a custom plan?",
+            "subtitle": "Contact our sales team for a custom offer tailored to your specific needs",
+            "button": "Chat with an expert"
+        }
+    },
+    "contactPage": {
+        "hero": {
+            "titlePrefix": "Contact",
+            "titleSuffix": "Our Team",
+            "desc": "A question? A project? Our team is here to support you in your digital transformation."
+        },
+        "nav": {
+            "start": "Start"
+        },
+        "methods": {
+            "email": {
+                "title": "Email",
+                "desc": "Response within 24h"
+            },
+            "phone": {
+                "title": "Phone",
+                "desc": "Mon-Fri 9am-6pm"
+            },
+            "chat": {
+                "title": "Live Chat",
+                "value": "Available now",
+                "desc": "Immediate response"
+            },
+            "address": {
+                "title": "Address"
+            }
+        },
+        "form": {
+            "title": "Send us a message",
+            "labels": {
+                "name": "Full Name",
+                "email": "Email",
+                "company": "Company",
+                "subject": "Subject",
+                "message": "Message"
+            },
+            "placeholders": {
+                "name": "John Doe",
+                "email": "john@example.com",
+                "company": "Your company",
+                "message": "Describe your project or question..."
+            },
+            "subjects": {
+                "general": "General Inquiry",
+                "sales": "Sales & Quotes",
+                "support": "Technical Support",
+                "partnership": "Partnership",
+                "billing": "Billing",
+                "other": "Other"
+            },
+            "button": "Send Message",
+            "privacy": "By submitting this form, you agree to our privacy policy.",
+            "success": {
+                "title": "Message Sent!",
+                "message": "We have received your message and will respond as soon as possible.",
+                "button": "Send another message"
+            }
+        },
+        "reasons": {
+            "title": "Why contact us?",
+            "expert": {
+                "title": "Expert Support",
+                "desc": "Our technical team answers all your questions"
+            },
+            "fast": {
+                "title": "Fast Response",
+                "desc": "We commit to answering within 24h maximum"
+            },
+            "custom": {
+                "title": "Custom Solutions",
+                "desc": "Recommendations adapted to your needs"
+            }
+        },
+        "hours": {
+            "title": "Opening Hours",
+            "weekdays": "Monday - Friday",
+            "saturday": "Saturday",
+            "sunday": "Sunday",
+            "closed": "Closed",
+            "emergency": "⚡ Emergency support available 24/7 for Enterprise clients"
+        },
+        "faq": {
+            "title": "Didn't find the answer?",
+            "subtitle": "Check our help center or FAQ to find answers quickly",
+            "helpCenter": "Help Center",
+            "faqButton": "View FAQ"
+        }
+    },
+    "filters": {
+        "category": "Category",
+        "allCategories": "All categories",
+        "sortBy": "Sort by",
+        "popularity": "Popularity",
+        "priceAsc": "Price ascending",
+        "priceDesc": "Price descending",
+        "name": "Name"
+    },
+    "productsCount": "{{count}} product",
+    "productsCount_other": "{{count}} products",
+    "noProducts": "No products available in this category.",
     "cartPage": {
         "title": "Cart",
         "emptyTitle": "Your cart is empty",
@@ -392,7 +770,11 @@
         "helpCenter": "Help Center",
         "contactUs": "Contact Us",
         "followUs": "Follow Us",
-        "allRightsReserved": "All rights reserved"
+        "allRightsReserved": "All rights reserved",
+        "product": "Product",
+        "blog": "Blog",
+        "legalNotice": "Legal Notice",
+        "security": "Security"
     },
     "forms": {
         "required": "This field is required",

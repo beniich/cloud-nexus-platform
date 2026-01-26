@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice AI Builder - Cloud Nexus 2030</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366f1",
+                        "accent": "#f59e0b",
+                        "background-dark": "#0a0e1a",
+                        "surface": "#111827"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes wave {
+            0%, 100% { height: 12px; }
+            50% { height: 40px; }
+        }
+        
+        .wave-bar {
+            animation: wave 1.2s ease-in-out infinite;
+        }
+        
+        .building-block {
+            animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display min-h-screen overflow-hidden">
+    <div class="flex flex-col h-screen">
+        <!-- Header -->
+        <header class="h-16 border-b border-white/10 px-6 flex items-center justify-between glass-panel">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary">record_voice_over</span>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold">Voice AI Builder</h1>
+                    <p class="text-xs text-gray-400">Phase 1 - Neural Generation</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="text-xs text-emerald-400 font-medium">Whisper AI Online</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex overflow-hidden">
+            <!-- Left: Voice Control -->
+            <div class="w-full lg:w-2/5 p-6 flex flex-col gap-6 overflow-y-auto">
+                <!-- Voice Input Card -->
+                <div class="glass-panel rounded-2xl p-8 flex flex-col items-center gap-6 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 pointer-events-none"></div>
+                    
+                    <div class="relative z-10 w-full">
+                        <div class="flex flex-col items-center gap-4">
+                            <!-- Mic Button -->
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-primary rounded-full pulse-ring opacity-50"></div>
+                                <button id="voiceBtn" class="relative w-24 h-24 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center shadow-lg shadow-primary/50 hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-5xl">mic</span>
+                                </button>
+                            </div>
+                            
+                            <p class="text-sm text-gray-400 text-center">Click to speak your vision</p>
+                        </div>
+
+                        <!-- Waveform Visualizer -->
+                        <div id="waveform" class="hidden mt-8 flex items-center justify-center gap-1 h-16">
+                            <div class="w-1 bg-primary rounded-full wave-bar" style="animation-delay: 0s"></div>
+                            <div class="w-1 bg-primary rounded-full wave-bar" style="animation-delay: 0.1s"></div>
+                            <div class="w-1 bg-accent rounded-full wave-bar" style="animation-delay: 0.2s"></div>
+                            <div class="w-1 bg-primary rounded-full wave-bar" style="animation-delay: 0.3s"></div>
+                            <div class="w-1 bg-primary rounded-full wave-bar" style="animation-delay: 0.4s"></div>
+                            <div class="w-1 bg-accent rounded-full wave-bar" style="animation-delay: 0.5s"></div>
+                            <div class="w-1 bg-primary rounded-full wave-bar" style="animation-delay: 0.6s"></div>
+                        </div>
+
+                        <!-- Transcription -->
+                        <div id="transcription" class="mt-6 p-4 rounded-xl bg-white/5 border border-white/10 min-h-[100px] hidden">
+                            <p class="text-sm text-gray-300 italic" id="transcriptText">Listening...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Processing Status -->
+                <div class="glass-panel rounded-xl p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-300">AI Pipeline</h3>
+                        <span class="text-xs font-mono text-accent">Processing</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <!-- Step 1 -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-emerald-400 text-sm">check_circle</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-medium">Speech Recognition</p>
+                                <div class="h-1 bg-white/10 rounded-full mt-1">
+                                    <div class="h-full w-full bg-emerald-500 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-sm animate-spin">progress_activity</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-medium">Intent Analysis</p>
+                                <div class="h-1 bg-white/10 rounded-full mt-1">
+                                    <div class="h-full w-3/4 bg-primary rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex items-center gap-3 opacity-50">
+                            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-gray-500 text-sm">pending</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-medium">Structure Generation</p>
+                                <div class="h-1 bg-white/10 rounded-full mt-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Templates -->
+                <div class="glass-panel rounded-xl p-5">
+                    <h3 class="text-sm font-bold mb-4">Voice Templates</h3>
+                    <div class="space-y-2">
+                        <button class="w-full p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-left text-sm">
+                            "Create a restaurant website with online booking"
+                        </button>
+                        <button class="w-full p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-left text-sm">
+                            "Build a SaaS landing page with pricing tiers"
+                        </button>
+                        <button class="w-full p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-left text-sm">
+                            "Design a portfolio for a photographer"
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Live Site Assembly -->
+            <div class="hidden lg:flex flex-1 p-6 flex-col gap-4 bg-surface/50">
+                <div class="glass-panel rounded-xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-accent">auto_awesome</span>
+                        <span class="text-sm font-medium">Building in real-time...</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                        <span class="text-xs text-gray-400 font-mono">32 components</span>
+                    </div>
+                </div>
+
+                <!-- Site Preview -->
+                <div class="flex-1 glass-panel rounded-2xl p-6 overflow-y-auto">
+                    <div id="sitePreview" class="space-y-4">
+                        <!-- Hero Block -->
+                        <div class="building-block bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-8 text-white">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="material-symbols-outlined text-xs">drag_indicator</span>
+                                <span class="text-[10px] uppercase tracking-wider opacity-60">Hero Section</span>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-2">Welcome to Your Site</h2>
+                            <p class="text-white/80 mb-4">Auto-generated from your voice</p>
+                            <button class="px-4 py-2 bg-white text-indigo-600 rounded-lg text-sm font-medium">
+                                Call to Action
+                            </button>
+                        </div>
+
+                        <!-- Features Block -->
+                        <div class="building-block bg-white/5 rounded-xl p-6" style="animation-delay: 0.2s">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="material-symbols-outlined text-xs">drag_indicator</span>
+                                <span class="text-[10px] uppercase tracking-wider opacity-60">Features Grid</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="bg-white/5 rounded-lg p-4 text-center">
+                                    <span class="material-symbols-outlined text-2xl mb-2">speed</span>
+                                    <p class="text-xs">Fast</p>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4 text-center">
+                                    <span class="material-symbols-outlined text-2xl mb-2">lock</span>
+                                    <p class="text-xs">Secure</p>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4 text-center">
+                                    <span class="material-symbols-outlined text-2xl mb-2">rocket_launch</span>
+                                    <p class="text-xs">Scalable</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Loading Next Block -->
+                        <div class="bg-white/5 rounded-xl p-6 border-2 border-dashed border-accent/30" style="animation-delay: 0.4s">
+                            <div class="flex items-center justify-center gap-3 text-accent">
+                                <span class="material-symbols-outlined animate-spin">progress_activity</span>
+                                <span class="text-sm">Generating next section...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="flex gap-3">
+                    <button class="flex-1 glass-panel px-4 py-3 rounded-xl hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">edit</span>
+                        <span class="text-sm font-medium">Refine</span>
+                    </button>
+                    <button class="flex-1 bg-primary hover:bg-primary/90 px-4 py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">rocket_launch</span>
+                        <span class="text-sm font-medium">Deploy Site</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const voiceBtn = document.getElementById('voiceBtn');
+        const waveform = document.getElementById('waveform');
+        const transcription = document.getElementById('transcription');
+        const transcriptText = document.getElementById('transcriptText');
+        
+        let isRecording = false;
+        
+        voiceBtn.addEventListener('click', () => {
+            isRecording = !isRecording;
+            
+            if (isRecording) {
+                waveform.classList.remove('hidden');
+                transcription.classList.remove('hidden');
+                voiceBtn.classList.add('scale-110');
+                
+                // Simulate transcription
+                setTimeout(() => {
+                    transcriptText.textContent = '"Create a modern restaurant website with a dark theme, reservation system, and menu gallery"';
+                }, 1500);
+                
+                // Auto-stop after 5 seconds
+                setTimeout(() => {
+                    isRecording = false;
+                    voiceBtn.classList.remove('scale-110');
+                }, 5000);
+            } else {
+                voiceBtn.classList.remove('scale-110');
+            }
+        });
+    </script>
+</body>
+</html>

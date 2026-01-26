@@ -34,11 +34,45 @@ const validateEnv = () => {
 
 validateEnv();
 
+// Minimal Error Boundary
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: Error | null }> {
+    constructor(props: { children: React.ReactNode }) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+
+    static getDerivedStateFromError(error: Error) {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        console.error("Uncaught error:", error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
+                    <h1 style={{ color: '#ef4444' }}>Something went wrong.</h1>
+                    <pre style={{ background: '#f3f4f6', padding: '1rem', borderRadius: '0.5rem', overflow: 'auto' }}>
+                        {this.state.error?.toString()}
+                    </pre>
+                    <p>Check the console for more details.</p>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
 createRoot(document.getElementById("root")!).render(
     // Temporarily disabled StrictMode to diagnose hook error
     // <React.StrictMode>
-    <I18nextProvider i18n={i18n}>
-        <App />
-    </I18nextProvider>
+    <ErrorBoundary>
+        <I18nextProvider i18n={i18n}>
+            <App />
+        </I18nextProvider>
+    </ErrorBoundary>
     // </React.StrictMode>
 );

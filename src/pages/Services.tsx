@@ -3,188 +3,119 @@ import { Cloud, Code, Database, Shield, Server, Globe, Zap, Lock, BarChart, Cpu,
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 
+import { useTranslation } from 'react-i18next';
+
 const Services = () => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('all');
 
   const categories = [
-    { id: 'all', label: 'Tous les Services', icon: <Globe className="w-5 h-5" /> },
-    { id: 'infrastructure', label: 'Infrastructure', icon: <Server className="w-5 h-5" /> },
-    { id: 'development', label: 'Développement', icon: <Code className="w-5 h-5" /> },
-    { id: 'security', label: 'Sécurité', icon: <Shield className="w-5 h-5" /> },
-    { id: 'data', label: 'Données', icon: <Database className="w-5 h-5" /> }
+    { id: 'all', label: t('servicesPage.categories.all'), icon: <Globe className="w-5 h-5" /> },
+    { id: 'infrastructure', label: t('servicesPage.categories.infrastructure'), icon: <Server className="w-5 h-5" /> },
+    { id: 'development', label: t('servicesPage.categories.development'), icon: <Code className="w-5 h-5" /> },
+    { id: 'security', label: t('servicesPage.categories.security'), icon: <Shield className="w-5 h-5" /> },
+    { id: 'data', label: t('servicesPage.categories.data'), icon: <Database className="w-5 h-5" /> }
   ];
 
   const services = [
     {
       category: 'infrastructure',
       icon: <Cloud className="w-12 h-12" />,
-      title: "Cloud Hosting",
-      description: "Hébergement cloud haute performance avec garantie 99.9% uptime",
-      features: [
-        "Serveurs SSD ultra-rapides",
-        "Scaling automatique",
-        "CDN mondial inclus",
-        "Backup quotidien automatique",
-        "Support 24/7"
-      ],
-      price: "À partir de 9€/mois",
+      title: t('servicesPage.services.cloudHosting.title'),
+      description: t('servicesPage.services.cloudHosting.desc'),
+      features: t('servicesPage.services.cloudHosting.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '9€' }) + t('servicesPage.pricing.perMonth'),
       popular: true
     },
     {
       category: 'infrastructure',
       icon: <Server className="w-12 h-12" />,
-      title: "Serveurs Dédiés",
-      description: "Serveurs dédiés personnalisables pour des performances maximales",
-      features: [
-        "Ressources 100% dédiées",
-        "Configuration sur mesure",
-        "Accès root complet",
-        "RAID pour sécurité des données",
-        "IP dédiée"
-      ],
-      price: "À partir de 79€/mois"
+      title: t('servicesPage.services.dedicatedServers.title'),
+      description: t('servicesPage.services.dedicatedServers.desc'),
+      features: t('servicesPage.services.dedicatedServers.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '79€' }) + t('servicesPage.pricing.perMonth')
     },
     {
       category: 'development',
       icon: <Code className="w-12 h-12" />,
-      title: "Site Builder",
-      description: "Créez des sites professionnels sans coder avec notre éditeur IA",
-      features: [
-        "Éditeur drag & drop intuitif",
-        "100+ templates premium",
-        "IA pour génération de contenu",
-        "SEO optimisé automatiquement",
-        "Responsive design"
-      ],
-      price: "À partir de 19€/mois",
+      title: t('servicesPage.services.siteBuilder.title'),
+      description: t('servicesPage.services.siteBuilder.desc'),
+      features: t('servicesPage.services.siteBuilder.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '19€' }) + t('servicesPage.pricing.perMonth'),
       popular: true
     },
     {
       category: 'development',
       icon: <Cpu className="w-12 h-12" />,
-      title: "API Management",
-      description: "Gérez et sécurisez vos APIs avec notre plateforme complète",
-      features: [
-        "Gateway API haute performance",
-        "Authentification avancée",
-        "Rate limiting & throttling",
-        "Analytics en temps réel",
-        "Documentation automatique"
-      ],
-      price: "À partir de 29€/mois"
+      title: t('servicesPage.services.apiManagement.title'),
+      description: t('servicesPage.services.apiManagement.desc'),
+      features: t('servicesPage.services.apiManagement.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '29€' }) + t('servicesPage.pricing.perMonth')
     },
     {
       category: 'data',
       icon: <Database className="w-12 h-12" />,
-      title: "Bases de Données",
-      description: "Solutions de bases de données managées et optimisées",
-      features: [
-        "PostgreSQL, MySQL, MongoDB",
-        "Réplication automatique",
-        "Backups continus",
-        "Scaling vertical & horizontal",
-        "Monitoring avancé"
-      ],
-      price: "À partir de 15€/mois"
+      title: t('servicesPage.services.databases.title'),
+      description: t('servicesPage.services.databases.desc'),
+      features: t('servicesPage.services.databases.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '15€' }) + t('servicesPage.pricing.perMonth')
     },
     {
       category: 'data',
       icon: <HardDrive className="w-12 h-12" />,
-      title: "Object Storage",
-      description: "Stockage illimité pour vos fichiers et médias",
-      features: [
-        "99.99% durabilité",
-        "Compatible S3",
-        "CDN intégré",
-        "Versioning des fichiers",
-        "Chiffrement automatique"
-      ],
-      price: "0.02€/GB/mois"
+      title: t('servicesPage.services.objectStorage.title'),
+      description: t('servicesPage.services.objectStorage.desc'),
+      features: t('servicesPage.services.objectStorage.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.perGbMonth')
     },
     {
       category: 'security',
       icon: <Shield className="w-12 h-12" />,
-      title: "DDoS Protection",
-      description: "Protection avancée contre les attaques DDoS",
-      features: [
-        "Détection en temps réel",
-        "Mitigation automatique",
-        "Jusqu'à 10 Tbps de protection",
-        "Analytics des menaces",
-        "Certificats SSL gratuits"
-      ],
-      price: "À partir de 49€/mois",
+      title: t('servicesPage.services.ddosProtection.title'),
+      description: t('servicesPage.services.ddosProtection.desc'),
+      features: t('servicesPage.services.ddosProtection.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '49€' }) + t('servicesPage.pricing.perMonth'),
       popular: true
     },
     {
       category: 'security',
       icon: <Lock className="w-12 h-12" />,
-      title: "Firewall Managé",
-      description: "Pare-feu intelligent avec règles personnalisables",
-      features: [
-        "Règles personnalisables",
-        "IP whitelisting/blacklisting",
-        "Protection WAF",
-        "Logs détaillés",
-        "Alertes instantanées"
-      ],
-      price: "À partir de 25€/mois"
+      title: t('servicesPage.services.managedFirewall.title'),
+      description: t('servicesPage.services.managedFirewall.desc'),
+      features: t('servicesPage.services.managedFirewall.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '25€' }) + t('servicesPage.pricing.perMonth')
     },
     {
       category: 'infrastructure',
       icon: <Wifi className="w-12 h-12" />,
-      title: "Load Balancing",
-      description: "Répartition intelligente de la charge sur vos serveurs",
-      features: [
-        "Algorithmes multiples",
-        "Health checks automatiques",
-        "SSL/TLS termination",
-        "Session persistence",
-        "Géo-routing"
-      ],
-      price: "À partir de 35€/mois"
+      title: t('servicesPage.services.loadBalancing.title'),
+      description: t('servicesPage.services.loadBalancing.desc'),
+      features: t('servicesPage.services.loadBalancing.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '35€' }) + t('servicesPage.pricing.perMonth')
     },
     {
       category: 'data',
       icon: <BarChart className="w-12 h-12" />,
-      title: "Analytics & Monitoring",
-      description: "Surveillance complète de votre infrastructure",
-      features: [
-        "Métriques en temps réel",
-        "Alertes personnalisables",
-        "Dashboards interactifs",
-        "Logs centralisés",
-        "Rapports automatiques"
-      ],
-      price: "À partir de 19€/mois"
+      title: t('servicesPage.services.analytics.title'),
+      description: t('servicesPage.services.analytics.desc'),
+      features: t('servicesPage.services.analytics.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '19€' }) + t('servicesPage.pricing.perMonth')
     },
     {
       category: 'development',
       icon: <Zap className="w-12 h-12" />,
-      title: "Serverless Functions",
-      description: "Exécutez du code sans gérer de serveurs",
-      features: [
-        "Auto-scaling instantané",
-        "Facturation à la milliseconde",
-        "Support multi-langages",
-        "Déploiement Git intégré",
-        "Edge computing"
-      ],
-      price: "Pay-as-you-go"
+      title: t('servicesPage.services.serverless.title'),
+      description: t('servicesPage.services.serverless.desc'),
+      features: t('servicesPage.services.serverless.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.payAsYouGo')
     },
     {
       category: 'infrastructure',
       icon: <Globe className="w-12 h-12" />,
-      title: "CDN Global",
-      description: "Réseau de distribution de contenu ultra-rapide",
-      features: [
-        "150+ points de présence",
-        "Cache intelligent",
-        "Compression automatique",
-        "HTTP/3 & QUIC",
-        "Real-time purging"
-      ],
-      price: "À partir de 0.05€/GB"
+      title: t('servicesPage.services.cdn.title'),
+      description: t('servicesPage.services.cdn.desc'),
+      features: t('servicesPage.services.cdn.features', { returnObjects: true }) as string[],
+      price: t('servicesPage.pricing.from', { price: '0.05€/GB' })
     }
   ];
 
@@ -204,12 +135,12 @@ const Services = () => {
               <Logo size="md" />
             </Link>
             <div className="hidden md:flex items-center gap-8">
-              <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Accueil</Link>
-              <Link to="/services" className="text-orange-600 font-semibold">Services</Link>
-              <Link to="/pricing" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Tarifs</Link>
-              <Link to="/contact" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Contact</Link>
+              <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.home')}</Link>
+              <Link to="/services" className="text-orange-600 font-semibold">{t('navbar.services')}</Link>
+              <Link to="/pricing" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.pricing')}</Link>
+              <Link to="/contact" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.contact')}</Link>
               <button className="px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg hover:shadow-orange-400/50 transition-all transform hover:scale-105 font-medium">
-                Démarrer
+                {t('common.create')}
               </button>
             </div>
           </div>
@@ -221,15 +152,15 @@ const Services = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-6xl font-bold mb-6">
             <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-              Nos Services
+              {t('servicesPage.title')}
             </span>
             <br />
             <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-              Cloud Complets
+              {t('servicesPage.subtitle')}
             </span>
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Des solutions cloud puissantes et flexibles pour propulser votre entreprise vers le succès digital
+            {t('servicesPage.desc')}
           </p>
         </div>
       </section>
@@ -266,7 +197,7 @@ const Services = () => {
               >
                 {service.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-bold rounded-full shadow-lg">
-                    ⭐ Populaire
+                    ⭐ {t('servicesPage.labels.popular')}
                   </div>
                 )}
 
@@ -289,14 +220,14 @@ const Services = () => {
                 <div className="border-t border-orange-200 pt-6 mt-auto">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-slate-600">Prix</p>
+                      <p className="text-sm text-slate-600">{t('servicesPage.labels.price')}</p>
                       <p className="text-xl font-bold text-orange-600">{service.price}</p>
                     </div>
                     <Link
                       to={`/hosting-request?type=${service.title === 'Cloud Hosting' ? 'cloud' : service.title === 'Serveurs Dédiés' ? 'dedicated' : 'shared'}`}
                       className="group/btn px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-medium"
                     >
-                      Choisir
+                      {t('servicesPage.labels.choose')}
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                     </Link>
                   </div>
@@ -312,13 +243,13 @@ const Services = () => {
         <div className="max-w-5xl mx-auto">
           <div className="relative overflow-hidden p-12 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-3xl shadow-2xl text-center">
             <h2 className="text-4xl font-bold text-white mb-4">
-              Besoin d'une solution personnalisée ?
+              {t('servicesPage.cta.title')}
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Notre équipe d'experts est là pour concevoir une infrastructure sur mesure adaptée à vos besoins
+              {t('servicesPage.cta.subtitle')}
             </p>
             <button className="px-8 py-4 bg-white text-orange-600 rounded-xl hover:shadow-2xl transition-all transform hover:scale-105 font-semibold text-lg">
-              Contactez-nous
+              {t('servicesPage.cta.button')}
             </button>
           </div>
         </div>
@@ -327,7 +258,7 @@ const Services = () => {
       {/* Footer */}
       <footer className="border-t border-orange-200 py-12 px-6 bg-white/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto text-center text-slate-600">
-          <p>© 2025 Cloud Nexus Platform. Tous droits réservés.</p>
+          <p>© 2025 Cloud Nexus Platform. {t('footer.allRightsReserved')}</p>
         </div>
       </footer>
     </div>

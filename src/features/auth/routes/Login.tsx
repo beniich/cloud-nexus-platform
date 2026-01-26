@@ -61,7 +61,7 @@ export default function Login() {
             <div className="w-full max-w-md z-10">
                 {/* Logo */}
                 <Link to="/" className="flex items-center justify-center gap-3 mb-10 group transition-transform hover:scale-105">
-                    <img src="/logo.png" alt="Cloud Industrie" className="h-20 w-auto" />
+                    <img src="/logo.png" alt="Cloud Nexus" className="h-20 w-auto" />
                 </Link>
 
                 <Tabs defaultValue="login" className="w-full">

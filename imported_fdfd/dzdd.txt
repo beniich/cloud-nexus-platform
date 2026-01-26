@@ -1,0 +1,598 @@
+// ============================================================
+// VOICE BUILDER SERVICE - COMPLETE BACKEND
+// Whisper (Speech-to-Text) + Claude (Site Generation)
+// ============================================================
+
+import express from 'express';
+import multer from 'multer';
+import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
+import { PrismaClient } from '@prisma/client';
+import cors from 'cors';
+import fs from 'fs/promises';
+import path from 'path';
+
+const app = express();
+const prisma = new PrismaClient();
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// ============================================================
+// MIDDLEWARE
+// ============================================================
+
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true
+}));
+
+app.use(express.json({ limit: '50mb' }));
+
+// Configuration Multer pour upload audio
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const uploadDir = './uploads/audio';
+    await fs.mkdir(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['audio/webm', 'audio/mp3', 'audio/wav', 'audio/mpeg', 'audio/ogg'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid audio format'));
+    }
+  }
+});
+
+// ============================================================
+// VOICE BUILDER SERVICE CLASS
+// ============================================================
+
+class VoiceBuilderService {
+  
+  /**
+   * Transcription audio vers texte avec Whisper
+   */
+  async transcribeAudio(audioFilePath) {
+    try {
+      console.log('🎙️ Starting transcription with Whisper...');
+      
+      const audioFile = await fs.readFile(audioFilePath);
+      
+      const transcription = await openai.audio.transcriptions.create({
+        file: new File([audioFile], path.basename(audioFilePath)),
+        model: 'whisper-1',
+        language: 'en', // ou 'fr' pour français
+        response_format: 'verbose_json',
+        timestamp_granularities: ['word']
+      });
+
+      console.log('✅ Transcription completed');
+      
+      return {
+        text: transcription.text,
+        duration: transcription.duration,
+        words: transcription.words,
+        language: transcription.language
+      };
+      
+    } catch (error) {
+      console.error('❌ Whisper API error:', error);
+      throw new Error(`Transcription failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Analyse de l'intention avec Claude
+   */
+  async analyzeIntent(transcript) {
+    try {
+      console.log('🧠 Analyzing user intent with Claude...');
+      
+      const message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        system: `Tu es un expert en analyse d'intentions utilisateur pour la création de sites web.
+        
+À partir d'une transcription vocale, extrait:
+1. Type de site (e-commerce, portfolio, blog, SaaS, restaurant, etc.)
+2. Fonctionnalités demandées
+3. Style visuel souhaité
+4. Public cible
+5. Contraintes techniques mentionnées
+
+Réponds UNIQUEMENT en JSON valide avec cette structure:
+{
+  "websiteType": "type de site",
+  "features": ["feature1", "feature2"],
+  "visualStyle": {
+    "theme": "light/dark/custom",
+    "colors": ["primary", "secondary"],
+    "vibe": "minimal/modern/playful/professional"
+  },
+  "targetAudience": "description",
+  "technicalRequirements": ["req1", "req2"],
+  "confidence": 0.0-1.0
+}`,
+        messages: [{
+          role: 'user',
+          content: transcript
+        }]
+      });
+
+      const intentAnalysis = JSON.parse(message.content[0].text);
+      console.log('✅ Intent analysis completed');
+      
+      return intentAnalysis;
+      
+    } catch (error) {
+      console.error('❌ Claude intent analysis error:', error);
+      throw new Error(`Intent analysis failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Génération de la structure complète du site
+   */
+  async generateSiteStructure(intentAnalysis, transcript) {
+    try {
+      console.log('🏗️ Generating site structure with Claude...');
+      
+      const message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8000,
+        temperature: 0.7,
+        system: `Tu es un expert UI/UX designer et développeur web.
+
+Génère une structure complète de site web en JSON basée sur l'analyse d'intention.
+
+IMPORTANT: Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans commentaires.
+
+Structure attendue:
+{
+  "metadata": {
+    "title": "titre du site",
+    "description": "meta description SEO",
+    "keywords": ["keyword1", "keyword2"],
+    "favicon": "emoji ou URL"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#hex",
+      "secondary": "#hex",
+      "background": "#hex",
+      "text": "#hex"
+    },
+    "fonts": {
+      "heading": "font-family",
+      "body": "font-family"
+    },
+    "spacing": "tight/normal/relaxed",
+    "borderRadius": "none/sm/md/lg/full"
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "layout": "centered/split/fullscreen",
+      "content": {
+        "headline": "texte principal",
+        "subheadline": "texte secondaire",
+        "cta": {
+          "text": "texte bouton",
+          "action": "scroll/link/modal",
+          "style": "primary/secondary"
+        },
+        "background": {
+          "type": "gradient/image/video",
+          "value": "détails"
+        }
+      }
+    },
+    {
+      "type": "features",
+      "layout": "grid/list/carousel",
+      "items": [
+        {
+          "icon": "emoji ou icon-name",
+          "title": "titre feature",
+          "description": "description"
+        }
+      ]
+    }
+  ],
+  "components": {
+    "navbar": {
+      "style": "fixed/sticky/static",
+      "logo": "text/image",
+      "links": ["Home", "About", "Contact"]
+    },
+    "footer": {
+      "columns": [
+        {
+          "title": "Section",
+          "links": ["Link1", "Link2"]
+        }
+      ],
+      "copyright": "texte"
+    }
+  },
+  "analytics": {
+    "performanceScore": 0.0-1.0,
+    "seoScore": 0.0-1.0,
+    "accessibilityScore": 0.0-1.0
+  }
+}`,
+        messages: [{
+          role: 'user',
+          content: `Transcription originale: "${transcript}"
+
+Analyse d'intention:
+${JSON.stringify(intentAnalysis, null, 2)}
+
+Génère maintenant la structure complète du site.`
+        }]
+      });
+
+      // Extraction et nettoyage du JSON
+      let siteStructure = message.content[0].text.trim();
+      
+      // Retirer les backticks markdown si présents
+      siteStructure = siteStructure.replace(/^```json\n?/i, '').replace(/\n?```$/i, '');
+      
+      const parsedStructure = JSON.parse(siteStructure);
+      
+      console.log('✅ Site structure generated');
+      
+      return parsedStructure;
+      
+    } catch (error) {
+      console.error('❌ Site generation error:', error);
+      throw new Error(`Site generation failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Optimisation SEO et Performance
+   */
+  async optimizeSite(siteStructure) {
+    try {
+      console.log('⚡ Optimizing site for SEO and performance...');
+      
+      const message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        system: `Tu es un expert SEO et performance web.
+
+Analyse la structure du site et propose des optimisations.
+
+Réponds en JSON:
+{
+  "seo": {
+    "improvements": ["amélioration1", "amélioration2"],
+    "metaTags": {
+      "og:title": "valeur",
+      "og:description": "valeur",
+      "twitter:card": "valeur"
+    }
+  },
+  "performance": {
+    "lazyLoadImages": true/false,
+    "criticalCSS": "inline critical styles",
+    "preloadAssets": ["asset1", "asset2"],
+    "compressionRecommendations": ["webp", "minify-js"]
+  },
+  "accessibility": {
+    "ariaLabels": {"element": "label"},
+    "colorContrast": "AAA/AA/fail",
+    "recommendations": ["rec1", "rec2"]
+  }
+}`,
+        messages: [{
+          role: 'user',
+          content: JSON.stringify(siteStructure, null, 2)
+        }]
+      });
+
+      let optimizations = message.content[0].text.trim();
+      optimizations = optimizations.replace(/^```json\n?/i, '').replace(/\n?```$/i, '');
+      
+      const parsedOptimizations = JSON.parse(optimizations);
+      
+      console.log('✅ Optimizations completed');
+      
+      return parsedOptimizations;
+      
+    } catch (error) {
+      console.error('❌ Optimization error:', error);
+      return null; // Non-bloquant
+    }
+  }
+
+  /**
+   * Sauvegarde en base de données
+   */
+  async saveSiteToDatabase(userId, siteData) {
+    try {
+      const site = await prisma.site.create({
+        data: {
+          name: siteData.metadata.title,
+          content: siteData,
+          userId: userId,
+          published: false,
+          metadata: {
+            generatedVia: 'voice',
+            transcriptLength: siteData._transcript?.length || 0,
+            confidenceScore: siteData._intentAnalysis?.confidence || 0
+          }
+        }
+      });
+
+      console.log('💾 Site saved to database:', site.id);
+      
+      return site;
+    } catch (error) {
+      console.error('❌ Database save error:', error);
+      throw error;
+    }
+  }
+}
+
+// ============================================================
+// API ROUTES
+// ============================================================
+
+const voiceBuilder = new VoiceBuilderService();
+
+/**
+ * POST /api/voice/upload
+ * Upload et transcription d'un fichier audio
+ */
+app.post('/api/voice/upload', upload.single('audio'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No audio file provided' });
+    }
+
+    const userId = req.body.userId || 'anonymous';
+    const audioPath = req.file.path;
+
+    // 1. Transcription
+    const transcription = await voiceBuilder.transcribeAudio(audioPath);
+
+    // Nettoyage du fichier temporaire
+    await fs.unlink(audioPath);
+
+    res.json({
+      success: true,
+      transcription: transcription.text,
+      metadata: {
+        duration: transcription.duration,
+        language: transcription.language,
+        wordCount: transcription.words?.length || 0
+      }
+    });
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ 
+      error: error.message,
+      details: 'Transcription failed'
+    });
+  }
+});
+
+/**
+ * POST /api/voice/generate
+ * Génération complète du site depuis une transcription
+ */
+app.post('/api/voice/generate', async (req, res) => {
+  try {
+    const { transcript, userId } = req.body;
+
+    if (!transcript) {
+      return res.status(400).json({ error: 'Transcript is required' });
+    }
+
+    console.log(`\n🚀 Starting site generation for user: ${userId}`);
+    console.log(`📝 Transcript: "${transcript.substring(0, 100)}..."`);
+
+    // 1. Analyse d'intention
+    const intentAnalysis = await voiceBuilder.analyzeIntent(transcript);
+
+    // 2. Génération de la structure
+    const siteStructure = await voiceBuilder.generateSiteStructure(
+      intentAnalysis, 
+      transcript
+    );
+
+    // 3. Optimisation
+    const optimizations = await voiceBuilder.optimizeSite(siteStructure);
+
+    // 4. Fusion des données
+    const completeSite = {
+      ...siteStructure,
+      optimizations,
+      _metadata: {
+        generatedAt: new Date().toISOString(),
+        generatedVia: 'voice',
+        processingTime: Date.now() // À calculer correctement
+      },
+      _transcript: transcript,
+      _intentAnalysis: intentAnalysis
+    };
+
+    // 5. Sauvegarde en DB
+    const savedSite = await voiceBuilder.saveSiteToDatabase(userId, completeSite);
+
+    res.json({
+      success: true,
+      siteId: savedSite.id,
+      site: completeSite,
+      preview: {
+        title: completeSite.metadata.title,
+        sectionsCount: completeSite.sections.length,
+        theme: completeSite.theme.colors.primary
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Generation error:', error);
+    res.status(500).json({ 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+/**
+ * GET /api/voice/site/:id
+ * Récupération d'un site généré
+ */
+app.get('/api/voice/site/:id', async (req, res) => {
+  try {
+    const site = await prisma.site.findUnique({
+      where: { id: req.params.id }
+    });
+
+    if (!site) {
+      return res.status(404).json({ error: 'Site not found' });
+    }
+
+    res.json({
+      success: true,
+      site: {
+        id: site.id,
+        name: site.name,
+        content: site.content,
+        createdAt: site.createdAt,
+        published: site.published
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * PUT /api/voice/site/:id/publish
+ * Publication d'un site
+ */
+app.put('/api/voice/site/:id/publish', async (req, res) => {
+  try {
+    const { domain } = req.body;
+
+    const site = await prisma.site.update({
+      where: { id: req.params.id },
+      data: {
+        published: true,
+        domain: domain || null,
+        updatedAt: new Date()
+      }
+    });
+
+    // TODO: Déploiement sur edge (Vercel/Netlify/Cloudflare)
+    
+    res.json({
+      success: true,
+      message: 'Site published successfully',
+      url: domain ? `https://${domain}` : `https://nexus.cloud/s/${site.id}`
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================================
+// HEALTH CHECK
+// ============================================================
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    services: {
+      whisper: !!process.env.OPENAI_API_KEY,
+      claude: !!process.env.ANTHROPIC_API_KEY,
+      database: prisma ? 'connected' : 'disconnected'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ============================================================
+// SERVER START
+// ============================================================
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`\n🚀 Voice Builder Backend running on port ${PORT}`);
+  console.log(`📡 Whisper API: ${process.env.OPENAI_API_KEY ? 'Connected' : 'Missing key'}`);
+  console.log(`🤖 Claude API: ${process.env.ANTHROPIC_API_KEY ? 'Connected' : 'Missing key'}`);
+  console.log(`💾 Database: Ready\n`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, closing server...');
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+// ============================================================
+// EXEMPLE D'UTILISATION (CLIENT)
+// ============================================================
+
+/*
+// Frontend - Enregistrement et upload audio
+
+const recordAudio = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const mediaRecorder = new MediaRecorder(stream);
+  const chunks = [];
+
+  mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+  
+  mediaRecorder.onstop = async () => {
+    const blob = new Blob(chunks, { type: 'audio/webm' });
+    const formData = new FormData();
+    formData.append('audio', blob, 'recording.webm');
+    formData.append('userId', currentUser.id);
+
+    const response = await fetch('http://localhost:5000/api/voice/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    const { transcription } = await response.json();
+    
+    // Génération du site
+    const siteResponse = await fetch('http://localhost:5000/api/voice/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        transcript: transcription,
+        userId: currentUser.id
+      })
+    });
+
+    const { site, siteId } = await siteResponse.json();
+    console.log('Site généré:', site);
+  };
+
+  mediaRecorder.start();
+  setTimeout(() => mediaRecorder.stop(), 5000); // 5 secondes
+};
+*/
+
+export default app;

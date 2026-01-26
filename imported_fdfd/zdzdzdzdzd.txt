@@ -1,0 +1,546 @@
+// ============================================================
+// CLOUD NEXUS 2030 - BACKEND ARCHITECTURE NEXT-GEN
+// Micro-services + Event-Driven + AI-First Design
+// ============================================================
+
+// ============================================================
+// 1. MAIN API GATEWAY (Kong/Express)
+// ============================================================
+
+// server.js - Point d'entrée principal
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { PrismaClient } from '@prisma/client';
+import Redis from 'ioredis';
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: { origin: process.env.CLIENT_URL, credentials: true }
+});
+
+const prisma = new PrismaClient();
+const redis = new Redis(process.env.REDIS_URL);
+
+// ============================================================
+// MIDDLEWARE STACK
+// ============================================================
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "wss:", "https://api.anthropic.com"],
+    }
+  }
+}));
+
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true
+}));
+
+app.use(compression());
+app.use(express.json({ limit: '50mb' }));
+
+// Rate limiting adaptatif basé sur ML
+const aiRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: async (req) => {
+    const userTier = await getUserTier(req.user?.id);
+    return userTier === 'enterprise' ? 1000 : 100;
+  },
+  message: 'Too many requests, please upgrade your plan'
+});
+
+// ============================================================
+// 2. AUTHENTIFICATION ZERO-TRUST (Passkeys + JWT)
+// ============================================================
+
+// auth/passkey.controller.js
+import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server';
+import jwt from 'jsonwebtoken';
+
+export class PasskeyAuthController {
+  
+  // Enregistrement biométrique sans mot de passe
+  async registerPasskey(req, res) {
+    const { email } = req.body;
+    
+    const user = await prisma.user.findUnique({ where: { email } });
+    
+    const options = await generateRegistrationOptions({
+      rpName: 'Cloud Nexus',
+      rpID: process.env.RP_ID,
+      userID: user.id,
+      userName: email,
+      authenticatorSelection: {
+        authenticatorAttachment: 'platform', // Biométrie native
+        requireResidentKey: true
+      }
+    });
+    
+    await redis.setex(`challenge:${user.id}`, 300, options.challenge);
+    
+    res.json(options);
+  }
+  
+  // Vérification et émission de JWT
+  async verifyPasskey(req, res) {
+    const { credential, userId } = req.body;
+    
+    const challenge = await redis.get(`challenge:${userId}`);
+    
+    const verification = await verifyRegistrationResponse({
+      response: credential,
+      expectedChallenge: challenge,
+      expectedOrigin: process.env.ORIGIN
+    });
+    
+    if (verification.verified) {
+      const token = jwt.sign(
+        { userId, role: 'user' },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+      
+      // Stockage de la clé publique pour future authentification
+      await prisma.credential.create({
+        data: {
+          userId,
+          credentialID: verification.registrationInfo.credentialID,
+          publicKey: verification.registrationInfo.credentialPublicKey
+        }
+      });
+      
+      res.json({ token, user: { id: userId } });
+    }
+  }
+}
+
+// ============================================================
+// 3. AI-POWERED SITE BUILDER SERVICE
+// ============================================================
+
+// services/ai-builder.service.js
+import Anthropic from '@anthropic-ai/sdk';
+
+export class AIBuilderService {
+  
+  constructor() {
+    this.anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY
+    });
+  }
+  
+  // Génération de site complet via prompt
+  async generateSiteFromPrompt(prompt, industry) {
+    const systemPrompt = `Tu es un expert UI/UX designer. Génère un site web complet en JSON basé sur cette description.
+    
+Structure attendue:
+{
+  "theme": { "colors": {...}, "fonts": {...} },
+  "sections": [
+    { "type": "hero", "content": {...}, "layout": "..." },
+    { "type": "features", "items": [...] }
+  ],
+  "metadata": { "seo": {...}, "performance": {...} }
+}`;
+    
+    const message = await this.anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      system: systemPrompt,
+      messages: [{
+        role: 'user',
+        content: `${prompt}\nIndustrie: ${industry}`
+      }]
+    });
+    
+    const siteJson = JSON.parse(message.content[0].text);
+    
+    // Amélioration avec intelligence prédictive
+    siteJson.aiMetadata = {
+      generatedAt: Date.now(),
+      predictedConversionRate: await this.predictConversion(siteJson),
+      carbonFootprint: this.calculateCarbon(siteJson)
+    };
+    
+    return siteJson;
+  }
+  
+  // ML pour prédire le taux de conversion
+  async predictConversion(siteStructure) {
+    // Appel au modèle ML TensorFlow.js ou API externe
+    const features = this.extractFeatures(siteStructure);
+    // Score 0-100%
+    return Math.random() * 30 + 70; // Simulé
+  }
+  
+  // Calcul empreinte carbone
+  calculateCarbon(siteJson) {
+    const totalAssets = siteJson.sections.reduce((acc, s) => 
+      acc + (s.images?.length || 0), 0
+    );
+    
+    // Formule simplifiée: 0.5g CO2 par requête + 2g par MB
+    const estimatedSize = totalAssets * 0.3; // MB
+    const carbonGrams = (0.5 + estimatedSize * 2);
+    
+    return {
+      grams: carbonGrams,
+      rating: carbonGrams < 5 ? 'A+' : 'B',
+      greenHosting: true
+    };
+  }
+}
+
+// ============================================================
+// 4. PREDICTIVE CRM + LEAD SCORING ML
+// ============================================================
+
+// services/crm-ml.service.js
+export class CRMMLService {
+  
+  // Score de propension d'achat (0-100%)
+  async calculateLeadScore(leadId) {
+    const lead = await prisma.cRMLead.findUnique({
+      where: { id: leadId },
+      include: { activities: true }
+    });
+    
+    // Features pour le ML
+    const features = {
+      emailEngagement: lead.activities.filter(a => a.type === 'EMAIL').length,
+      websiteVisits: lead.activities.filter(a => a.type === 'VISIT').length,
+      demoRequested: lead.activities.some(a => a.type === 'DEMO'),
+      companySize: this.estimateCompanySize(lead.company),
+      industryFit: this.getIndustryScore(lead.company)
+    };
+    
+    // Simulation modèle ML (en prod: TensorFlow ou API Python)
+    const score = (
+      features.emailEngagement * 10 +
+      features.websiteVisits * 5 +
+      (features.demoRequested ? 30 : 0) +
+      features.companySize * 2 +
+      features.industryFit * 15
+    );
+    
+    return Math.min(100, Math.max(0, score));
+  }
+  
+  // Prédiction revenue (ML Regression)
+  async predictRevenue(leadId) {
+    const score = await this.calculateLeadScore(leadId);
+    const avgDealSize = 50000; // $
+    
+    return {
+      expectedRevenue: (score / 100) * avgDealSize,
+      confidence: score > 80 ? 'HIGH' : score > 50 ? 'MEDIUM' : 'LOW',
+      closingProbability: score / 100
+    };
+  }
+}
+
+// ============================================================
+// 5. EDGE COMPUTING + AUTO-SCALING (AIOps)
+// ============================================================
+
+// services/edge-manager.service.js
+export class EdgeManagerService {
+  
+  constructor() {
+    this.nodes = [];
+    this.metrics = new Map();
+  }
+  
+  // Monitoring temps réel de tous les edge nodes
+  async monitorEdgeNodes() {
+    const nodes = await prisma.edgeNode.findMany();
+    
+    for (const node of nodes) {
+      const metrics = await this.getNodeMetrics(node.id);
+      
+      // Détection anomalie par ML
+      const anomaly = await this.detectAnomaly(metrics);
+      
+      if (anomaly.detected) {
+        await this.autoScale(node.id, anomaly.prediction);
+      }
+      
+      // Émission temps réel via Socket.io
+      io.to('ops-dashboard').emit('node:metrics', {
+        nodeId: node.id,
+        ...metrics,
+        anomaly
+      });
+    }
+  }
+  
+  // Prédiction de charge (Time Series ML)
+  async detectAnomaly(metrics) {
+    const history = await redis.lrange(`metrics:${metrics.nodeId}`, 0, 100);
+    
+    // Algorithme simple de détection (en prod: LSTM/Prophet)
+    const avg = history.reduce((a, b) => a + parseFloat(b), 0) / history.length;
+    const current = metrics.cpu;
+    
+    if (current > avg * 1.5) {
+      return {
+        detected: true,
+        prediction: {
+          spikeIn: 14, // minutes
+          estimatedLoad: current * 1.3,
+          recommendedAction: 'SCALE_UP'
+        }
+      };
+    }
+    
+    return { detected: false };
+  }
+  
+  // Auto-scaling intelligent
+  async autoScale(nodeId, prediction) {
+    const node = await prisma.edgeNode.findUnique({ where: { id: nodeId } });
+    
+    // Calcul optimal d'instances
+    const requiredInstances = Math.ceil(prediction.estimatedLoad / 70); // 70% threshold
+    const toSpawn = requiredInstances - node.currentInstances;
+    
+    if (toSpawn > 0) {
+      await this.provisionInstances(nodeId, toSpawn, 'GPU'); // Priorité GPU pour AI
+      
+      // Log blockchain pour audit trail
+      await this.logToBlockchain({
+        action: 'AUTO_SCALE',
+        nodeId,
+        instances: toSpawn,
+        reason: prediction,
+        timestamp: Date.now()
+      });
+    }
+  }
+  
+  // Provisionnement via Kubernetes/Terraform
+  async provisionInstances(nodeId, count, type) {
+    // Appel à l'API Kubernetes ou cloud provider
+    console.log(`🚀 Spawning ${count} ${type} instances for node ${nodeId}`);
+    
+    // Mise à jour DB
+    await prisma.edgeNode.update({
+      where: { id: nodeId },
+      data: { 
+        currentInstances: { increment: count },
+        lastScaleAt: new Date()
+      }
+    });
+  }
+}
+
+// ============================================================
+// 6. BLOCKCHAIN INTEGRATION (Web3 Payments + Audit)
+// ============================================================
+
+// services/web3.service.js
+import { ethers } from 'ethers';
+
+export class Web3Service {
+  
+  constructor() {
+    this.provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL);
+    this.wallet = new ethers.Wallet(process.env.PRIVATE_KEY, this.provider);
+  }
+  
+  // Smart contract pour paiements récurrents
+  async createSubscriptionContract(userId, planId) {
+    const SubscriptionFactory = new ethers.Contract(
+      process.env.SUBSCRIPTION_CONTRACT,
+      ABI,
+      this.wallet
+    );
+    
+    const plan = await prisma.hostingPlan.findUnique({ where: { id: planId } });
+    const priceInWei = ethers.parseEther(plan.price.toString());
+    
+    const tx = await SubscriptionFactory.createSubscription(
+      userId,
+      priceInWei,
+      30 * 24 * 60 * 60 // 30 jours en secondes
+    );
+    
+    await tx.wait();
+    
+    return {
+      contractAddress: tx.to,
+      transactionHash: tx.hash
+    };
+  }
+  
+  // Stockage décentralisé IPFS
+  async deployToIPFS(siteContent) {
+    const ipfs = await import('ipfs-http-client').then(m => m.create({
+      host: 'ipfs.infura.io',
+      port: 5001,
+      protocol: 'https'
+    }));
+    
+    const { cid } = await ipfs.add(JSON.stringify(siteContent));
+    
+    return {
+      ipfsHash: cid.toString(),
+      url: `https://ipfs.io/ipfs/${cid}`
+    };
+  }
+  
+  // Audit trail immuable
+  async logToBlockchain(event) {
+    const AuditContract = new ethers.Contract(
+      process.env.AUDIT_CONTRACT,
+      AUDIT_ABI,
+      this.wallet
+    );
+    
+    const eventHash = ethers.keccak256(ethers.toUtf8Bytes(JSON.stringify(event)));
+    
+    const tx = await AuditContract.logEvent(
+      event.action,
+      eventHash,
+      Math.floor(Date.now() / 1000)
+    );
+    
+    return tx.hash;
+  }
+}
+
+// ============================================================
+// 7. REAL-TIME COLLABORATION (Socket.io + CRDT)
+// ============================================================
+
+// socket/collaboration.handler.js
+import { Server } from 'socket.io';
+
+export class CollaborationHandler {
+  
+  constructor(io) {
+    this.io = io;
+    this.activeSessions = new Map();
+  }
+  
+  initialize() {
+    this.io.on('connection', (socket) => {
+      
+      // Rejoindre une session de builder
+      socket.on('join:site', async ({ siteId, userId }) => {
+        socket.join(`site:${siteId}`);
+        
+        // Broadcast présence
+        this.io.to(`site:${siteId}`).emit('user:joined', {
+          userId,
+          cursor: { x: 0, y: 0 }
+        });
+        
+        // Envoi de l'état initial (CRDT)
+        const currentState = await redis.get(`site:state:${siteId}`);
+        socket.emit('site:state', JSON.parse(currentState));
+      });
+      
+      // Sync changements (Operational Transformation)
+      socket.on('site:edit', async ({ siteId, operation }) => {
+        // Application de l'opération
+        const newState = await this.applyOperation(siteId, operation);
+        
+        // Broadcast à tous sauf émetteur
+        socket.to(`site:${siteId}`).emit('site:update', {
+          operation,
+          state: newState
+        });
+        
+        // Auto-save en DB (debounced)
+        this.debouncedSave(siteId, newState);
+      });
+      
+      // Curseur en temps réel
+      socket.on('cursor:move', ({ siteId, x, y }) => {
+        socket.to(`site:${siteId}`).emit('cursor:update', {
+          userId: socket.userId,
+          x, y
+        });
+      });
+    });
+  }
+  
+  async applyOperation(siteId, operation) {
+    // CRDT merge logic (simplifié)
+    const current = await redis.get(`site:state:${siteId}`);
+    const state = JSON.parse(current);
+    
+    // Appliquer transformation
+    if (operation.type === 'INSERT') {
+      state.sections.splice(operation.index, 0, operation.data);
+    } else if (operation.type === 'UPDATE') {
+      state.sections[operation.index] = operation.data;
+    }
+    
+    await redis.set(`site:state:${siteId}`, JSON.stringify(state));
+    return state;
+  }
+}
+
+// ============================================================
+// 8. ROUTES PRINCIPALES
+// ============================================================
+
+// routes/index.js
+import { Router } from 'express';
+import { AIBuilderController } from '../controllers/ai-builder.controller.js';
+import { CRMController } from '../controllers/crm.controller.js';
+import { EdgeController } from '../controllers/edge.controller.js';
+import { Web3Controller } from '../controllers/web3.controller.js';
+import { authMiddleware } from '../middleware/auth.js';
+
+const router = Router();
+
+// AI Builder
+router.post('/api/ai/generate-site', authMiddleware, AIBuilderController.generate);
+router.post('/api/ai/optimize-seo', authMiddleware, AIBuilderController.optimizeSEO);
+
+// CRM + ML
+router.get('/api/crm/leads/:id/score', authMiddleware, CRMController.getScore);
+router.get('/api/crm/predictions', authMiddleware, CRMController.getPredictions);
+
+// Edge & AIOps
+router.get('/api/edge/nodes', authMiddleware, EdgeController.listNodes);
+router.post('/api/edge/deploy', authMiddleware, EdgeController.deploy);
+
+// Web3
+router.post('/api/web3/subscribe', authMiddleware, Web3Controller.subscribe);
+router.post('/api/web3/deploy-ipfs', authMiddleware, Web3Controller.deployIPFS);
+
+export default router;
+
+// ============================================================
+// 9. DÉMARRAGE SERVEUR
+// ============================================================
+
+const PORT = process.env.PORT || 5000;
+
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Cloud Nexus 2030 Backend running on port ${PORT}`);
+  console.log(`🌐 API Gateway ready`);
+  console.log(`⚡ WebSocket server initialized`);
+  console.log(`🤖 AI Services connected`);
+  console.log(`🔗 Blockchain integration active`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect();
+  await redis.quit();
+  httpServer.close();
+});

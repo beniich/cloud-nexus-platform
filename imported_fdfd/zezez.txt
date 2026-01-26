@@ -1,0 +1,539 @@
+import React, { useState } from 'react';
+import { Mic, Shield, Zap, Box, Menu, X, ChevronRight, Sparkles } from 'lucide-react';
+
+// Main App with Router
+export default function CloudNexusApp() {
+  const [currentPhase, setCurrentPhase] = useState('home');
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const phases = [
+    {
+      id: 'voice',
+      name: 'Voice AI Builder',
+      icon: Mic,
+      color: 'from-indigo-500 to-purple-600',
+      description: 'Generate sites with your voice',
+      phase: 'Phase 1'
+    },
+    {
+      id: 'security',
+      name: 'Security Scanner',
+      icon: Shield,
+      color: 'from-emerald-500 to-green-600',
+      description: 'Zero-trust vulnerability detection',
+      phase: 'Phase 2'
+    },
+    {
+      id: 'cdn',
+      name: 'Predictive CDN',
+      icon: Zap,
+      color: 'from-blue-500 to-cyan-600',
+      description: 'ML-powered performance optimization',
+      phase: 'Phase 3'
+    },
+    {
+      id: 'metaverse',
+      name: 'Metaverse Builder',
+      icon: Box,
+      color: 'from-purple-500 to-pink-600',
+      description: '3D spatial web experiences',
+      phase: 'Phase 4'
+    }
+  ];
+
+  const renderPage = () => {
+    switch(currentPhase) {
+      case 'voice':
+        return <VoiceBuilderPage />;
+      case 'security':
+        return <SecurityScannerPage />;
+      case 'cdn':
+        return <PredictiveCDNPage />;
+      case 'metaverse':
+        return <MetaversePage />;
+      default:
+        return <HomePage phases={phases} onNavigate={setCurrentPhase} />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0e1a] text-white">
+      {/* Navigation Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 backdrop-blur-xl bg-[#0a0e1a]/80">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          <button 
+            onClick={() => setCurrentPhase('home')}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-sm font-bold">CLOUD NEXUS</h1>
+              <p className="text-xs text-gray-400">Vision 2030</p>
+            </div>
+          </button>
+
+          {/* Desktop Menu */}
+          <nav className="hidden md:flex items-center gap-2">
+            {phases.map(phase => {
+              const Icon = phase.icon;
+              return (
+                <button
+                  key={phase.id}
+                  onClick={() => setCurrentPhase(phase.id)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    currentPhase === phase.id 
+                      ? 'bg-white/10 text-white' 
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 inline mr-2" />
+                  {phase.name}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Mobile Menu Toggle */}
+          <button 
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden p-2 hover:bg-white/10 rounded-lg"
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div className="md:hidden border-t border-white/10 bg-[#0a0e1a] p-4">
+            {phases.map(phase => {
+              const Icon = phase.icon;
+              return (
+                <button
+                  key={phase.id}
+                  onClick={() => {
+                    setCurrentPhase(phase.id);
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 mb-2"
+                >
+                  <Icon className="w-5 h-5 text-blue-400" />
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-medium">{phase.name}</p>
+                    <p className="text-xs text-gray-400">{phase.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </header>
+
+      {/* Main Content */}
+      <main className="pt-16">
+        {renderPage()}
+      </main>
+    </div>
+  );
+}
+
+// Home Page
+function HomePage({ phases, onNavigate }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="max-w-6xl w-full">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl sm:text-7xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text">
+            Cloud Nexus 2030
+          </h1>
+          <p className="text-xl text-gray-400">Next-Generation Platform Architecture</p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {phases.map((phase, index) => {
+            const Icon = phase.icon;
+            return (
+              <button
+                key={phase.id}
+                onClick={() => onNavigate(phase.id)}
+                className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-white/30 transition-all duration-300 hover:scale-105 text-left"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ChevronRight className="w-5 h-5" />
+                </div>
+
+                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${phase.color} flex items-center justify-center mb-4`}>
+                  <Icon className="w-8 h-8" />
+                </div>
+
+                <div className="mb-2">
+                  <span className="text-xs font-mono text-gray-500 uppercase tracking-wider">{phase.phase}</span>
+                  <h3 className="text-2xl font-bold mt-1">{phase.name}</h3>
+                </div>
+
+                <p className="text-gray-400">{phase.description}</p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Voice Builder Page
+function VoiceBuilderPage() {
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState('');
+
+  const startRecording = () => {
+    setIsRecording(true);
+    setTimeout(() => {
+      setTranscript('Create a modern restaurant website with dark theme, reservation system, and menu gallery');
+    }, 1500);
+    setTimeout(() => setIsRecording(false), 5000);
+  };
+
+  return (
+    <div className="min-h-screen p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Voice AI Builder</h2>
+          <p className="text-gray-400">Generate complete websites using natural language</p>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Voice Input */}
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+            <div className="flex flex-col items-center gap-6">
+              <div className="relative">
+                {isRecording && (
+                  <div className="absolute inset-0 bg-indigo-500 rounded-full animate-ping opacity-50"></div>
+                )}
+                <button
+                  onClick={startRecording}
+                  disabled={isRecording}
+                  className={`relative w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg transition-transform ${
+                    isRecording ? 'scale-110' : 'hover:scale-105'
+                  }`}
+                >
+                  <Mic className="w-12 h-12" />
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-400">
+                {isRecording ? 'Listening...' : 'Click to speak your vision'}
+              </p>
+
+              {isRecording && (
+                <div className="flex gap-1 h-16 items-center">
+                  {[...Array(7)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-1 bg-indigo-500 rounded-full"
+                      style={{
+                        animation: `wave 1.2s ease-in-out infinite`,
+                        animationDelay: `${i * 0.1}s`,
+                        height: '12px'
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {transcript && (
+                <div className="w-full p-4 rounded-xl bg-white/5 border border-white/10">
+                  <p className="text-sm text-gray-300 italic">"{transcript}"</p>
+                </div>
+              )}
+            </div>
+
+            {/* AI Pipeline Status */}
+            <div className="mt-8 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+                  <div className="w-4 h-4 rounded-full bg-emerald-500"></div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium">Speech Recognition</p>
+                  <div className="h-1 bg-white/10 rounded-full mt-1">
+                    <div className="h-full w-full bg-emerald-500 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center shrink-0">
+                  <div className="w-4 h-4 rounded-full bg-indigo-500 animate-pulse"></div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium">Claude Analysis</p>
+                  <div className="h-1 bg-white/10 rounded-full mt-1">
+                    <div className="h-full w-3/4 bg-indigo-500 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Preview */}
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+            <h3 className="text-sm font-bold mb-4 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              Building in real-time...
+            </h3>
+
+            <div className="space-y-4">
+              <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-6">
+                <div className="text-xs text-white/60 mb-2">HERO SECTION</div>
+                <h3 className="text-2xl font-bold mb-2">Welcome to Your Site</h3>
+                <p className="text-white/80 text-sm mb-4">Auto-generated from voice</p>
+                <button className="px-4 py-2 bg-white text-indigo-600 rounded-lg text-sm font-medium">
+                  Call to Action
+                </button>
+              </div>
+
+              <div className="bg-white/5 rounded-xl p-4">
+                <div className="text-xs text-gray-500 mb-3">FEATURES GRID</div>
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-white/5 rounded-lg p-3 text-center">
+                      <div className="w-8 h-8 bg-white/10 rounded-lg mx-auto mb-2"></div>
+                      <p className="text-xs">Feature {i}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Security Scanner Page
+function SecurityScannerPage() {
+  return (
+    <div className="min-h-screen p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Security Scanner</h2>
+          <p className="text-gray-400">Zero-trust vulnerability detection</p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white/5 backdrop-blur-sm border border-emerald-500/20 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <Shield className="w-5 h-5 text-emerald-500" />
+              <span className="text-xs text-gray-400">Passed</span>
+            </div>
+            <div className="text-3xl font-bold">142</div>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-sm border border-yellow-500/20 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <Zap className="w-5 h-5 text-yellow-500" />
+              <span className="text-xs text-gray-400">Warnings</span>
+            </div>
+            <div className="text-3xl font-bold text-yellow-500">3</div>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-sm border border-red-500/20 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <X className="w-5 h-5 text-red-500" />
+              <span className="text-xs text-gray-400">Critical</span>
+            </div>
+            <div className="text-3xl font-bold text-red-500">0</div>
+          </div>
+        </div>
+
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+          <h3 className="font-bold mb-4">Threat Analysis</h3>
+          <div className="space-y-3">
+            {[
+              { name: 'HTTPS Enforced', status: 'SECURE', color: 'emerald' },
+              { name: 'CSP Headers Missing', status: 'MEDIUM', color: 'yellow' },
+              { name: 'Zero-Knowledge Encryption', status: 'ACTIVE', color: 'emerald' }
+            ].map((item, i) => (
+              <div key={i} className={`bg-[#0a0e1a] rounded-lg p-4 border-l-2 border-l-${item.color}-500`}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-bold">{item.name}</span>
+                  <span className={`text-xs px-2 py-1 rounded bg-${item.color}-500/20 text-${item.color}-500`}>
+                    {item.status}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400">Automated security check completed</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Predictive CDN Page
+function PredictiveCDNPage() {
+  return (
+    <div className="min-h-screen p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Predictive CDN Engine</h2>
+          <p className="text-gray-400">ML-powered performance optimization</p>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-6">
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+            <h3 className="text-sm font-bold mb-4">User Intent Heatmap</h3>
+            <div className="bg-[#0a0e1a] rounded-xl p-4 border border-white/10">
+              <div className="h-32 rounded-lg bg-gradient-to-br from-amber-500/40 to-orange-600/30 flex items-center justify-center relative">
+                <div className="absolute top-2 right-2 bg-red-500 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">
+                  92%
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold mb-1">Primary CTA</div>
+                  <div className="text-xs text-gray-400">High click probability</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                {[40, 50, 30].map((opacity, i) => (
+                  <div key={i} className="h-16 rounded bg-blue-500" style={{ opacity: opacity / 100 }}></div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+              <p className="text-xs font-bold text-amber-500 mb-1">Preload Recommendation</p>
+              <p className="text-xs text-gray-400">
+                Product page has 92% click probability. Preloading assets now.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5">
+              <h3 className="text-sm font-bold mb-4">ML Model Performance</h3>
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-gray-400">Prediction Accuracy</span>
+                    <span className="font-bold text-emerald-500">91.2%</span>
+                  </div>
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: '91.2%' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5">
+              <h3 className="text-sm font-bold mb-4">Preloaded Assets</h3>
+              <div className="space-y-2">
+                {[
+                  { name: 'hero-product-5k.webp', size: '2.3MB', confidence: 89 },
+                  { name: 'checkout-bundle.min.js', size: '145KB', confidence: 92 }
+                ].map((asset, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-[#0a0e1a]">
+                    <div>
+                      <p className="text-xs font-medium">{asset.name}</p>
+                      <p className="text-xs text-gray-500">Confidence: {asset.confidence}%</p>
+                    </div>
+                    <span className="text-xs font-mono text-emerald-500">{asset.size}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Metaverse Page
+function MetaversePage() {
+  return (
+    <div className="min-h-screen p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Metaverse Builder</h2>
+          <p className="text-gray-400">Create immersive 3D web experiences</p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0" style={{
+                backgroundImage: 'linear-gradient(rgba(0,240,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.1) 1px, transparent 1px)',
+                backgroundSize: '40px 40px'
+              }}></div>
+            </div>
+
+            <div className="relative min-h-[400px] flex items-center justify-center">
+              <div className="relative" style={{ perspective: '1000px' }}>
+                <div className="w-64 h-64 rounded-2xl bg-gradient-to-br from-purple-500/30 to-cyan-500/20 border border-cyan-500/30 flex items-center justify-center transform hover:scale-105 transition-transform">
+                  <Box className="w-24 h-24 text-cyan-400" />
+                </div>
+              </div>
+            </div>
+
+            <button className="absolute top-4 right-4 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-cyan-500 text-sm font-bold shadow-lg hover:shadow-cyan-500/50 transition-all">
+              Enter VR Mode
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5">
+              <h3 className="text-sm font-bold mb-4">Scene Properties</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-gray-400 mb-2 block">Environment</label>
+                  <select className="w-full bg-[#0a0e1a] border border-white/10 rounded-lg px-3 py-2 text-sm">
+                    <option>Cyberpunk City</option>
+                    <option>Space Station</option>
+                    <option>Minimal Studio</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5">
+              <h3 className="text-sm font-bold mb-4">3D Assets</h3>
+              <div className="space-y-2">
+                {[
+                  { name: 'Product Display', size: '2.4 MB' },
+                  { name: 'Furniture Set', size: '5.1 MB' }
+                ].map((asset, i) => (
+                  <div key={i} className="p-3 rounded-lg bg-[#0a0e1a] border border-purple-500/20 hover:border-purple-500/50 transition-colors cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/30 to-cyan-500/20 flex items-center justify-center">
+                        <Box className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold">{asset.name}</p>
+                        <p className="text-xs text-gray-500">.glb • {asset.size}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Add wave animation keyframes
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes wave {
+    0%, 100% { height: 12px; }
+    50% { height: 40px; }
+  }
+`;
+document.head.appendChild(style);

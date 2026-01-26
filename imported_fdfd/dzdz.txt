@@ -1,0 +1,414 @@
+// ============================================================
+// CLOUD NEXUS 2030 - MAIN SERVER
+// Complete backend integration
+// ============================================================
+
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { PrismaClient } from '@prisma/client';
+import Redis from 'ioredis';
+import winston from 'winston';
+
+// Routes
+import authRouter from './routes/auth.js';
+import voiceBuilderRouter from './routes/voice-builder.js';
+import deploymentRouter from './routes/deployment.js';
+import siteRouter from './routes/sites.js';
+import crmRouter from './routes/crm.js';
+
+// Middleware
+import { authMiddleware } from './middleware/auth.js';
+import { errorHandler } from './middleware/error-handler.js';
+import { requestLogger } from './middleware/logger.js';
+
+// Services
+import { CollaborationHandler } from './services/collaboration.js';
+import { EdgeManagerService } from './services/edge-manager.js';
+import { CRMMLService } from './services/crm-ml.js';
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST']
+  }
+});
+
+const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
+});
+
+const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
+  retryStrategy: (times) => {
+    const delay = Math.min(times * 50, 2000);
+    return delay;
+  },
+  maxRetriesPerRequest: 3
+});
+
+// ============================================================
+// LOGGER CONFIGURATION
+// ============================================================
+
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
+  ),
+  defaultMeta: { service: 'cloud-nexus-backend' },
+  transports: [
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+    })
+  ]
+});
+
+// Make logger globally available
+global.logger = logger;
+
+// ============================================================
+// MIDDLEWARE STACK
+// ============================================================
+
+// Security
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "wss:", process.env.CLIENT_URL],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'", "data:", "https:"]
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
+
+// CORS
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      process.env.CLIENT_URL,
+      'http://localhost:3000',
+      'http://localhost:5173'
+    ].filter(Boolean);
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
+// Compression
+app.use(compression());
+
+// Body parsing
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Request logging
+app.use(requestLogger);
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: async (req) => {
+    // Tier-based rate limiting
+    if (req.user?.role === 'ADMIN') return 10000;
+    if (req.user?.role === 'VENDOR') return 1000;
+    return 100;
+  },
+  message: 'Too many requests from this IP, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting for health checks
+    return req.path === '/health';
+  }
+});
+
+app.use('/api/', limiter);
+
+// ============================================================
+// HEALTH CHECK & MONITORING
+// ============================================================
+
+app.get('/health', async (req, res) => {
+  try {
+    // Check database
+    await prisma.$queryRaw`SELECT 1`;
+    const dbHealth = true;
+
+    // Check Redis
+    const redisHealth = redis.status === 'ready';
+
+    const health = {
+      status: dbHealth && redisHealth ? 'healthy' : 'degraded',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      services: {
+        database: dbHealth ? 'connected' : 'disconnected',
+        redis: redisHealth ? 'connected' : 'disconnected',
+        anthropic: !!process.env.ANTHROPIC_API_KEY,
+        openai: !!process.env.OPENAI_API_KEY,
+        vercel: !!process.env.VERCEL_TOKEN,
+        netlify: !!process.env.NETLIFY_TOKEN
+      }
+    };
+
+    const httpCode = health.status === 'healthy' ? 200 : 503;
+    res.status(httpCode).json(health);
+
+  } catch (error) {
+    logger.error('Health check failed:', error);
+    res.status(503).json({
+      status: 'unhealthy',
+      error: error.message
+    });
+  }
+});
+
+// Metrics endpoint
+app.get('/metrics', authMiddleware, async (req, res) => {
+  const metrics = {
+    totalUsers: await prisma.user.count(),
+    totalSites: await prisma.site.count(),
+    publishedSites: await prisma.site.count({ where: { published: true } }),
+    totalDeployments: await prisma.deployment.count(),
+    activeDeployments: await prisma.deployment.count({ where: { status: 'DEPLOYED' } }),
+    timestamp: new Date().toISOString()
+  };
+
+  res.json(metrics);
+});
+
+// ============================================================
+// API ROUTES
+// ============================================================
+
+// Authentication routes
+app.use('/auth', authRouter);
+
+// Voice builder routes
+app.use('/api/voice', authMiddleware, voiceBuilderRouter);
+
+// Deployment routes
+app.use('/api/deploy', authMiddleware, deploymentRouter);
+
+// Site management routes
+app.use('/api/sites', authMiddleware, siteRouter);
+
+// CRM routes
+app.use('/api/crm', authMiddleware, crmRouter);
+
+// ============================================================
+// WEBSOCKET / REAL-TIME COLLABORATION
+// ============================================================
+
+const collaborationHandler = new CollaborationHandler(io);
+collaborationHandler.initialize();
+
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth.token;
+    
+    if (!token) {
+      return next(new Error('Authentication token required'));
+    }
+
+    // Verify token (reuse auth middleware logic)
+    const jwt = await import('jsonwebtoken');
+    const decoded = jwt.default.verify(token, process.env.JWT_SECRET);
+    
+    socket.userId = decoded.userId;
+    socket.userEmail = decoded.email;
+    
+    next();
+  } catch (error) {
+    next(new Error('Invalid token'));
+  }
+});
+
+io.on('connection', (socket) => {
+  logger.info(`WebSocket connected: ${socket.userId}`);
+
+  socket.on('disconnect', () => {
+    logger.info(`WebSocket disconnected: ${socket.userId}`);
+  });
+
+  socket.on('error', (error) => {
+    logger.error('WebSocket error:', error);
+  });
+});
+
+// ============================================================
+// BACKGROUND JOBS & SCHEDULED TASKS
+// ============================================================
+
+const edgeManager = new EdgeManagerService();
+const crmML = new CRMMLService();
+
+// Monitor edge nodes every 30 seconds
+setInterval(async () => {
+  try {
+    await edgeManager.monitorEdgeNodes();
+  } catch (error) {
+    logger.error('Edge monitoring failed:', error);
+  }
+}, 30000);
+
+// Update ML lead scores every 5 minutes
+setInterval(async () => {
+  try {
+    const leads = await prisma.cRMLead.findMany({
+      where: { status: { in: ['NEW', 'CONTACTED', 'QUALIFIED'] } }
+    });
+
+    for (const lead of leads) {
+      const score = await crmML.calculateLeadScore(lead.id);
+      await prisma.cRMLead.update({
+        where: { id: lead.id },
+        data: { score }
+      });
+    }
+
+    logger.info(`Updated ML scores for ${leads.length} leads`);
+  } catch (error) {
+    logger.error('ML score update failed:', error);
+  }
+}, 5 * 60 * 1000);
+
+// Cleanup expired tokens every hour
+setInterval(async () => {
+  try {
+    const result = await prisma.refreshToken.deleteMany({
+      where: { expiresAt: { lt: new Date() } }
+    });
+
+    logger.info(`Cleaned up ${result.count} expired tokens`);
+  } catch (error) {
+    logger.error('Token cleanup failed:', error);
+  }
+}, 60 * 60 * 1000);
+
+// ============================================================
+// ERROR HANDLING
+// ============================================================
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    path: req.path,
+    message: 'The requested resource does not exist'
+  });
+});
+
+// Global error handler
+app.use(errorHandler);
+
+// Unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Uncaught exceptions
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  // Graceful shutdown
+  gracefulShutdown(1);
+});
+
+// ============================================================
+// GRACEFUL SHUTDOWN
+// ============================================================
+
+async function gracefulShutdown(code = 0) {
+  logger.info('Starting graceful shutdown...');
+
+  try {
+    // Close HTTP server
+    await new Promise((resolve) => {
+      httpServer.close(resolve);
+    });
+    logger.info('HTTP server closed');
+
+    // Close WebSocket connections
+    io.close();
+    logger.info('WebSocket server closed');
+
+    // Close database connection
+    await prisma.$disconnect();
+    logger.info('Database connection closed');
+
+    // Close Redis connection
+    await redis.quit();
+    logger.info('Redis connection closed');
+
+    logger.info('Graceful shutdown completed');
+    process.exit(code);
+
+  } catch (error) {
+    logger.error('Error during shutdown:', error);
+    process.exit(1);
+  }
+}
+
+process.on('SIGTERM', () => gracefulShutdown());
+process.on('SIGINT', () => gracefulShutdown());
+
+// ============================================================
+// SERVER START
+// ============================================================
+
+const PORT = process.env.PORT || 5000;
+const ENV = process.env.NODE_ENV || 'development';
+
+httpServer.listen(PORT, () => {
+  logger.info('═══════════════════════════════════════════════════');
+  logger.info('🚀 Cloud Nexus 2030 Backend Started');
+  logger.info('═══════════════════════════════════════════════════');
+  logger.info(`📡 Environment: ${ENV}`);
+  logger.info(`🌐 Server: http://localhost:${PORT}`);
+  logger.info(`💾 Database: ${prisma ? 'Connected' : 'Disconnected'}`);
+  logger.info(`⚡ Redis: ${redis.status}`);
+  logger.info(`🤖 Anthropic API: ${process.env.ANTHROPIC_API_KEY ? '✓' : '✗'}`);
+  logger.info(`🎙️ OpenAI API: ${process.env.OPENAI_API_KEY ? '✓' : '✗'}`);
+  logger.info(`🔐 WebAuthn: ${process.env.RP_ID || 'localhost'}`);
+  logger.info('═══════════════════════════════════════════════════');
+  logger.info('📚 Available routes:');
+  logger.info('   POST   /auth/register');
+  logger.info('   POST   /auth/login');
+  logger.info('   POST   /auth/passkey/register/options');
+  logger.info('   POST   /api/voice/upload');
+  logger.info('   POST   /api/voice/generate');
+  logger.info('   POST   /api/deploy/site/:id');
+  logger.info('   GET    /health');
+  logger.info('═══════════════════════════════════════════════════\n');
+});
+
+// Export for testing
+export { app, httpServer, io, prisma, redis };

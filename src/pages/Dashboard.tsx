@@ -1,153 +1,90 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  ShoppingBag,
-  Users,
-  Settings,
-  Package,
-  TrendingUp,
-  FileText,
-  MessageSquare,
-  LogOut,
-  Cloud,
-  Upload,
-  Server,
-  Sun,
-  Moon,
-  CreditCard,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/config/menu';
-import { Button } from '@/shared/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/select';
+import { Suspense } from 'react';
+import { Package } from 'lucide-react';
+import { DashboardProvider, useDashboard } from '@/contexts/DashboardContext';
+import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { ToastContainer } from '@/components/notifications/ToastContainer';
+import { SECTION_COMPONENTS, needsWideLayout } from '@/config/dashboardConfig';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
-import ProductsManager from '@/components/dashboard/ProductsManager';
-import SalesManager from '@/components/dashboard/SalesManager';
-import StatisticsView from '@/components/dashboard/StatisticsView';
-import MessagingView from '@/components/dashboard/MessagingView';
-import SettingsView from '@/components/dashboard/SettingsView';
-import CloudSpacesBrowser from '@/components/dashboard/CloudSpacesBrowser';
-import CloudSpacesUpload from '@/components/dashboard/CloudSpacesUpload';
-import ServersManagement from '@/components/dashboard/ServersManagement';
-import HostingRequestForm from '@/components/dashboard/HostingRequestForm';
-import BillingPaymentSystem from '@/components/dashboard/BillingPaymentSystem';
-import UsersManagement from '@/components/dashboard/UsersManagement';
-import AnalyticsDashboard from '@/components/dashboard/AnalyticsDashboard';
-import TicketSupportSystem from '@/components/dashboard/TicketSupportSystem';
-import SubscriptionSection from '@/components/dashboard/SubscriptionSection';
-import { Logo } from '@/components/Logo';
 
-import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { NotificationCenter } from "@/components/notifications/NotificationCenter";
-import { ToastContainer } from "@/components/notifications/ToastContainer";
+// Mock stats for DashboardOverview
+const mockStats = [
+  { label: "Revenu Total", value: "€24,500", change: "+12%" },
+  { label: "Clients Actifs", value: "1,240", change: "+18%" },
+  { label: "Commandes", value: "345", change: "+5%" },
+  { label: "Support", value: "12", change: "-2%" }
+];
 
-type UserRole = 'client' | 'seller' | 'admin';
-type Section = 'overview' | 'orders' | 'invoices' | 'services' | 'support' | 'settings' | 'products' | 'sales' | 'stats' | 'messages' | 'users' | 'analytics' | 'config' | 'cloud-spaces' | 'cloud-upload' | 'servers' | 'new-hosting' | 'subscription';
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center h-96">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <p className="text-gray-500">Chargement...</p>
+    </div>
+  </div>
+);
 
+// Main dashboard content renderer
+const DashboardContent = () => {
+  const { activeSection, currentRole, isNotificationOpen, setIsNotificationOpen } = useDashboard();
 
-export default function Dashboard() {
-  // ... existing code ...
+  // Get component for active section
+  const ActiveComponent = SECTION_COMPONENTS[activeSection];
+
+  // Determine if current section needs wide layout
+  const isWideLayout = needsWideLayout(activeSection);
+
+  if (!ActiveComponent) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-gray-500">
+        <Package className="w-16 h-16 mb-4 opacity-20" />
+        <p className="text-lg font-medium">Section en construction</p>
+        <p className="text-sm">La section {activeSection} sera bientôt disponible.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-subtl">
-      {/* Header */}
-      <header className="h-16 flex items-center justify-between px-6 mb-2">
-        <div className="flex items-center gap-4">
-          {/* Title removed as requested */}
-        </div>
+    <>
+      <div className="min-h-screen bg-gradient-subtl">
+        <DashboardHeader />
 
-        {/* Context Controls Only */}
-        <div className="flex items-center gap-4 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm border border-gray-100 dark:border-gray-700">
-          <span className="font-medium text-gray-500 uppercase text-xs tracking-wider">{t('dashboard.mode')}:</span>
-          <Select value={currentRole} onValueChange={(v: UserRole) => setCurrentRole(v)}>
-            <SelectTrigger className="w-[110px] h-8 border-none bg-transparent focus:ring-0 font-semibold text-primary">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="client">Client</SelectItem>
-              <SelectItem value="seller">Vendeur</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </header>
+        <div className="flex">
+          <DashboardSidebar />
 
-      <div className="flex">
-        <aside
-          className={`${isSidebarCollapsed ? 'w-20' : 'w-64'} bg-background border-r border-border min-h-[calc(100vh-73px)] p-4 transition-all duration-300 relative`}
-        >
-          {/* Logo in Sidebar */}
-          <div className={`mb-6 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'px-2'}`}>
-            <Logo size="sm" showText={!isSidebarCollapsed} />
-          </div>
-
-          {/* Toggle Button */}
-          <button
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="absolute -right-3 top-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full p-1 shadow-sm hover:shadow-md transition-all z-10"
-          >
-            {isSidebarCollapsed ? (
-              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-            ) : (
-              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-            )}
-          </button>
-
-          <nav className="space-y-2">
-            {menuItems[currentRole].map((item, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveSection(item.section)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === item.section
-                  ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-accent hover:text-accent-foreground'
-                  } ${isSidebarCollapsed ? 'justify-center px-2' : ''}`}
-                title={isSidebarCollapsed ? item.label : ''}
-              >
-                <item.icon className="w-5 h-5 flex-shrink-0" />
-                {!isSidebarCollapsed && (
-                  <span className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                    {item.label}
-                  </span>
+          <main className="flex-1 p-8">
+            <div
+              className={`${isWideLayout ? 'max-w-[95%]' : 'max-w-7xl'
+                } mx-auto transition-all duration-300`}
+            >
+              <Suspense fallback={<LoadingFallback />}>
+                {activeSection === 'overview' ? (
+                  <DashboardOverview stats={mockStats} role={currentRole} />
+                ) : (
+                  <ActiveComponent />
                 )}
-              </button>
-            ))}
-          </nav>
-
-          {!isSidebarCollapsed && (
-            <div className="mt-8 p-4 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-2">Besoin d'aide ?</p>
-              <p className="text-xs text-muted-foreground mb-3">Consultez notre documentation ou contactez le support.</p>
-              <Link to="/contact">
-                <Button variant="outline" size="sm" className="w-full">
-                  Contacter le support
-                </Button>
-              </Link>
+              </Suspense>
             </div>
-          )}
-        </aside>
-
-        <main className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
-            {renderContent()}
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
+
       <NotificationCenter
         isOpen={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
       />
       <ToastContainer />
-    </div >
+    </>
+  );
+};
+
+// Main Dashboard component with provider
+export default function Dashboard() {
+  return (
+    <DashboardProvider>
+      <DashboardContent />
+    </DashboardProvider>
   );
 }

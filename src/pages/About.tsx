@@ -3,34 +3,38 @@ import { Cloud, Users, Target, Heart, Globe, Award, ChevronRight, ArrowRight } f
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 
+import { useTranslation } from 'react-i18next';
+
 const About = () => {
+    const { t } = useTranslation();
+
     const stats = [
-        { label: "Clients Actifs", value: "10k+" },
-        { label: "Pays", value: "30+" },
-        { label: "Membres d'équipe", value: "200+" },
-        { label: "Uptime", value: "99.99%" }
+        { label: t('aboutPage.stats.clients'), value: "10k+" },
+        { label: t('aboutPage.stats.countries'), value: "30+" },
+        { label: t('aboutPage.stats.team'), value: "200+" },
+        { label: t('aboutPage.stats.uptime'), value: "99.99%" }
     ];
 
     const values = [
         {
             icon: <Target className="w-8 h-8 text-orange-500" />,
-            title: "Innovation",
-            description: "Nous repoussons constamment les limites de la technologie cloud."
+            title: t('aboutPage.values.innovation.title'),
+            description: t('aboutPage.values.innovation.desc')
         },
         {
             icon: <Heart className="w-8 h-8 text-orange-500" />,
-            title: "Engagement Client",
-            description: "Votre réussite est notre priorité absolue."
+            title: t('aboutPage.values.engagement.title'),
+            description: t('aboutPage.values.engagement.desc')
         },
         {
             icon: <Users className="w-8 h-8 text-orange-500" />,
-            title: "Transparence",
-            description: "Communication claire et honnête à chaque étape."
+            title: t('aboutPage.values.transparency.title'),
+            description: t('aboutPage.values.transparency.desc')
         },
         {
             icon: <Globe className="w-8 h-8 text-orange-500" />,
-            title: "Durabilité",
-            description: "Engagement pour un cloud computing éco-responsable."
+            title: t('aboutPage.values.sustainability.title'),
+            description: t('aboutPage.values.sustainability.desc')
         }
     ];
 
@@ -67,12 +71,12 @@ const About = () => {
                             <Logo size="lg" />
                         </div>
                         <div className="hidden md:flex items-center gap-8">
-                            <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Accueil</Link>
-                            <Link to="/services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Services</Link>
-                            <Link to="/about" className="text-orange-600 font-bold">À propos</Link>
-                            <Link to="/contact" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">Contact</Link>
+                            <Link to="/" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.home')}</Link>
+                            <Link to="/services" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.services')}</Link>
+                            <Link to="/about" className="text-orange-600 font-bold">{t('navbar.about')}</Link>
+                            <Link to="/contact" className="text-slate-600 hover:text-orange-600 transition-colors font-medium">{t('navbar.contact')}</Link>
                             <button className="px-6 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-all font-medium">
-                                Rejoignez-nous
+                                {t('aboutPage.nav.join')}
                             </button>
                         </div>
                     </div>
@@ -86,20 +90,20 @@ const About = () => {
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <div className="space-y-8">
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100/50 text-orange-700 rounded-full text-sm font-semibold border border-orange-200">
-                                <span>Notre Histoire</span>
+                                <span>{t('aboutPage.hero.badge')}</span>
                             </div>
                             <h1 className="text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-                                Démocratiser l'accès au <br />
+                                {t('aboutPage.hero.title')} <br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">
-                                    Cloud de Demain
+                                    {t('aboutPage.hero.titleHighlight')}
                                 </span>
                             </h1>
                             <p className="text-xl text-slate-600 leading-relaxed">
-                                Fondée en 2023, Cloud Nexus est née d'une vision simple : rendre la puissance du cloud accessible à toutes les entreprises, avec une simplicité et une sécurité inégalées.
+                                {t('aboutPage.hero.desc')}
                             </p>
                             <div className="flex gap-4 pt-4">
                                 <Link to="/careers" className="px-8 py-4 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all font-bold flex items-center gap-2">
-                                    Voir nos offres
+                                    {t('aboutPage.hero.cta')}
                                     <ArrowRight className="w-5 h-5" />
                                 </Link>
                             </div>
@@ -118,8 +122,8 @@ const About = () => {
                                         <Award className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <p className="font-bold text-slate-900">Excellence Certifiée</p>
-                                        <p className="text-sm text-slate-500">ISO 27001 & HDS</p>
+                                        <p className="font-bold text-slate-900">{t('aboutPage.cert.title')}</p>
+                                        <p className="text-sm text-slate-500">{t('aboutPage.cert.desc')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -150,9 +154,9 @@ const About = () => {
             <section className="py-24 px-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-slate-900 mb-4">Nos Valeurs</h2>
+                        <h2 className="text-4xl font-bold text-slate-900 mb-4">{t('aboutPage.values.title')}</h2>
                         <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                            Ce qui nous guide au quotidien pour servir nos clients et construire nos produits.
+                            {t('aboutPage.values.subtitle')}
                         </p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -175,9 +179,9 @@ const About = () => {
             <section className="py-24 px-6 bg-slate-50">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-slate-900 mb-4">L'Équipe Dirigeante</h2>
+                        <h2 className="text-4xl font-bold text-slate-900 mb-4">{t('aboutPage.team.title')}</h2>
                         <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                            Des experts passionnés par l'innovation technologique.
+                            {t('aboutPage.team.subtitle')}
                         </p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -208,7 +212,7 @@ const About = () => {
             {/* Footer */}
             <footer className="border-t border-slate-200 py-12 px-6 bg-white">
                 <div className="max-w-7xl mx-auto text-center text-slate-600">
-                    <p>© 2025 Cloud Nexus Platform. Tous droits réservés.</p>
+                    <p>© 2025 Cloud Nexus Platform. {t('footer.allRightsReserved')}</p>
                 </div>
             </footer>
         </div>

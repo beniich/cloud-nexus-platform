@@ -1,0 +1,698 @@
+// ============================================================
+// EMAIL SERVICE - SENDGRID & MAILGUN
+// Transactional emails, templates, analytics
+// ============================================================
+
+import sgMail from '@sendgrid/mail';
+import Mailgun from 'mailgun.js';
+import formData from 'form-data';
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import handlebars from 'handlebars';
+import fs from 'fs/promises';
+import path from 'path';
+
+const router = express.Router();
+const prisma = new PrismaClient();
+
+// ============================================================
+// EMAIL PROVIDERS SETUP
+// ============================================================
+
+// SendGrid Configuration
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+if (SENDGRID_API_KEY) {
+  sgMail.setApiKey(SENDGRID_API_KEY);
+}
+
+// Mailgun Configuration
+const mailgun = new Mailgun(formData);
+const mgClient = process.env.MAILGUN_API_KEY ? mailgun.client({
+  username: 'api',
+  key: process.env.MAILGUN_API_KEY,
+  url: process.env.MAILGUN_URL || 'https://api.mailgun.net'
+}) : null;
+
+const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN || 'mg.cloudnexus.com';
+
+// Default sender
+const DEFAULT_FROM = {
+  email: process.env.EMAIL_FROM || 'noreply@cloudnexus.com',
+  name: 'Cloud Nexus 2030'
+};
+
+// ============================================================
+// EMAIL TEMPLATES
+// ============================================================
+
+const EMAIL_TEMPLATES = {
+  WELCOME: 'welcome',
+  VERIFY_EMAIL: 'verify-email',
+  RESET_PASSWORD: 'reset-password',
+  SITE_DEPLOYED: 'site-deployed',
+  SITE_FAILED: 'site-failed',
+  INVOICE: 'invoice',
+  LEAD_ASSIGNED: 'lead-assigned',
+  DEPLOYMENT_SUCCESS: 'deployment-success',
+  SECURITY_ALERT: 'security-alert',
+  MONTHLY_REPORT: 'monthly-report'
+};
+
+// ============================================================
+// EMAIL SERVICE CLASS
+// ============================================================
+
+class EmailService {
+  
+  constructor(provider = 'sendgrid') {
+    this.provider = provider;
+    this.templatesPath = path.join(process.cwd(), 'templates', 'emails');
+  }
+
+  /**
+   * Send email via SendGrid
+   */
+  async sendViaSendGrid(options) {
+    try {
+      const msg = {
+        to: options.to,
+        from: options.from || DEFAULT_FROM,
+        subject: options.subject,
+        text: options.text,
+        html: options.html,
+        templateId: options.templateId,
+        dynamicTemplateData: options.templateData,
+        attachments: options.attachments,
+        categories: options.categories || ['cloud-nexus'],
+        customArgs: {
+          userId: options.userId,
+          eventType: options.eventType
+        }
+      };
+
+      const response = await sgMail.send(msg);
+      
+      console.log(`✉️ Email sent via SendGrid to ${options.to}`);
+      
+      return {
+        success: true,
+        provider: 'sendgrid',
+        messageId: response[0].headers['x-message-id']
+      };
+
+    } catch (error) {
+      console.error('SendGrid error:', error.response?.body || error);
+      throw new Error(`SendGrid failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Send email via Mailgun
+   */
+  async sendViaMailgun(options) {
+    try {
+      if (!mgClient) {
+        throw new Error('Mailgun not configured');
+      }
+
+      const messageData = {
+        from: `${options.from?.name || DEFAULT_FROM.name} <${options.from?.email || DEFAULT_FROM.email}>`,
+        to: options.to,
+        subject: options.subject,
+        text: options.text,
+        html: options.html,
+        'o:tag': options.categories || ['cloud-nexus'],
+        'v:userId': options.userId,
+        'v:eventType': options.eventType
+      };
+
+      // Attachments
+      if (options.attachments) {
+        messageData.attachment = options.attachments.map(att => ({
+          filename: att.filename,
+          data: Buffer.from(att.content, 'base64')
+        }));
+      }
+
+      const response = await mgClient.messages.create(MAILGUN_DOMAIN, messageData);
+      
+      console.log(`✉️ Email sent via Mailgun to ${options.to}`);
+      
+      return {
+        success: true,
+        provider: 'mailgun',
+        messageId: response.id
+      };
+
+    } catch (error) {
+      console.error('Mailgun error:', error);
+      throw new Error(`Mailgun failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Main send method (auto-selects provider)
+   */
+  async send(options) {
+    try {
+      // Log email to database
+      const emailLog = await prisma.emailLog.create({
+        data: {
+          to: options.to,
+          subject: options.subject,
+          template: options.template,
+          provider: this.provider,
+          status: 'SENDING',
+          userId: options.userId,
+          metadata: options.templateData || {}
+        }
+      });
+
+      let result;
+
+      // Send via selected provider
+      if (this.provider === 'sendgrid' && SENDGRID_API_KEY) {
+        result = await this.sendViaSendGrid(options);
+      } else if (this.provider === 'mailgun' && mgClient) {
+        result = await this.sendViaMailgun(options);
+      } else {
+        throw new Error('No email provider configured');
+      }
+
+      // Update log
+      await prisma.emailLog.update({
+        where: { id: emailLog.id },
+        data: {
+          status: 'SENT',
+          messageId: result.messageId,
+          sentAt: new Date()
+        }
+      });
+
+      return result;
+
+    } catch (error) {
+      // Log failure
+      await prisma.emailLog.update({
+        where: { id: emailLog.id },
+        data: {
+          status: 'FAILED',
+          error: error.message
+        }
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * Load and compile email template
+   */
+  async renderTemplate(templateName, data) {
+    try {
+      const templatePath = path.join(this.templatesPath, `${templateName}.html`);
+      const templateSource = await fs.readFile(templatePath, 'utf-8');
+      
+      const template = handlebars.compile(templateSource);
+      const html = template(data);
+
+      return html;
+
+    } catch (error) {
+      console.error(`Template ${templateName} not found:`, error);
+      // Fallback to plain text
+      return this.generatePlainTemplate(templateName, data);
+    }
+  }
+
+  /**
+   * Fallback plain text templates
+   */
+  generatePlainTemplate(templateName, data) {
+    const templates = {
+      [EMAIL_TEMPLATES.WELCOME]: `
+        <h1>Welcome to Cloud Nexus 2030!</h1>
+        <p>Hi ${data.name},</p>
+        <p>Your account has been created successfully. Start building amazing sites with AI.</p>
+        <a href="${data.dashboardUrl}">Go to Dashboard</a>
+      `,
+      [EMAIL_TEMPLATES.SITE_DEPLOYED]: `
+        <h1>🚀 Site Deployed Successfully!</h1>
+        <p>Hi ${data.name},</p>
+        <p>Your site <strong>${data.siteName}</strong> is now live!</p>
+        <p>URL: <a href="${data.siteUrl}">${data.siteUrl}</a></p>
+      `,
+      [EMAIL_TEMPLATES.VERIFY_EMAIL]: `
+        <h1>Verify Your Email</h1>
+        <p>Hi ${data.name},</p>
+        <p>Please verify your email address by clicking the link below:</p>
+        <a href="${data.verificationUrl}">Verify Email</a>
+      `
+    };
+
+    return templates[templateName] || '<p>Email content</p>';
+  }
+
+  /**
+   * Send welcome email
+   */
+  async sendWelcomeEmail(user) {
+    const html = await this.renderTemplate(EMAIL_TEMPLATES.WELCOME, {
+      name: user.name || user.email,
+      email: user.email,
+      dashboardUrl: `${process.env.CLIENT_URL}/dashboard`
+    });
+
+    return this.send({
+      to: user.email,
+      subject: 'Welcome to Cloud Nexus 2030! 🚀',
+      html,
+      template: EMAIL_TEMPLATES.WELCOME,
+      userId: user.id,
+      eventType: 'user.welcome',
+      categories: ['onboarding', 'welcome']
+    });
+  }
+
+  /**
+   * Send email verification
+   */
+  async sendVerificationEmail(user, token) {
+    const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+
+    const html = await this.renderTemplate(EMAIL_TEMPLATES.VERIFY_EMAIL, {
+      name: user.name,
+      verificationUrl
+    });
+
+    return this.send({
+      to: user.email,
+      subject: 'Verify Your Email Address',
+      html,
+      template: EMAIL_TEMPLATES.VERIFY_EMAIL,
+      userId: user.id,
+      eventType: 'user.verify_email'
+    });
+  }
+
+  /**
+   * Send password reset email
+   */
+  async sendPasswordResetEmail(user, token) {
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
+
+    const html = await this.renderTemplate(EMAIL_TEMPLATES.RESET_PASSWORD, {
+      name: user.name,
+      resetUrl,
+      expiresIn: '1 hour'
+    });
+
+    return this.send({
+      to: user.email,
+      subject: 'Password Reset Request',
+      html,
+      template: EMAIL_TEMPLATES.RESET_PASSWORD,
+      userId: user.id,
+      eventType: 'user.password_reset',
+      categories: ['security', 'password-reset']
+    });
+  }
+
+  /**
+   * Send deployment success notification
+   */
+  async sendDeploymentSuccessEmail(user, site, deployment) {
+    const html = await this.renderTemplate(EMAIL_TEMPLATES.SITE_DEPLOYED, {
+      name: user.name,
+      siteName: site.name,
+      siteUrl: deployment.url,
+      provider: deployment.provider,
+      deployedAt: new Date().toLocaleString()
+    });
+
+    return this.send({
+      to: user.email,
+      subject: `🚀 ${site.name} is now live!`,
+      html,
+      template: EMAIL_TEMPLATES.SITE_DEPLOYED,
+      userId: user.id,
+      eventType: 'deployment.success',
+      categories: ['deployment', 'success']
+    });
+  }
+
+  /**
+   * Send deployment failure notification
+   */
+  async sendDeploymentFailureEmail(user, site, error) {
+    const html = await this.renderTemplate(EMAIL_TEMPLATES.SITE_FAILED, {
+      name: user.name,
+      siteName: site.name,
+      error: error.message,
+      supportUrl: `${process.env.CLIENT_URL}/support`
+    });
+
+    return this.send({
+      to: user.email,
+      subject: `⚠️ Deployment failed: ${site.name}`,
+      html,
+      template: EMAIL_TEMPLATES.SITE_FAILED,
+      userId: user.id,
+      eventType: 'deployment.failed',
+      categories: ['deployment', 'error']
+    });
+  }
+
+  /**
+   * Send invoice email with PDF attachment
+   */
+  async sendInvoiceEmail(user, invoice, pdfBuffer) {
+    const html = await this.renderTemplate(EMAIL_TEMPLATES.INVOICE, {
+      name: user.name,
+      invoiceNumber: invoice.id,
+      amount: invoice.total,
+      dueDate: invoice.dueDate
+    });
+
+    return this.send({
+      to: user.email,
+      subject: `Invoice ${invoice.id} - Cloud Nexus`,
+      html,
+      template: EMAIL_TEMPLATES.INVOICE,
+      userId: user.id,
+      eventType: 'billing.invoice',
+      attachments: [{
+        filename: `invoice-${invoice.id}.pdf`,
+        content: pdfBuffer.toString('base64'),
+        type: 'application/pdf'
+      }],
+      categories: ['billing', 'invoice']
+    });
+  }
+
+  /**
+   * Send CRM lead assignment notification
+   */
+  async sendLeadAssignedEmail(user, lead) {
+    const html = await this.renderTemplate(EMAIL_TEMPLATES.LEAD_ASSIGNED, {
+      name: user.name,
+      leadName: lead.name,
+      leadCompany: lead.company,
+      leadEmail: lead.email,
+      crmUrl: `${process.env.CLIENT_URL}/crm/leads/${lead.id}`
+    });
+
+    return this.send({
+      to: user.email,
+      subject: `New Lead Assigned: ${lead.name}`,
+      html,
+      template: EMAIL_TEMPLATES.LEAD_ASSIGNED,
+      userId: user.id,
+      eventType: 'crm.lead_assigned',
+      categories: ['crm', 'lead']
+    });
+  }
+
+  /**
+   * Send security alert
+   */
+  async sendSecurityAlert(user, alertType, details) {
+    const html = await this.renderTemplate(EMAIL_TEMPLATES.SECURITY_ALERT, {
+      name: user.name,
+      alertType,
+      details,
+      timestamp: new Date().toLocaleString(),
+      securityUrl: `${process.env.CLIENT_URL}/security`
+    });
+
+    return this.send({
+      to: user.email,
+      subject: `🔒 Security Alert: ${alertType}`,
+      html,
+      template: EMAIL_TEMPLATES.SECURITY_ALERT,
+      userId: user.id,
+      eventType: 'security.alert',
+      categories: ['security', 'alert']
+    });
+  }
+
+  /**
+   * Send bulk emails (with rate limiting)
+   */
+  async sendBulk(emails) {
+    const results = [];
+    const batchSize = 100; // SendGrid/Mailgun limit
+
+    for (let i = 0; i < emails.length; i += batchSize) {
+      const batch = emails.slice(i, i + batchSize);
+      
+      const batchPromises = batch.map(email => 
+        this.send(email).catch(error => ({
+          error: error.message,
+          to: email.to
+        }))
+      );
+
+      const batchResults = await Promise.allSettled(batchPromises);
+      results.push(...batchResults);
+
+      // Rate limiting delay
+      if (i + batchSize < emails.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Get email analytics
+   */
+  async getAnalytics(userId, startDate, endDate) {
+    const stats = await prisma.emailLog.groupBy({
+      by: ['status', 'template'],
+      where: {
+        userId,
+        createdAt: {
+          gte: startDate,
+          lte: endDate
+        }
+      },
+      _count: true
+    });
+
+    return {
+      total: stats.reduce((sum, s) => sum + s._count, 0),
+      byStatus: stats.reduce((acc, s) => {
+        acc[s.status] = (acc[s.status] || 0) + s._count;
+        return acc;
+      }, {}),
+      byTemplate: stats.reduce((acc, s) => {
+        acc[s.template] = (acc[s.template] || 0) + s._count;
+        return acc;
+      }, {})
+    };
+  }
+}
+
+// ============================================================
+// API ROUTES
+// ============================================================
+
+const emailService = new EmailService(process.env.EMAIL_PROVIDER || 'sendgrid');
+
+/**
+ * POST /email/send
+ * Send custom email
+ */
+router.post('/send', async (req, res) => {
+  try {
+    const { to, subject, html, userId, template } = req.body;
+
+    if (!to || !subject) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const result = await emailService.send({
+      to,
+      subject,
+      html,
+      userId,
+      template
+    });
+
+    res.json({
+      success: true,
+      ...result
+    });
+
+  } catch (error) {
+    console.error('Email send error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /email/welcome
+ * Send welcome email to new user
+ */
+router.post('/welcome', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await emailService.sendWelcomeEmail(user);
+
+    res.json({
+      success: true,
+      message: 'Welcome email sent'
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /email/deployment-success
+ * Notify user of successful deployment
+ */
+router.post('/deployment-success', async (req, res) => {
+  try {
+    const { userId, siteId, deploymentId } = req.body;
+
+    const [user, site, deployment] = await Promise.all([
+      prisma.user.findUnique({ where: { id: userId } }),
+      prisma.site.findUnique({ where: { id: siteId } }),
+      prisma.deployment.findUnique({ where: { id: deploymentId } })
+    ]);
+
+    await emailService.sendDeploymentSuccessEmail(user, site, deployment);
+
+    res.json({
+      success: true,
+      message: 'Deployment notification sent'
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /email/bulk
+ * Send bulk emails
+ */
+router.post('/bulk', async (req, res) => {
+  try {
+    const { emails } = req.body;
+
+    if (!Array.isArray(emails) || emails.length === 0) {
+      return res.status(400).json({ error: 'Invalid emails array' });
+    }
+
+    const results = await emailService.sendBulk(emails);
+
+    const summary = {
+      total: results.length,
+      successful: results.filter(r => r.status === 'fulfilled').length,
+      failed: results.filter(r => r.status === 'rejected').length
+    };
+
+    res.json({
+      success: true,
+      summary,
+      results
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /email/analytics
+ * Get email sending analytics
+ */
+router.get('/analytics', async (req, res) => {
+  try {
+    const { userId, startDate, endDate } = req.query;
+
+    const analytics = await emailService.getAnalytics(
+      userId,
+      new Date(startDate),
+      new Date(endDate)
+    );
+
+    res.json({
+      success: true,
+      analytics
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /email/logs
+ * Get email sending history
+ */
+router.get('/logs', async (req, res) => {
+  try {
+    const { userId, limit = 50, offset = 0 } = req.query;
+
+    const logs = await prisma.emailLog.findMany({
+      where: userId ? { userId } : {},
+      orderBy: { createdAt: 'desc' },
+      take: parseInt(limit),
+      skip: parseInt(offset)
+    });
+
+    res.json({
+      success: true,
+      logs,
+      total: await prisma.emailLog.count({ where: userId ? { userId } : {} })
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================================
+// PRISMA SCHEMA ADDITION REQUIRED
+// ============================================================
+
+/*
+Add to prisma/schema.prisma:
+
+model EmailLog {
+  id          String   @id @default(uuid())
+  to          String
+  subject     String
+  template    String?
+  provider    String   // sendgrid, mailgun
+  status      String   // SENDING, SENT, FAILED
+  messageId   String?
+  error       String?
+  userId      String?
+  metadata    Json?
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+}
+*/
+
+// ============================================================
+// EXPORT
+// ============================================================
+
+export { emailService, EmailService, EMAIL_TEMPLATES };
+export default router;

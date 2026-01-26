@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber-Sec Scanner - Cloud Nexus 2030</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "cyber-red": "#ff0040",
+                        "cyber-green": "#00ff88",
+                        "cyber-blue": "#0088ff",
+                        "background-dark": "#050a0f",
+                        "surface": "#0a1118"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(10, 17, 24, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 136, 0.1);
+        }
+        
+        .terminal-text {
+            font-family: 'JetBrains Mono', monospace;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+        }
+        
+        @keyframes scan-line {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        
+        .scan-line {
+            animation: scan-line 2s linear infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        .threat-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display min-h-screen">
+    <div class="flex flex-col h-screen">
+        <!-- Header -->
+        <header class="h-16 border-b border-cyber-green/20 px-6 flex items-center justify-between glass-panel">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-cyber-green/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-cyber-green">verified_user</span>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold terminal-text">NEXUS CYBER-SEC</h1>
+                    <p class="text-xs text-gray-400 font-mono">Phase 2 - Quantum Shield</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 text-xs font-mono">
+                    <span class="text-gray-500">THREAT LEVEL:</span>
+                    <span class="text-cyber-green font-bold">LOW</span>
+                </div>
+                <div class="px-3 py-1 rounded bg-cyber-green/10 border border-cyber-green/30">
+                    <span class="text-xs text-cyber-green font-mono blink">● SCANNING</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-hidden flex">
+            <!-- Left Panel: Scanner -->
+            <div class="w-full lg:w-3/5 p-6 flex flex-col gap-4 overflow-y-auto">
+                <!-- Scan Progress -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-cyber-green/20">
+                        <div class="h-full bg-cyber-green" style="width: 67%; transition: width 0.3s;"></div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold mb-1">Deep Security Scan</h2>
+                            <p class="text-sm text-gray-400 font-mono">Target: nexus-app.io</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-3xl font-bold terminal-text text-cyber-green">67%</div>
+                            <p class="text-xs text-gray-500">Completed</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-surface rounded-xl p-4 border border-white/5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-cyber-green text-sm">check_circle</span>
+                                <span class="text-xs uppercase tracking-wider text-gray-400">Passed</span>
+                            </div>
+                            <div class="text-2xl font-bold">142</div>
+                        </div>
+                        <div class="bg-surface rounded-xl p-4 border border-yellow-500/20">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-yellow-500 text-sm">warning</span>
+                                <span class="text-xs uppercase tracking-wider text-gray-400">Warnings</span>
+                            </div>
+                            <div class="text-2xl font-bold text-yellow-500">3</div>
+                        </div>
+                        <div class="bg-surface rounded-xl p-4 border border-cyber-red/20">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-cyber-red text-sm">dangerous</span>
+                                <span class="text-xs uppercase tracking-wider text-gray-400">Critical</span>
+                            </div>
+                            <div class="text-2xl font-bold text-cyber-red">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vulnerability List -->
+                <div class="glass-panel rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm uppercase tracking-wider">Threat Analysis</h3>
+                        <button class="text-xs text-cyber-green hover:underline font-mono">VIEW ALL</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Item 1 -->
+                        <div class="bg-surface rounded-lg p-4 border-l-2 border-l-cyber-green">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-cyber-green text-sm">shield_check</span>
+                                    <span class="text-sm font-bold">HTTPS Enforced</span>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-cyber-green/20 text-cyber-green font-mono">SECURE</span>
+                            </div>
+                            <p class="text-xs text-gray-400 font-mono">All traffic encrypted via TLS 1.3</p>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="bg-surface rounded-lg p-4 border-l-2 border-l-yellow-500">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-yellow-500 text-sm">warning</span>
+                                    <span class="text-sm font-bold">CSP Headers Missing</span>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-500 font-mono">MEDIUM</span>
+                            </div>
+                            <p class="text-xs text-gray-400 font-mono mb-2">Content-Security-Policy not configured</p>
+                            <button class="text-xs text-cyber-green hover:underline font-mono">→ Auto-Fix Available</button>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="bg-surface rounded-lg p-4 border-l-2 border-l-cyber-green">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-cyber-green text-sm">fingerprint</span>
+                                    <span class="text-sm font-bold">Zero-Knowledge Encryption</span>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-cyber-green/20 text-cyber-green font-mono">ACTIVE</span>
+                            </div>
+                            <p class="text-xs text-gray-400 font-mono">E2E encryption for user data</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OWASP Top 10 -->
+                <div class="glass-panel rounded-xl p-5">
+                    <h3 class="font-bold text-sm uppercase tracking-wider mb-4">OWASP Top 10 Compliance</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="font-mono">A01: Broken Access Control</span>
+                            <span class="material-symbols-outlined text-cyber-green text-sm">check_circle</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="font-mono">A02: Cryptographic Failures</span>
+                            <span class="material-symbols-outlined text-cyber-green text-sm">check_circle</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="font-mono">A03: Injection</span>
+                            <span class="material-symbols-outlined text-cyber-green text-sm">check_circle</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm opacity-50">
+                            <span class="font-mono">A04: Insecure Design</span>
+                            <span class="material-symbols-outlined text-gray-600 text-sm animate-spin">progress_activity</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Live Monitoring -->
+            <div class="hidden lg:flex flex-1 flex-col p-6 gap-4 bg-surface/30">
+                <!-- Encryption Status -->
+                <div class="glass-panel rounded-xl p-5 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-full opacity-10">
+                        <div class="scan-line h-4 bg-gradient-to-b from-transparent via-cyber-green to-transparent"></div>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-sm">Zero-Knowledge Vault</h3>
+                            <div class="w-2 h-2 bg-cyber-green rounded-full animate-pulse"></div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-400">Encryption Algorithm</span>
+                                <span class="text-xs font-mono text-cyber-green">AES-256-GCM</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-400">Key Derivation</span>
+                                <span class="text-xs font-mono text-cyber-green">PBKDF2</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-400">Files Encrypted</span>
+                                <span class="text-xs font-mono text-cyber-green">1,247</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 rounded-lg bg-cyber-green/5 border border-cyber-green/20">
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-cyber-green">lock</span>
+                                <div>
+                                    <p class="text-xs font-bold mb-1">Client-Side Encryption</p>
+                                    <p class="text-xs text-gray-400">Data encrypted before upload. Server never sees plaintext.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GDPR Compliance -->
+                <div class="glass-panel rounded-xl p-5">
+                    <h3 class="font-bold text-sm mb-4">GDPR Compliance</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-cyber-green/10 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-cyber-green text-sm">check</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-medium">Data Anonymization</p>
+                                <p class="text-[10px] text-gray-500 truncate">PII automatically pseudonymized</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-cyber-green/10 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-cyber-green text-sm">check</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-medium">Right to be Forgotten</p>
+                                <p class="text-[10px] text-gray-500">One-click data deletion</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-cyber-green/10 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-cyber-green text-sm">check</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-medium">Audit Logs</p>
+                                <p class="text-[10px] text-gray-500">Immutable blockchain trail</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terminal Output -->
+                <div class="glass-panel rounded-xl p-4 flex-1 overflow-hidden">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="flex gap-1">
+                            <div class="w-2 h-2 rounded-full bg-cyber-red"></div>
+                            <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                            <div class="w-2 h-2 rounded-full bg-cyber-green"></div>
+                        </div>
+                        <span class="text-[10px] font-mono text-gray-500">security.log</span>
+                    </div>
+                    
+                    <div class="font-mono text-[10px] space-y-1 text-cyber-green overflow-y-auto h-[calc(100%-2rem)]">
+                        <p>[12:45:32] <span class="text-gray-500">INFO</span> Starting security scan...</p>
+                        <p>[12:45:33] <span class="text-gray-500">INFO</span> Checking SSL/TLS configuration</p>
+                        <p>[12:45:34] <span class="text-cyber-green">PASS</span> Certificate valid (expires: 2026-03-15)</p>
+                        <p>[12:45:35] <span class="text-gray-500">INFO</span> Scanning for SQL injection vectors</p>
+                        <p>[12:45:36] <span class="text-cyber-green">PASS</span> Parameterized queries detected</p>
+                        <p>[12:45:37] <span class="text-yellow-500">WARN</span> CSP header not found</p>
+                        <p>[12:45:38] <span class="text-gray-500">INFO</span> Testing XSS protection</p>
+                        <p>[12:45:39] <span class="text-cyber-green">PASS</span> Content sanitization active</p>
+                        <p>[12:45:40] <span class="text-gray-500">INFO</span> Analyzing authentication flow<span class="blink">_</span></p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button class="flex-1 glass-panel px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-sm font-mono">
+                        GENERATE REPORT
+                    </button>
+                    <button class="flex-1 bg-cyber-green/10 border border-cyber-green px-4 py-3 rounded-xl hover:bg-cyber-green/20 transition-colors text-sm font-mono text-cyber-green">
+                        AUTO-FIX ALL
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

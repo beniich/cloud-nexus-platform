@@ -42,8 +42,12 @@ export const Logo: React.FC<LogoProps> = ({
 
     return (
         <div className={`flex items-center gap-3 ${className}`}>
-            <div className={`${currentSize.container} bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0`}>
-                <Cloud className={`${currentSize.icon} text-white`} />
+            <div className={`${currentSize.container} overflow-hidden rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/10 flex-shrink-0`}>
+                <img
+                    src="/logo-new.jpg"
+                    alt="Logo"
+                    className="w-full h-full object-cover"
+                />
             </div>
             {showText && (
                 <span className={`${currentSize.text} font-bold ${textColor} tracking-tight`}>

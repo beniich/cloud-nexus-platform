@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,128 +8,129 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      String   @default("client") // client, seller, admin, owner
-  avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  teamId    String?
-  team      Team?    @relation(fields: [teamId], references: [id])
-  
+  id              String       @id @default(uuid())
+  email           String       @unique
+  password        String
+  name            String
+  role            String       @default("client")
+  avatar          String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  teamId          String?
   createdDroplets Droplet[]
   invitations     Invitation[]
+  team            Team?        @relation(fields: [teamId], references: [id])
+  stripeCustomerId String?
+  currentPlan      String   @default("FREE")
+  subscriptions    Subscription[]
+  payments         Payment[]
+  deviceTokens            DeviceToken[]
+  notificationPreferences NotificationPreferences?
+  scheduledNotifications  ScheduledNotification[]
+  comments                Comment[]
+  userLanguage            UserLanguage?
+  language                String    @default("en")
+  country                 String?
+  timezone                String?
+  lastIP                  String?
 }
 
 model Team {
-  id          String   @id @default(uuid())
+  id          String       @id @default(uuid())
   name        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  users       User[]
-  droplets    Droplet[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  backups     Backup[]
   databases   Database[]
   domains     Domain[]
-  invoices    Invoice[]
+  droplets    Droplet[]
   invitations Invitation[]
-  backups     Backup[]
+  invoices    Invoice[]
+  users       User[]
 }
 
 model Droplet {
-  id          String   @id @default(uuid())
+  id          String          @id @default(uuid())
   name        String
   region      String
   size        String
   image       String
-  status      String   // starting, running, stopped, rebooting
+  status      String
   ipAddress   String
   monthlyCost Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   teamId      String
-  team        Team     @relation(fields: [teamId], references: [id])
   createdBy   String
-  creator     User     @relation(fields: [createdBy], references: [id])
-
+  creator     User            @relation(fields: [createdBy], references: [id])
+  team        Team            @relation(fields: [teamId], references: [id])
   metrics     DropletMetric[]
   snapshots   Snapshot[]
 }
 
 model DropletMetric {
-  id          String   @id @default(uuid())
-  cpuUsage    Float
-  ramUsage    Float
-  diskUsage   Float
-  networkIn   Float
-  networkOut  Float
-  timestamp   DateTime @default(now())
-
-  dropletId   String
-  droplet     Droplet  @relation(fields: [dropletId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid())
+  cpuUsage   Float
+  ramUsage   Float
+  diskUsage  Float
+  networkIn  Float
+  networkOut Float
+  timestamp  DateTime @default(now())
+  dropletId  String
+  droplet    Droplet  @relation(fields: [dropletId], references: [id], onDelete: Cascade)
 }
 
 model Domain {
-  id        String   @id @default(uuid())
+  id        String      @id @default(uuid())
   name      String
-  status    String   // active, pending
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  status    String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   teamId    String
-  team      Team     @relation(fields: [teamId], references: [id])
-  
   records   DNSRecord[]
+  team      Team        @relation(fields: [teamId], references: [id])
 }
 
 model DNSRecord {
-  id        String   @id @default(uuid())
-  type      String   // A, CNAME, MX, TXT, etc.
-  name      String
-  value     String
-  ttl       Int      @default(3600)
-
-  domainId  String
-  domain    Domain   @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  id       String @id @default(uuid())
+  type     String
+  name     String
+  value    String
+  ttl      Int    @default(3600)
+  domainId String
+  domain   Domain @relation(fields: [domainId], references: [id], onDelete: Cascade)
 }
 
 model Invoice {
   id              String   @id @default(uuid())
   amount          Float
-  status          String   // paid, open, past_due
+  status          String
   stripeInvoiceId String?
   createdAt       DateTime @default(now())
-
   teamId          String
   team            Team     @relation(fields: [teamId], references: [id])
 }
 
 model Invitation {
-  id        String   @id @default(uuid())
-  email     String
-  role      String
-  token     String   @unique
+  id         String    @id @default(uuid())
+  email      String
+  role       String
+  token      String    @unique
   acceptedAt DateTime?
-  createdAt DateTime @default(now())
-
-  teamId    String
-  team      Team     @relation(fields: [teamId], references: [id])
-  invitedBy String
-  inviter   User     @relation(fields: [invitedBy], references: [id])
+  createdAt  DateTime  @default(now())
+  teamId     String
+  invitedBy  String
+  inviter    User      @relation(fields: [invitedBy], references: [id])
+  team       Team      @relation(fields: [teamId], references: [id])
 }
 
 model ActivityLog {
   id         String   @id @default(uuid())
-  action     String   // EMAIL_SENT, DROPLET_CREATED, SNAPSHOT_CREATED, etc.
-  entityType String   // EMAIL, DROPLET, SNAPSHOT, BACKUP, etc.
+  action     String
+  entityType String
   entityId   String
   metadata   String?
   createdAt  DateTime @default(now())
-
   teamId     String?
   userId     String?
 }
@@ -140,23 +138,21 @@ model ActivityLog {
 model Snapshot {
   id          String   @id @default(uuid())
   name        String
-  size        Float    // GB
-  status      String   @default("pending") // pending, completed, failed
+  size        Float
+  status      String   @default("pending")
   monthlyCost Float
   createdAt   DateTime @default(now())
-
   dropletId   String
   droplet     Droplet  @relation(fields: [dropletId], references: [id], onDelete: Cascade)
 }
 
 model Backup {
   id        String   @id @default(uuid())
-  type      String   // database, droplets, full
-  size      Float    // MB
-  status    String   @default("pending") // pending, completed, failed
+  type      String
+  size      Float
+  status    String   @default("pending")
   metadata  String?
   createdAt DateTime @default(now())
-
   teamId    String
   team      Team     @relation(fields: [teamId], references: [id])
 }
@@ -164,15 +160,129 @@ model Backup {
 model Database {
   id          String   @id @default(uuid())
   name        String
-  engine      String   // postgresql, mysql, mongodb, redis
+  engine      String
   version     String
   region      String
-  status      String   @default("pending") // pending, running, stopped
+  status      String   @default("pending")
   monthlyCost Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   teamId      String
   team        Team     @relation(fields: [teamId], references: [id])
 }
 
+model Subscription {
+  id                    String   @id @default(uuid())
+  userId                String
+  stripeSubscriptionId  String   @unique
+  planId                String
+  status                String   // ACTIVE, CANCELLED, PAST_DUE
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelledAt           DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  user                  User     @relation(fields: [userId], references: [id])
+  usageRecords          UsageRecord[]
+}
+
+model Payment {
+  id               String   @id @default(uuid())
+  userId           String
+  stripePaymentId  String
+  amount           Float
+  status           String   // PAID, FAILED, REFUNDED
+  type             String   // SUBSCRIPTION, ONE_TIME
+  invoiceUrl       String?
+  createdAt        DateTime @default(now())
+  
+  user             User     @relation(fields: [userId], references: [id])
+}
+
+model UsageRecord {
+  id             String       @id @default(uuid())
+  userId         String
+  subscriptionId String
+  metric         String       // sites_generated, storage_gb, etc
+  quantity       Int
+  recordedAt     DateTime     @default(now())
+  
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+}
+
+model DeviceToken {
+  id         String   @id @default(uuid())
+  userId     String
+  token      String   @unique
+  deviceType String   // web, ios, android
+  deviceInfo Json?
+  active     Boolean  @default(true)
+  lastUsed   DateTime @default(now())
+  createdAt  DateTime @default(now())
+  
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model PushSubscription {
+  token     String
+  topic     String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  
+  @@unique([token, topic])
+}
+
+model NotificationLog {
+  id        String   @id @default(uuid())
+  token     String
+  type      String?
+  title     String
+  status    String   // SENT, FAILED
+  messageId String?
+  error     String?
+  createdAt DateTime @default(now())
+}
+
+model ScheduledNotification {
+  id           String   @id @default(uuid())
+  userId       String
+  notification Json
+  scheduledFor DateTime
+  status       String   @default("PENDING") // PENDING, SENT, FAILED
+  sentAt       DateTime?
+  error        String?
+  createdAt    DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model NotificationPreferences {
+  userId      String  @id
+  deployments Boolean @default(true)
+  payments    Boolean @default(true)
+  crm         Boolean @default(true)
+  security    Boolean @default(true)
+  marketing   Boolean @default(false)
+  
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  roomId    String
+  userId    String
+  content   String
+  position  Json     // { x, y, elementId }
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model UserLanguage {
+  userId   String @id
+  language String @default("en")
+  
+  user     User   @relation(fields: [userId], references: [id])
+}

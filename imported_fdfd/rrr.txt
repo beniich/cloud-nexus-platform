@@ -1,0 +1,630 @@
+// ============================================================
+// DEPLOYMENT AUTOMATION SERVICE
+// Auto-deploy to Vercel, Netlify, or Cloudflare Pages
+// ============================================================
+
+import express from 'express';
+import axios from 'axios';
+import { PrismaClient } from '@prisma/client';
+import archiver from 'archiver';
+import FormData from 'form-data';
+import { Readable } from 'stream';
+import fs from 'fs/promises';
+import path from 'path';
+
+const router = express.Router();
+const prisma = new PrismaClient();
+
+// ============================================================
+// DEPLOYMENT PROVIDERS
+// ============================================================
+
+class VercelDeployment {
+  constructor(token) {
+    this.token = token || process.env.VERCEL_TOKEN;
+    this.apiUrl = 'https://api.vercel.com';
+    this.teamId = process.env.VERCEL_TEAM_ID;
+  }
+
+  /**
+   * Crée un nouveau projet Vercel
+   */
+  async createProject(projectName) {
+    try {
+      const response = await axios.post(
+        `${this.apiUrl}/v9/projects`,
+        {
+          name: projectName,
+          framework: 'nextjs',
+          environmentVariables: [],
+          buildCommand: 'npm run build',
+          outputDirectory: 'dist'
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/json'
+          },
+          params: this.teamId ? { teamId: this.teamId } : {}
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Vercel project creation error:', error.response?.data);
+      throw new Error(`Failed to create Vercel project: ${error.message}`);
+    }
+  }
+
+  /**
+   * Déploie un site sur Vercel
+   */
+  async deploy(siteContent, projectName) {
+    try {
+      console.log(`🚀 Starting Vercel deployment for: ${projectName}`);
+
+      // 1. Générer les fichiers du site
+      const files = await this.generateSiteFiles(siteContent);
+
+      // 2. Créer un déploiement
+      const deployment = await axios.post(
+        `${this.apiUrl}/v13/deployments`,
+        {
+          name: projectName,
+          files: files.map(f => ({
+            file: f.path,
+            data: f.content
+          })),
+          projectSettings: {
+            framework: 'nextjs'
+          },
+          target: 'production'
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/json'
+          },
+          params: this.teamId ? { teamId: this.teamId } : {}
+        }
+      );
+
+      console.log('✅ Vercel deployment created:', deployment.data.url);
+
+      return {
+        success: true,
+        url: `https://${deployment.data.url}`,
+        deploymentId: deployment.data.id,
+        provider: 'vercel'
+      };
+
+    } catch (error) {
+      console.error('Vercel deployment error:', error.response?.data);
+      throw new Error(`Vercel deployment failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Génère les fichiers HTML/CSS/JS du site
+   */
+  async generateSiteFiles(siteContent) {
+    const files = [];
+
+    // index.html
+    const html = this.generateHTML(siteContent);
+    files.push({
+      path: 'index.html',
+      content: Buffer.from(html).toString('base64')
+    });
+
+    // styles.css
+    const css = this.generateCSS(siteContent);
+    files.push({
+      path: 'styles.css',
+      content: Buffer.from(css).toString('base64')
+    });
+
+    // package.json
+    files.push({
+      path: 'package.json',
+      content: Buffer.from(JSON.stringify({
+        name: siteContent.metadata.title.toLowerCase().replace(/\s+/g, '-'),
+        version: '1.0.0',
+        scripts: {
+          build: 'echo "Static site, no build needed"'
+        }
+      }, null, 2)).toString('base64')
+    });
+
+    return files;
+  }
+
+  generateHTML(siteContent) {
+    const { metadata, theme, sections, components } = siteContent;
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${metadata.title}</title>
+    <meta name="description" content="${metadata.description}">
+    <link rel="stylesheet" href="/styles.css">
+    ${metadata.keywords ? `<meta name="keywords" content="${metadata.keywords.join(', ')}">` : ''}
+</head>
+<body>
+    ${components?.navbar ? this.generateNavbar(components.navbar) : ''}
+    
+    <main>
+        ${sections.map(section => this.generateSection(section)).join('\n')}
+    </main>
+
+    ${components?.footer ? this.generateFooter(components.footer) : ''}
+</body>
+</html>`;
+  }
+
+  generateCSS(siteContent) {
+    const { theme } = siteContent;
+
+    return `
+:root {
+    --primary: ${theme.colors.primary};
+    --secondary: ${theme.colors.secondary};
+    --background: ${theme.colors.background};
+    --text: ${theme.colors.text};
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: ${theme.fonts.body}, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    font-family: ${theme.fonts.heading}, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: ${theme.borderRadius === 'full' ? '999px' : '0.5rem'};
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+`;
+  }
+
+  generateNavbar(navbar) {
+    return `
+<nav class="navbar">
+    <div class="container">
+        <a href="/" class="logo">${navbar.logo}</a>
+        <ul>
+            ${navbar.links.map(link => `<li><a href="#${link.toLowerCase()}">${link}</a></li>`).join('')}
+        </ul>
+    </div>
+</nav>`;
+  }
+
+  generateSection(section) {
+    switch(section.type) {
+      case 'hero':
+        return `
+<section class="hero">
+    <div class="container">
+        <h1>${section.content.headline}</h1>
+        <p>${section.content.subheadline}</p>
+        ${section.content.cta ? `<button class="btn btn-primary">${section.content.cta.text}</button>` : ''}
+    </div>
+</section>`;
+      
+      case 'features':
+        return `
+<section class="features">
+    <div class="container">
+        <div class="grid">
+            ${section.items.map(item => `
+                <div class="feature">
+                    <span class="icon">${item.icon}</span>
+                    <h3>${item.title}</h3>
+                    <p>${item.description}</p>
+                </div>
+            `).join('')}
+        </div>
+    </div>
+</section>`;
+      
+      default:
+        return `<section><div class="container"><p>Section type: ${section.type}</p></div></section>`;
+    }
+  }
+
+  generateFooter(footer) {
+    return `
+<footer>
+    <div class="container">
+        <p>${footer.copyright}</p>
+    </div>
+</footer>`;
+  }
+}
+
+// ============================================================
+
+class NetlifyDeployment {
+  constructor(token) {
+    this.token = token || process.env.NETLIFY_TOKEN;
+    this.apiUrl = 'https://api.netlify.com/api/v1';
+  }
+
+  async deploy(siteContent, siteName) {
+    try {
+      console.log(`🚀 Starting Netlify deployment for: ${siteName}`);
+
+      // 1. Créer un site
+      const siteResponse = await axios.post(
+        `${this.apiUrl}/sites`,
+        {
+          name: siteName,
+          custom_domain: null
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const siteId = siteResponse.data.id;
+      const deployUrl = siteResponse.data.url;
+
+      // 2. Créer un ZIP avec les fichiers
+      const zipBuffer = await this.createZipArchive(siteContent);
+
+      // 3. Déployer
+      await axios.post(
+        `${this.apiUrl}/sites/${siteId}/deploys`,
+        zipBuffer,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/zip'
+          }
+        }
+      );
+
+      console.log('✅ Netlify deployment completed');
+
+      return {
+        success: true,
+        url: `https://${deployUrl}`,
+        siteId,
+        provider: 'netlify'
+      };
+
+    } catch (error) {
+      console.error('Netlify deployment error:', error.response?.data);
+      throw new Error(`Netlify deployment failed: ${error.message}`);
+    }
+  }
+
+  async createZipArchive(siteContent) {
+    const vercel = new VercelDeployment();
+    const html = vercel.generateHTML(siteContent);
+    const css = vercel.generateCSS(siteContent);
+
+    const archive = archiver('zip', { zlib: { level: 9 } });
+    const chunks = [];
+
+    archive.on('data', chunk => chunks.push(chunk));
+
+    archive.append(html, { name: 'index.html' });
+    archive.append(css, { name: 'styles.css' });
+
+    await archive.finalize();
+
+    return Buffer.concat(chunks);
+  }
+}
+
+// ============================================================
+
+class CloudflareDeployment {
+  constructor(token, accountId) {
+    this.token = token || process.env.CLOUDFLARE_TOKEN;
+    this.accountId = accountId || process.env.CLOUDFLARE_ACCOUNT_ID;
+    this.apiUrl = 'https://api.cloudflare.com/client/v4';
+  }
+
+  async deploy(siteContent, projectName) {
+    try {
+      console.log(`🚀 Starting Cloudflare Pages deployment for: ${projectName}`);
+
+      // 1. Créer un projet Pages
+      const projectResponse = await axios.post(
+        `${this.apiUrl}/accounts/${this.accountId}/pages/projects`,
+        {
+          name: projectName,
+          production_branch: 'main'
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const projectId = projectResponse.data.result.id;
+
+      // 2. Upload files (Cloudflare utilise Workers KV ou R2)
+      const vercel = new VercelDeployment();
+      const files = await vercel.generateSiteFiles(siteContent);
+
+      // 3. Créer le déploiement
+      const formData = new FormData();
+      
+      files.forEach(file => {
+        const buffer = Buffer.from(file.content, 'base64');
+        formData.append(file.path, buffer, file.path);
+      });
+
+      const deployResponse = await axios.post(
+        `${this.apiUrl}/accounts/${this.accountId}/pages/projects/${projectName}/deployments`,
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.token}`,
+            ...formData.getHeaders()
+          }
+        }
+      );
+
+      const deploymentUrl = deployResponse.data.result.url;
+
+      console.log('✅ Cloudflare Pages deployment completed');
+
+      return {
+        success: true,
+        url: deploymentUrl,
+        projectId,
+        provider: 'cloudflare'
+      };
+
+    } catch (error) {
+      console.error('Cloudflare deployment error:', error.response?.data);
+      throw new Error(`Cloudflare deployment failed: ${error.message}`);
+    }
+  }
+}
+
+// ============================================================
+// DEPLOYMENT ORCHESTRATOR
+// ============================================================
+
+class DeploymentOrchestrator {
+  constructor() {
+    this.providers = {
+      vercel: new VercelDeployment(),
+      netlify: new NetlifyDeployment(),
+      cloudflare: new CloudflareDeployment()
+    };
+  }
+
+  /**
+   * Déploie un site sur le provider choisi
+   */
+  async deploy(siteId, provider = 'vercel', customDomain = null) {
+    try {
+      // 1. Récupérer le site depuis la DB
+      const site = await prisma.site.findUnique({
+        where: { id: siteId }
+      });
+
+      if (!site) {
+        throw new Error('Site not found');
+      }
+
+      const siteContent = site.content;
+      const projectName = site.name.toLowerCase().replace(/\s+/g, '-');
+
+      // 2. Déployer
+      const deployment = this.providers[provider];
+      
+      if (!deployment) {
+        throw new Error(`Provider ${provider} not supported`);
+      }
+
+      const result = await deployment.deploy(siteContent, projectName);
+
+      // 3. Sauvegarder les infos de déploiement
+      await prisma.deployment.create({
+        data: {
+          siteId,
+          provider,
+          url: result.url,
+          deploymentId: result.deploymentId || result.siteId || result.projectId,
+          status: 'DEPLOYED',
+          customDomain
+        }
+      });
+
+      // 4. Mettre à jour le site
+      await prisma.site.update({
+        where: { id: siteId },
+        data: {
+          published: true,
+          domain: customDomain || result.url
+        }
+      });
+
+      return result;
+
+    } catch (error) {
+      // Log l'erreur en DB
+      await prisma.deployment.create({
+        data: {
+          siteId,
+          provider,
+          status: 'FAILED',
+          error: error.message
+        }
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * Redéploie un site existant
+   */
+  async redeploy(deploymentId) {
+    const deployment = await prisma.deployment.findUnique({
+      where: { id: deploymentId },
+      include: { site: true }
+    });
+
+    if (!deployment) {
+      throw new Error('Deployment not found');
+    }
+
+    return this.deploy(deployment.siteId, deployment.provider, deployment.customDomain);
+  }
+
+  /**
+   * Supprime un déploiement
+   */
+  async destroy(deploymentId) {
+    const deployment = await prisma.deployment.findUnique({
+      where: { id: deploymentId }
+    });
+
+    if (!deployment) {
+      throw new Error('Deployment not found');
+    }
+
+    // TODO: Appeler l'API du provider pour supprimer le déploiement
+
+    await prisma.deployment.update({
+      where: { id: deploymentId },
+      data: { status: 'DESTROYED' }
+    });
+
+    return { success: true };
+  }
+}
+
+// ============================================================
+// API ROUTES
+// ============================================================
+
+const orchestrator = new DeploymentOrchestrator();
+
+/**
+ * POST /deploy/site/:siteId
+ * Déploie un site
+ */
+router.post('/site/:siteId', async (req, res) => {
+  try {
+    const { siteId } = req.params;
+    const { provider = 'vercel', customDomain } = req.body;
+
+    const result = await orchestrator.deploy(siteId, provider, customDomain);
+
+    res.json({
+      success: true,
+      ...result,
+      message: 'Site deployed successfully'
+    });
+
+  } catch (error) {
+    console.error('Deployment error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /deploy/:deploymentId/redeploy
+ * Redéploie un site
+ */
+router.post('/:deploymentId/redeploy', async (req, res) => {
+  try {
+    const { deploymentId } = req.params;
+
+    const result = await orchestrator.redeploy(deploymentId);
+
+    res.json({
+      success: true,
+      ...result,
+      message: 'Site redeployed successfully'
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * DELETE /deploy/:deploymentId
+ * Supprime un déploiement
+ */
+router.delete('/:deploymentId', async (req, res) => {
+  try {
+    const { deploymentId } = req.params;
+
+    await orchestrator.destroy(deploymentId);
+
+    res.json({
+      success: true,
+      message: 'Deployment destroyed successfully'
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /deploy/site/:siteId/deployments
+ * Liste tous les déploiements d'un site
+ */
+router.get('/site/:siteId/deployments', async (req, res) => {
+  try {
+    const { siteId } = req.params;
+
+    const deployments = await prisma.deployment.findMany({
+      where: { siteId },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({
+      success: true,
+      deployments
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+export default router;

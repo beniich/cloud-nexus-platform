@@ -1,0 +1,671 @@
+# 🚀 Cloud Nexus 2030 - Complete Setup Guide
+
+## 📋 Table of Contents
+1. [Prerequisites](#prerequisites)
+2. [Installation](#installation)
+3. [Database Setup](#database-setup)
+4. [Environment Variables](#environment-variables)
+5. [Running the Application](#running-the-application)
+6. [Testing](#testing)
+7. [Deployment](#deployment)
+
+---
+
+## 🔧 Prerequisites
+
+```bash
+# Required
+- Node.js >= 18.x
+- PostgreSQL >= 14.x
+- Redis >= 7.x (for sessions/cache)
+- npm or yarn
+
+# Optional (for deployment)
+- Docker & Docker Compose
+- Vercel CLI / Netlify CLI
+```
+
+---
+
+## 📦 Installation
+
+### 1. Clone & Install Dependencies
+
+```bash
+# Clone repository
+git clone https://github.com/your-org/cloud-nexus-2030.git
+cd cloud-nexus-2030
+
+# Install backend dependencies
+cd backend
+npm install
+
+# Install frontend dependencies
+cd ../frontend
+npm install
+```
+
+### 2. Backend Dependencies
+
+```json
+// backend/package.json
+{
+  "name": "cloud-nexus-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:generate": "prisma generate",
+    "prisma:studio": "prisma studio",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
+    "@prisma/client": "^5.20.0",
+    "@simplewebauthn/server": "^10.0.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.5",
+    "multer": "^1.4.5-lts.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.0.4",
+    "openai": "^4.20.0",
+    "socket.io": "^4.6.1",
+    "ioredis": "^5.3.2",
+    "axios": "^1.6.5",
+    "archiver": "^6.0.1",
+    "form-data": "^4.0.0",
+    "ethers": "^6.9.0",
+    "zod": "^3.22.4",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/node": "^20.10.6",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "prisma": "^5.20.0",
+    "supertest": "^6.3.3",
+    "typescript": "^5.3.3"
+  }
+}
+```
+
+---
+
+## 🗄️ Database Setup
+
+### 1. Prisma Schema
+
+```prisma
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users & Authentication
+model User {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  password      String?
+  name          String?
+  avatar        String?
+  role          Role            @default(CLIENT)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  sites         Site[]
+  credentials   Credential[]
+  refreshTokens RefreshToken[]
+  deployments   Deployment[]
+}
+
+enum Role {
+  ADMIN
+  SELLER
+  CLIENT
+  VENDOR
+}
+
+model Credential {
+  id            String    @id @default(uuid())
+  userId        String
+  credentialID  String    @unique
+  publicKey     String
+  counter       Int       @default(0)
+  transports    String[]
+  lastUsed      DateTime?
+  createdAt     DateTime  @default(now())
+  
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ChallengeStore {
+  userId    String   @id
+  challenge String
+  expiresAt DateTime
+}
+
+// Sites & Content
+model Site {
+  id          String       @id @default(uuid())
+  name        String
+  domain      String?      @unique
+  content     Json
+  published   Boolean      @default(false)
+  userId      String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deployments Deployment[]
+}
+
+// Deployments
+model Deployment {
+  id           String   @id @default(uuid())
+  siteId       String
+  provider     String   // vercel, netlify, cloudflare
+  url          String?
+  deploymentId String?
+  status       String   // DEPLOYED, FAILED, DESTROYED
+  customDomain String?
+  error        String?
+  createdAt    DateTime @default(now())
+  
+  site         Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+```
+
+### 2. Run Migrations
+
+```bash
+cd backend
+
+# Create migration
+npx prisma migrate dev --name init
+
+# Generate Prisma Client
+npx prisma generate
+
+# Seed database (optional)
+npx prisma db seed
+```
+
+---
+
+## 🔐 Environment Variables
+
+### Backend `.env`
+
+```bash
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/cloud_nexus"
+DATABASE_URL_TEST="postgresql://user:password@localhost:5432/cloud_nexus_test"
+
+# Redis
+REDIS_URL="redis://localhost:6379"
+
+# JWT
+JWT_SECRET="your-super-secret-jwt-key-change-in-production"
+
+# AI Services
+OPENAI_API_KEY="sk-..."
+ANTHROPIC_API_KEY="sk-ant-..."
+
+# WebAuthn
+RP_ID="localhost"
+ORIGIN="http://localhost:3000"
+
+# Deployment Providers
+VERCEL_TOKEN="your-vercel-token"
+VERCEL_TEAM_ID="team_xxx"
+
+NETLIFY_TOKEN="your-netlify-token"
+
+CLOUDFLARE_TOKEN="your-cloudflare-token"
+CLOUDFLARE_ACCOUNT_ID="account-id"
+
+# Application
+PORT=5000
+NODE_ENV="development"
+CLIENT_URL="http://localhost:3000"
+
+# Monitoring (Optional)
+SENTRY_DSN=""
+LOGTAIL_TOKEN=""
+```
+
+### Frontend `.env`
+
+```bash
+VITE_API_URL="http://localhost:5000"
+VITE_WS_URL="ws://localhost:5000"
+VITE_RP_ID="localhost"
+```
+
+---
+
+## 🚀 Running the Application
+
+### Development Mode
+
+```bash
+# Terminal 1: Backend
+cd backend
+npm run dev
+
+# Terminal 2: Frontend
+cd frontend
+npm run dev
+
+# Terminal 3: Redis (if not running as service)
+redis-server
+
+# Terminal 4: Prisma Studio (optional)
+cd backend
+npx prisma studio
+```
+
+### Production Mode
+
+```bash
+# Backend
+cd backend
+npm run build
+npm start
+
+# Frontend
+cd frontend
+npm run build
+npm run preview
+```
+
+### Docker Compose (Recommended)
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: nexus
+      POSTGRES_PASSWORD: nexus_password
+      POSTGRES_DB: cloud_nexus
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://nexus:nexus_password@postgres:5432/cloud_nexus
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+  redis_data:
+```
+
+```bash
+# Run with Docker
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
+```
+
+---
+
+## 🧪 Testing
+
+### Run Tests
+
+```bash
+cd backend
+
+# All tests
+npm test
+
+# Watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
+
+# Specific test suite
+npm test -- auth.test.js
+npm test -- voice-builder.test.js
+npm test -- deployment.test.js
+```
+
+### Test Configuration
+
+```javascript
+// jest.config.js
+export default {
+  testEnvironment: 'node',
+  transform: {},
+  extensionsToTreatAsEsm: ['.js'],
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1'
+  },
+  coverageDirectory: 'coverage',
+  collectCoverageFrom: [
+    'src/**/*.js',
+    '!src/**/*.test.js'
+  ],
+  testMatch: [
+    '**/__tests__/**/*.js',
+    '**/?(*.)+(spec|test).js'
+  ],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  testTimeout: 30000
+};
+```
+
+### CI/CD Pipeline (GitHub Actions)
+
+```yaml
+# .github/workflows/test.yml
+name: Test Suite
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd backend
+          npm ci
+      
+      - name: Run Prisma migrations
+        run: |
+          cd backend
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+      
+      - name: Run tests
+        run: |
+          cd backend
+          npm test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-secret
+          NODE_ENV: test
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./backend/coverage/lcov.info
+```
+
+---
+
+## 🌐 Deployment
+
+### Vercel (Recommended for Frontend)
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+cd frontend
+vercel --prod
+
+# Environment variables (set in Vercel dashboard)
+VITE_API_URL=https://api.cloudnexus.com
+```
+
+### Railway (Backend)
+
+```bash
+# Install Railway CLI
+npm i -g @railway/cli
+
+# Login
+railway login
+
+# Deploy
+cd backend
+railway up
+
+# Add environment variables via Railway dashboard
+```
+
+### Docker Production Build
+
+```dockerfile
+# backend/Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+RUN npx prisma generate
+
+EXPOSE 5000
+
+CMD ["node", "server.js"]
+```
+
+```bash
+# Build and push
+docker build -t cloudnexus/backend:latest ./backend
+docker push cloudnexus/backend:latest
+```
+
+---
+
+## 📊 Monitoring & Logging
+
+### Winston Logger Setup
+
+```javascript
+// backend/src/utils/logger.js
+import winston from 'winston';
+
+export const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' }),
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+    })
+  ]
+});
+```
+
+### Health Check Endpoint
+
+```javascript
+// server.js
+app.get('/health', async (req, res) => {
+  const health = {
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+    status: 'ok',
+    services: {
+      database: await checkDatabase(),
+      redis: await checkRedis(),
+      anthropic: !!process.env.ANTHROPIC_API_KEY,
+      openai: !!process.env.OPENAI_API_KEY
+    }
+  };
+  
+  const httpCode = health.services.database && health.services.redis ? 200 : 503;
+  res.status(httpCode).json(health);
+});
+```
+
+---
+
+## 🔒 Security Best Practices
+
+1. **Never commit `.env` files**
+2. **Use HTTPS in production**
+3. **Enable rate limiting**
+4. **Implement CORS properly**
+5. **Sanitize all user inputs**
+6. **Use helmet.js for security headers**
+7. **Rotate JWT secrets regularly**
+8. **Enable 2FA for admin accounts**
+
+---
+
+## 📚 Additional Resources
+
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [Anthropic Claude API](https://docs.anthropic.com/)
+- [WebAuthn Guide](https://webauthn.guide/)
+- [Jest Testing](https://jestjs.io/docs/getting-started)
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Prisma Client not generated**
+```bash
+npx prisma generate
+```
+
+**Port already in use**
+```bash
+# Kill process on port 5000
+lsof -ti:5000 | xargs kill -9
+```
+
+**Database connection failed**
+```bash
+# Check PostgreSQL is running
+pg_isready -h localhost -p 5432
+```
+
+**Redis connection error**
+```bash
+# Check Redis is running
+redis-cli ping
+```
+
+---
+
+## 📝 License
+
+MIT License - see LICENSE file for details
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+---
+
+**Need help?** Open an issue on GitHub or contact support@cloudnexus.com

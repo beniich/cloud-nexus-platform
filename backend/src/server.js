@@ -17,6 +17,12 @@ import featureFlagsRoutes from './routes/featureFlags.js';
 import usersRoutes from './routes/users.js';
 import vendorRoutes from './routes/vendor.js';
 import settingsRoutes from './routes/settings.js';
+import paymentRoutes from './routes/payment.js';
+import notificationRoutes from './routes/notifications.js';
+import geoRoutes from './routes/geo.js';
+import i18nRoutes from './routes/i18n.js';
+import analyticsRoutes from './routes/analytics.js';
+import advancedAiRoutes from './routes/advanced-ai.js';
 
 dotenv.config();
 
@@ -97,6 +103,12 @@ app.use('/api/feature-flags', featureFlagsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/vendor', vendorRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/geo', geoRoutes);
+app.use('/api/i18n', i18nRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/ai', advancedAiRoutes);
 
 // ============================================
 // ERROR HANDLING
@@ -106,10 +118,24 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ============================================
+// COLLABORATION SERVICE
+// ============================================
+import { CollaborationService } from './services/collaboration.js';
+const collaborationService = new CollaborationService(io);
+collaborationService.initialize();
+
+// ============================================
+// TERMINAL SERVICE
+// ============================================
+import { TerminalService } from './services/terminalService.js';
+const terminalService = new TerminalService(io);
+terminalService.initialize();
+
+// ============================================
 // START SERVER
 // ============================================
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════╗
 ║   🚀 Backend Server Running            ║

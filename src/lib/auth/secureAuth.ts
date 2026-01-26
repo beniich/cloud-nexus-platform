@@ -5,6 +5,29 @@ class SecureAuthService {
     private readonly TOKEN_REFRESH_BUFFER = 60000; // 1 minute avant expiration
 
     /**
+     * Inscription sécurisée
+     */
+    async register(email: string, password: string, firstName: string, lastName: string): Promise<any> {
+        if (!this.isValidEmail(email)) {
+            throw new Error('Email invalide');
+        }
+
+        const hashedPassword = await this.hashPassword(password);
+
+        try {
+            const response = await api.post('/auth/register', {
+                email,
+                password: hashedPassword,
+                firstName,
+                lastName
+            });
+            return response.data;
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+    /**
      * Login sécurisé avec rate limiting
      */
     async login(email: string, password: string): Promise<any> {

@@ -67,7 +67,7 @@ const testimonials = [
   {
     name: 'Marie Dubois',
     role: 'CEO, TechStart',
-    content: 'Cloud Industrie a transformé notre infrastructure IT. Service impeccable et équipe réactive.',
+    content: 'Cloud Nexus a transformé notre infrastructure IT. Service impeccable et équipe réactive.',
     rating: 5,
   },
   {
@@ -101,7 +101,7 @@ export default function Index() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-accent/80" />
         </div>
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
           <h1 className="font-display font-bold text-primary-foreground mb-6 animate-fade-in">
             Propulsez votre entreprise vers le cloud

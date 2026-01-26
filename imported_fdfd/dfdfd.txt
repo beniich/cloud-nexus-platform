@@ -1,0 +1,641 @@
+# 🔍📧 Elasticsearch & Email Service - Complete Integration Guide
+
+## 📋 Table of Contents
+1. [Elasticsearch Setup](#elasticsearch-setup)
+2. [Email Service Setup](#email-service-setup)
+3. [Integration with Main Server](#integration)
+4. [Usage Examples](#usage-examples)
+5. [Testing](#testing)
+
+---
+
+## 🔍 PART 1: Elasticsearch Setup
+
+### 1.1 Install Elasticsearch
+
+#### Via Docker (Recommended)
+```yaml
+# Add to docker-compose.yml
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+volumes:
+  es_data:
+```
+
+#### Via Homebrew (macOS)
+```bash
+brew install elasticsearch
+brew services start elasticsearch
+```
+
+#### Via Package Manager (Ubuntu)
+```bash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+sudo apt update && sudo apt install elasticsearch
+sudo systemctl start elasticsearch
+```
+
+### 1.2 Install Node.js Dependencies
+
+```bash
+cd backend
+npm install @elastic/elasticsearch
+```
+
+### 1.3 Environment Variables
+
+Add to `.env`:
+```bash
+# Elasticsearch
+ELASTICSEARCH_URL="http://localhost:9200"
+ELASTICSEARCH_USER="elastic"
+ELASTICSEARCH_PASSWORD="changeme"
+```
+
+### 1.4 Initialize Indices
+
+```javascript
+// server.js - Add after database connection
+import { searchService } from './routes/elasticsearch.js';
+
+// Initialize Elasticsearch on startup
+(async () => {
+  try {
+    await searchService.initializeIndices();
+    console.log('✅ Elasticsearch ready');
+  } catch (error) {
+    console.error('⚠️ Elasticsearch unavailable:', error.message);
+  }
+})();
+```
+
+### 1.5 Add Prisma Hooks for Auto-Indexing
+
+```javascript
+// prisma/middleware.js
+import { searchService } from '../routes/elasticsearch.js';
+
+export function setupPrismaMiddleware(prisma) {
+  // Auto-index sites
+  prisma.$use(async (params, next) => {
+    const result = await next(params);
+
+    // Index after create/update
+    if (params.model === 'Site' && ['create', 'update'].includes(params.action)) {
+      await searchService.indexSite(result);
+    }
+
+    // Delete from index
+    if (params.model === 'Site' && params.action === 'delete') {
+      await searchService.deleteDocument('nexus-sites', params.where.id);
+    }
+
+    return result;
+  });
+
+  // Auto-index users
+  prisma.$use(async (params, next) => {
+    const result = await next(params);
+
+    if (params.model === 'User' && ['create', 'update'].includes(params.action)) {
+      await searchService.indexUser(result);
+    }
+
+    return result;
+  });
+
+  // Auto-index CRM leads
+  prisma.$use(async (params, next) => {
+    const result = await next(params);
+
+    if (params.model === 'CRMLead' && ['create', 'update'].includes(params.action)) {
+      await searchService.indexLead(result);
+    }
+
+    return result;
+  });
+}
+```
+
+### 1.6 Bulk Index Existing Data
+
+```bash
+# Via API endpoint
+curl -X POST http://localhost:5000/api/search/bulk-index \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Or programmatically
+import { searchService } from './routes/elasticsearch.js';
+await searchService.bulkIndexFromDatabase();
+```
+
+---
+
+## 📧 PART 2: Email Service Setup
+
+### 2.1 Choose Provider
+
+**Option A: SendGrid** (Recommended for high volume)
+- Free tier: 100 emails/day
+- Paid: $19.95/mo for 50k emails
+
+**Option B: Mailgun** (Recommended for flexibility)
+- Free tier: 5,000 emails/month
+- Paid: Pay as you go
+
+### 2.2 Get API Keys
+
+#### SendGrid
+```bash
+# 1. Sign up at https://sendgrid.com
+# 2. Settings → API Keys → Create API Key
+# 3. Copy the key
+```
+
+#### Mailgun
+```bash
+# 1. Sign up at https://mailgun.com
+# 2. Sending → Domains → Add domain
+# 3. Settings → API Keys
+```
+
+### 2.3 Install Dependencies
+
+```bash
+npm install @sendgrid/mail mailgun.js handlebars
+```
+
+### 2.4 Environment Variables
+
+```bash
+# Email Configuration
+EMAIL_PROVIDER="sendgrid"  # or "mailgun"
+EMAIL_FROM="noreply@cloudnexus.com"
+
+# SendGrid
+SENDGRID_API_KEY="SG.xxxxxxxxxxxx"
+
+# Mailgun
+MAILGUN_API_KEY="key-xxxxxxxxxxxx"
+MAILGUN_DOMAIN="mg.cloudnexus.com"
+MAILGUN_URL="https://api.mailgun.net"
+```
+
+### 2.5 Create Email Templates
+
+```bash
+mkdir -p templates/emails
+```
+
+**templates/emails/welcome.html:**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .button { background: #135bec; color: white; padding: 12px 24px; 
+              text-decoration: none; border-radius: 4px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Cloud Nexus 2030! 🚀</h1>
+    <p>Hi {{name}},</p>
+    <p>Thank you for joining Cloud Nexus. Your account is now active!</p>
+    <p>
+      <a href="{{dashboardUrl}}" class="button">Go to Dashboard</a>
+    </p>
+    <p>Best regards,<br>The Cloud Nexus Team</p>
+  </div>
+</body>
+</html>
+```
+
+**templates/emails/site-deployed.html:**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; 
+                 background: white; border-radius: 8px; }
+    .success { background: #10b981; color: white; padding: 16px; 
+               border-radius: 4px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="success">
+      <h2>🚀 Deployment Successful!</h2>
+    </div>
+    <p>Hi {{name}},</p>
+    <p>Your site <strong>{{siteName}}</strong> is now live!</p>
+    <p><strong>URL:</strong> <a href="{{siteUrl}}">{{siteUrl}}</a></p>
+    <p><strong>Provider:</strong> {{provider}}</p>
+    <p><strong>Deployed:</strong> {{deployedAt}}</p>
+    <hr>
+    <p style="color: #666; font-size: 12px;">
+      Cloud Nexus 2030 - Next Generation Platform
+    </p>
+  </div>
+</body>
+</html>
+```
+
+### 2.6 Update Prisma Schema
+
+```prisma
+// Add to schema.prisma
+model EmailLog {
+  id          String    @id @default(uuid())
+  to          String
+  subject     String
+  template    String?
+  provider    String    // sendgrid, mailgun
+  status      String    // SENDING, SENT, FAILED
+  messageId   String?
+  error       String?
+  userId      String?
+  metadata    Json?
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+}
+```
+
+```bash
+npx prisma migrate dev --name add_email_log
+npx prisma generate
+```
+
+---
+
+## 🔗 PART 3: Integration with Main Server
+
+### 3.1 Update server.js
+
+```javascript
+// server.js
+import express from 'express';
+import { authMiddleware } from './middleware/auth.js';
+
+// Import new routes
+import searchRouter from './routes/elasticsearch.js';
+import emailRouter from './routes/email.js';
+
+const app = express();
+
+// ... existing middleware ...
+
+// Add new routes
+app.use('/api/search', authMiddleware, searchRouter);
+app.use('/api/email', authMiddleware, emailRouter);
+
+// ... rest of server code ...
+```
+
+### 3.2 Auto-Send Emails on Events
+
+```javascript
+// routes/voice-builder.js
+import { emailService } from './email.js';
+
+router.post('/generate', authMiddleware, async (req, res) => {
+  // ... generate site ...
+  
+  const site = await prisma.site.create({ /* ... */ });
+  
+  // Auto-send email
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  await emailService.send({
+    to: user.email,
+    subject: 'Your AI-Generated Site is Ready!',
+    html: `<p>Your site "${site.name}" has been generated successfully.</p>`,
+    userId: user.id,
+    eventType: 'site.generated'
+  });
+  
+  res.json({ success: true, siteId: site.id });
+});
+```
+
+```javascript
+// routes/deployment.js
+import { emailService } from './email.js';
+
+router.post('/site/:siteId', authMiddleware, async (req, res) => {
+  // ... deploy site ...
+  
+  if (deployment.success) {
+    const [user, site] = await Promise.all([
+      prisma.user.findUnique({ where: { id: req.user.userId } }),
+      prisma.site.findUnique({ where: { id: siteId } })
+    ]);
+    
+    await emailService.sendDeploymentSuccessEmail(user, site, deployment);
+  }
+  
+  res.json(deployment);
+});
+```
+
+---
+
+## 💻 PART 4: Usage Examples
+
+### 4.1 Elasticsearch Queries
+
+#### Universal Search
+```javascript
+// Frontend
+const searchSites = async (query) => {
+  const response = await fetch(`/api/search?q=${query}&type=sites`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return response.json();
+};
+
+// Example
+const results = await searchSites('restaurant dark theme');
+console.log(results.results);
+// [
+//   { id: '123', name: 'Zen Dining', score: 4.5, highlights: {...} },
+//   { id: '456', name: 'Dark Food Co', score: 3.2, ... }
+// ]
+```
+
+#### Autocomplete
+```javascript
+const getSuggestions = async (query) => {
+  const response = await fetch(`/api/search/suggest?q=${query}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return response.json();
+};
+
+// Example
+const suggestions = await getSuggestions('rest');
+// suggestions: ["Restaurant Site", "Restful API", "Restoration Co"]
+```
+
+#### Filtered Search
+```javascript
+const searchUserSites = async (query, userId) => {
+  const response = await fetch(
+    `/api/search?q=${query}&type=sites&userId=${userId}&published=true`,
+    { headers: { 'Authorization': `Bearer ${token}` } }
+  );
+  return response.json();
+};
+```
+
+### 4.2 Email Sending
+
+#### Welcome Email (Automatic)
+```javascript
+// After user registration
+router.post('/auth/register', async (req, res) => {
+  const user = await prisma.user.create({ /* ... */ });
+  
+  // Auto-send welcome email
+  await emailService.sendWelcomeEmail(user);
+  
+  res.json({ success: true, user });
+});
+```
+
+#### Custom Email
+```javascript
+const sendCustomEmail = async () => {
+  await fetch('/api/email/send', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      to: 'user@example.com',
+      subject: 'Your Monthly Report',
+      html: '<h1>Report</h1><p>...</p>',
+      userId: 'user-id',
+      template: 'monthly-report'
+    })
+  });
+};
+```
+
+#### Bulk Email Campaign
+```javascript
+const sendCampaign = async (users) => {
+  const emails = users.map(user => ({
+    to: user.email,
+    subject: 'New Feature Release!',
+    html: renderTemplate('feature-release', { name: user.name }),
+    userId: user.id
+  }));
+  
+  await fetch('/api/email/bulk', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ emails })
+  });
+};
+```
+
+---
+
+## 🧪 PART 5: Testing
+
+### 5.1 Elasticsearch Tests
+
+```javascript
+// tests/elasticsearch.test.js
+import { describe, test, expect, beforeAll } from '@jest/globals';
+import { searchService } from '../routes/elasticsearch.js';
+
+describe('Elasticsearch Service', () => {
+  
+  beforeAll(async () => {
+    await searchService.initializeIndices();
+  });
+
+  test('should index a site', async () => {
+    const site = {
+      id: 'test-site-1',
+      name: 'Test Restaurant',
+      content: {
+        sections: [
+          { content: { headline: 'Best Food in Town' } }
+        ],
+        metadata: { title: 'Test Restaurant' }
+      },
+      userId: 'user-1',
+      published: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    const result = await searchService.indexSite(site);
+    expect(result).toBe(true);
+  });
+
+  test('should search sites', async () => {
+    const results = await searchService.search('restaurant');
+    
+    expect(results.total).toBeGreaterThan(0);
+    expect(results.results[0].source.name).toContain('Restaurant');
+  });
+
+  test('should provide autocomplete', async () => {
+    const suggestions = await searchService.suggest('rest');
+    
+    expect(suggestions.length).toBeGreaterThan(0);
+    expect(suggestions[0].text).toBeDefined();
+  });
+});
+```
+
+### 5.2 Email Service Tests
+
+```javascript
+// tests/email.test.js
+import { describe, test, expect, jest } from '@jest/globals';
+import { emailService } from '../routes/email.js';
+
+// Mock SendGrid
+jest.mock('@sendgrid/mail');
+
+describe('Email Service', () => {
+  
+  test('should send welcome email', async () => {
+    const user = {
+      id: 'user-1',
+      email: 'test@example.com',
+      name: 'Test User'
+    };
+
+    const result = await emailService.sendWelcomeEmail(user);
+    
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('sendgrid');
+  });
+
+  test('should log email to database', async () => {
+    await emailService.send({
+      to: 'test@example.com',
+      subject: 'Test',
+      html: '<p>Test</p>',
+      userId: 'user-1'
+    });
+
+    const log = await prisma.emailLog.findFirst({
+      where: { to: 'test@example.com' }
+    });
+
+    expect(log).toBeDefined();
+    expect(log.status).toBe('SENT');
+  });
+});
+```
+
+---
+
+## 📊 Monitoring & Analytics
+
+### Elasticsearch Health
+```bash
+curl http://localhost:9200/_cluster/health
+curl http://localhost:5000/api/search/health
+```
+
+### Email Analytics
+```bash
+curl "http://localhost:5000/api/email/analytics?userId=123&startDate=2024-01-01&endDate=2024-12-31" \
+  -H "Authorization: Bearer TOKEN"
+```
+
+---
+
+## 🚀 Production Deployment
+
+### Elasticsearch on AWS
+```bash
+# Use Amazon OpenSearch Service
+# or Elastic Cloud: https://cloud.elastic.co
+```
+
+### SendGrid Domain Setup
+```bash
+# 1. Add domain to SendGrid
+# 2. Configure DNS records:
+CNAME: em1234.cloudnexus.com → sendgrid.net
+CNAME: s1._domainkey → s1.domainkey.u1234.wl.sendgrid.net
+CNAME: s2._domainkey → s2.domainkey.u1234.wl.sendgrid.net
+```
+
+### Monitoring
+```javascript
+// Add to server.js
+import * as Sentry from '@sentry/node';
+
+Sentry.init({ dsn: process.env.SENTRY_DSN });
+
+// Email failures
+emailService.on('error', (error) => {
+  Sentry.captureException(error);
+  logger.error('Email error:', error);
+});
+```
+
+---
+
+## 🎯 Quick Start Commands
+
+```bash
+# 1. Start Elasticsearch
+docker-compose up -d elasticsearch
+
+# 2. Initialize indices
+curl -X POST http://localhost:5000/api/search/init
+
+# 3. Bulk index existing data
+curl -X POST http://localhost:5000/api/search/bulk-index
+
+# 4. Test search
+curl "http://localhost:5000/api/search?q=test"
+
+# 5. Send test email
+curl -X POST http://localhost:5000/api/email/send \
+  -H "Content-Type: application/json" \
+  -d '{"to":"test@example.com","subject":"Test","html":"<p>Hello</p>"}'
+```
+
+---
+
+## 📚 Additional Resources
+
+- [Elasticsearch Documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html)
+- [SendGrid API Reference](https://docs.sendgrid.com/api-reference)
+- [Mailgun Documentation](https://documentation.mailgun.com/)
+- [Handlebars Templates](https://handlebarsjs.com/)
+
+---
+
+**Questions?** Check the logs or open an issue on GitHub!

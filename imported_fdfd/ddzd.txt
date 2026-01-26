@@ -1,0 +1,797 @@
+// ============================================================
+// ELASTICSEARCH FULL-TEXT SEARCH SERVICE
+// Advanced search across sites, users, CRM, deployments
+// ============================================================
+
+import { Client } from '@elastic/elasticsearch';
+import { PrismaClient } from '@prisma/client';
+import express from 'express';
+
+const router = express.Router();
+const prisma = new PrismaClient();
+
+// ============================================================
+// ELASTICSEARCH CLIENT CONFIGURATION
+// ============================================================
+
+const esClient = new Client({
+  node: process.env.ELASTICSEARCH_URL || 'http://localhost:9200',
+  auth: {
+    username: process.env.ELASTICSEARCH_USER || 'elastic',
+    password: process.env.ELASTICSEARCH_PASSWORD || 'changeme'
+  },
+  maxRetries: 5,
+  requestTimeout: 60000,
+  sniffOnStart: true
+});
+
+// ============================================================
+// INDEX DEFINITIONS
+// ============================================================
+
+const INDICES = {
+  SITES: 'nexus-sites',
+  USERS: 'nexus-users',
+  CRM_LEADS: 'nexus-crm-leads',
+  DEPLOYMENTS: 'nexus-deployments',
+  CONTENT: 'nexus-content' // For site content full-text
+};
+
+// ============================================================
+// ELASTICSEARCH SERVICE CLASS
+// ============================================================
+
+class ElasticsearchService {
+  
+  /**
+   * Initialize all indices with mappings
+   */
+  async initializeIndices() {
+    try {
+      console.log('🔍 Initializing Elasticsearch indices...');
+
+      // Sites Index
+      await this.createIndex(INDICES.SITES, {
+        properties: {
+          id: { type: 'keyword' },
+          name: { 
+            type: 'text',
+            analyzer: 'standard',
+            fields: {
+              keyword: { type: 'keyword' },
+              autocomplete: { 
+                type: 'text',
+                analyzer: 'autocomplete',
+                search_analyzer: 'standard'
+              }
+            }
+          },
+          domain: { type: 'keyword' },
+          userId: { type: 'keyword' },
+          published: { type: 'boolean' },
+          content: { type: 'object', enabled: false }, // Don't index JSON structure
+          sections: { type: 'text' }, // Flattened content for search
+          metadata: {
+            properties: {
+              title: { type: 'text' },
+              description: { type: 'text' },
+              keywords: { type: 'keyword' }
+            }
+          },
+          createdAt: { type: 'date' },
+          updatedAt: { type: 'date' }
+        }
+      });
+
+      // Users Index
+      await this.createIndex(INDICES.USERS, {
+        properties: {
+          id: { type: 'keyword' },
+          email: { type: 'keyword' },
+          name: { 
+            type: 'text',
+            fields: { keyword: { type: 'keyword' } }
+          },
+          role: { type: 'keyword' },
+          createdAt: { type: 'date' }
+        }
+      });
+
+      // CRM Leads Index
+      await this.createIndex(INDICES.CRM_LEADS, {
+        properties: {
+          id: { type: 'keyword' },
+          name: { type: 'text' },
+          email: { type: 'keyword' },
+          company: { 
+            type: 'text',
+            fields: { keyword: { type: 'keyword' } }
+          },
+          status: { type: 'keyword' },
+          score: { type: 'integer' },
+          userId: { type: 'keyword' },
+          notes: { type: 'text' }, // For activity content
+          createdAt: { type: 'date' }
+        }
+      });
+
+      // Deployments Index
+      await this.createIndex(INDICES.DEPLOYMENTS, {
+        properties: {
+          id: { type: 'keyword' },
+          siteId: { type: 'keyword' },
+          provider: { type: 'keyword' },
+          url: { type: 'keyword' },
+          status: { type: 'keyword' },
+          error: { type: 'text' },
+          createdAt: { type: 'date' }
+        }
+      });
+
+      console.log('✅ Elasticsearch indices initialized');
+
+    } catch (error) {
+      console.error('❌ Failed to initialize indices:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create index with custom settings
+   */
+  async createIndex(indexName, mappings) {
+    const exists = await esClient.indices.exists({ index: indexName });
+
+    if (exists) {
+      console.log(`Index ${indexName} already exists, skipping...`);
+      return;
+    }
+
+    await esClient.indices.create({
+      index: indexName,
+      body: {
+        settings: {
+          number_of_shards: 1,
+          number_of_replicas: 1,
+          analysis: {
+            analyzer: {
+              autocomplete: {
+                tokenizer: 'autocomplete',
+                filter: ['lowercase']
+              }
+            },
+            tokenizer: {
+              autocomplete: {
+                type: 'edge_ngram',
+                min_gram: 2,
+                max_gram: 10,
+                token_chars: ['letter', 'digit']
+              }
+            }
+          }
+        },
+        mappings
+      }
+    });
+
+    console.log(`✅ Created index: ${indexName}`);
+  }
+
+  /**
+   * Index a site document
+   */
+  async indexSite(site) {
+    try {
+      // Extract searchable content from sections
+      const sectionsText = this.extractSiteContent(site.content);
+
+      await esClient.index({
+        index: INDICES.SITES,
+        id: site.id,
+        document: {
+          id: site.id,
+          name: site.name,
+          domain: site.domain,
+          userId: site.userId,
+          published: site.published,
+          sections: sectionsText,
+          metadata: site.content?.metadata || {},
+          createdAt: site.createdAt,
+          updatedAt: site.updatedAt
+        }
+      });
+
+      await esClient.indices.refresh({ index: INDICES.SITES });
+      
+      console.log(`✅ Indexed site: ${site.id}`);
+      return true;
+
+    } catch (error) {
+      console.error('Failed to index site:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Extract text content from site JSON structure
+   */
+  extractSiteContent(siteContent) {
+    if (!siteContent?.sections) return '';
+
+    const textParts = [];
+
+    siteContent.sections.forEach(section => {
+      // Extract headlines
+      if (section.content?.headline) {
+        textParts.push(section.content.headline);
+      }
+      if (section.content?.subheadline) {
+        textParts.push(section.content.subheadline);
+      }
+      
+      // Extract features
+      if (section.items) {
+        section.items.forEach(item => {
+          if (item.title) textParts.push(item.title);
+          if (item.description) textParts.push(item.description);
+        });
+      }
+
+      // Extract CTA text
+      if (section.content?.cta?.text) {
+        textParts.push(section.content.cta.text);
+      }
+    });
+
+    return textParts.join(' ');
+  }
+
+  /**
+   * Index a user
+   */
+  async indexUser(user) {
+    try {
+      await esClient.index({
+        index: INDICES.USERS,
+        id: user.id,
+        document: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          createdAt: user.createdAt
+        }
+      });
+
+      await esClient.indices.refresh({ index: INDICES.USERS });
+      return true;
+
+    } catch (error) {
+      console.error('Failed to index user:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Index a CRM lead
+   */
+  async indexLead(lead) {
+    try {
+      // Get activities for notes
+      const activities = await prisma.activity.findMany({
+        where: { leadId: lead.id }
+      });
+
+      const notes = activities.map(a => a.content).join(' ');
+
+      await esClient.index({
+        index: INDICES.CRM_LEADS,
+        id: lead.id,
+        document: {
+          id: lead.id,
+          name: lead.name,
+          email: lead.email,
+          company: lead.company,
+          status: lead.status,
+          score: lead.score,
+          userId: lead.userId,
+          notes,
+          createdAt: lead.createdAt
+        }
+      });
+
+      await esClient.indices.refresh({ index: INDICES.CRM_LEADS });
+      return true;
+
+    } catch (error) {
+      console.error('Failed to index lead:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Universal search across all indices
+   */
+  async search(query, options = {}) {
+    const {
+      indices = Object.values(INDICES),
+      from = 0,
+      size = 20,
+      filters = {},
+      sort = [{ _score: 'desc' }, { createdAt: 'desc' }]
+    } = options;
+
+    try {
+      const searchBody = {
+        query: {
+          bool: {
+            must: [
+              {
+                multi_match: {
+                  query,
+                  fields: [
+                    'name^3',           // Boost name matches
+                    'title^3',
+                    'email^2',
+                    'company^2',
+                    'description',
+                    'sections',
+                    'notes',
+                    'metadata.title^2',
+                    'metadata.description'
+                  ],
+                  type: 'best_fields',
+                  fuzziness: 'AUTO',
+                  operator: 'or'
+                }
+              }
+            ],
+            filter: this.buildFilters(filters)
+          }
+        },
+        highlight: {
+          fields: {
+            'name': {},
+            'sections': {},
+            'notes': {},
+            'description': {}
+          },
+          pre_tags: ['<mark>'],
+          post_tags: ['</mark>']
+        },
+        from,
+        size,
+        sort
+      };
+
+      const result = await esClient.search({
+        index: indices.join(','),
+        body: searchBody
+      });
+
+      return {
+        total: result.hits.total.value,
+        results: result.hits.hits.map(hit => ({
+          index: hit._index,
+          id: hit._id,
+          score: hit._score,
+          source: hit._source,
+          highlights: hit.highlight
+        })),
+        took: result.took
+      };
+
+    } catch (error) {
+      console.error('Search error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Autocomplete suggestions
+   */
+  async suggest(query, field = 'name.autocomplete', index = INDICES.SITES) {
+    try {
+      const result = await esClient.search({
+        index,
+        body: {
+          suggest: {
+            suggestions: {
+              prefix: query,
+              completion: {
+                field,
+                size: 10,
+                fuzzy: { fuzziness: 'AUTO' }
+              }
+            }
+          }
+        }
+      });
+
+      return result.suggest.suggestions[0].options.map(opt => ({
+        text: opt.text,
+        score: opt._score,
+        source: opt._source
+      }));
+
+    } catch (error) {
+      console.error('Suggest error:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Advanced search with aggregations
+   */
+  async searchWithAggregations(query, options = {}) {
+    try {
+      const result = await esClient.search({
+        index: options.index || INDICES.SITES,
+        body: {
+          query: {
+            multi_match: {
+              query,
+              fields: ['name', 'sections', 'metadata.title']
+            }
+          },
+          aggs: {
+            by_status: {
+              terms: { field: 'published' }
+            },
+            by_user: {
+              terms: { field: 'userId' }
+            },
+            by_date: {
+              date_histogram: {
+                field: 'createdAt',
+                calendar_interval: 'month'
+              }
+            }
+          },
+          size: options.size || 20
+        }
+      });
+
+      return {
+        hits: result.hits.hits.map(h => h._source),
+        aggregations: result.aggregations
+      };
+
+    } catch (error) {
+      console.error('Aggregation search error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Build filters from options
+   */
+  buildFilters(filters) {
+    const filterClauses = [];
+
+    if (filters.userId) {
+      filterClauses.push({ term: { userId: filters.userId } });
+    }
+
+    if (filters.published !== undefined) {
+      filterClauses.push({ term: { published: filters.published } });
+    }
+
+    if (filters.role) {
+      filterClauses.push({ term: { role: filters.role } });
+    }
+
+    if (filters.status) {
+      filterClauses.push({ term: { status: filters.status } });
+    }
+
+    if (filters.dateFrom || filters.dateTo) {
+      const rangeFilter = { range: { createdAt: {} } };
+      if (filters.dateFrom) rangeFilter.range.createdAt.gte = filters.dateFrom;
+      if (filters.dateTo) rangeFilter.range.createdAt.lte = filters.dateTo;
+      filterClauses.push(rangeFilter);
+    }
+
+    return filterClauses;
+  }
+
+  /**
+   * Bulk index from database
+   */
+  async bulkIndexFromDatabase() {
+    console.log('🔄 Starting bulk indexing from database...');
+
+    try {
+      // Index all sites
+      const sites = await prisma.site.findMany();
+      for (const site of sites) {
+        await this.indexSite(site);
+      }
+      console.log(`✅ Indexed ${sites.length} sites`);
+
+      // Index all users
+      const users = await prisma.user.findMany();
+      for (const user of users) {
+        await this.indexUser(user);
+      }
+      console.log(`✅ Indexed ${users.length} users`);
+
+      // Index all leads
+      const leads = await prisma.cRMLead.findMany();
+      for (const lead of leads) {
+        await this.indexLead(lead);
+      }
+      console.log(`✅ Indexed ${leads.length} CRM leads`);
+
+      console.log('✅ Bulk indexing completed');
+
+    } catch (error) {
+      console.error('❌ Bulk indexing failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete document from index
+   */
+  async deleteDocument(index, id) {
+    try {
+      await esClient.delete({ index, id });
+      return true;
+    } catch (error) {
+      if (error.meta?.statusCode === 404) {
+        return true; // Already deleted
+      }
+      console.error('Delete error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Health check
+   */
+  async healthCheck() {
+    try {
+      const health = await esClient.cluster.health();
+      return {
+        status: health.status,
+        cluster_name: health.cluster_name,
+        number_of_nodes: health.number_of_nodes,
+        active_shards: health.active_shards
+      };
+    } catch (error) {
+      return { status: 'unavailable', error: error.message };
+    }
+  }
+}
+
+// ============================================================
+// API ROUTES
+// ============================================================
+
+const searchService = new ElasticsearchService();
+
+/**
+ * POST /search/init
+ * Initialize all Elasticsearch indices
+ */
+router.post('/init', async (req, res) => {
+  try {
+    await searchService.initializeIndices();
+    res.json({
+      success: true,
+      message: 'Elasticsearch indices initialized'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /search/bulk-index
+ * Bulk index all data from database
+ */
+router.post('/bulk-index', async (req, res) => {
+  try {
+    await searchService.bulkIndexFromDatabase();
+    res.json({
+      success: true,
+      message: 'Bulk indexing completed'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /search
+ * Universal search endpoint
+ */
+router.get('/', async (req, res) => {
+  try {
+    const { 
+      q, 
+      type = 'all',
+      from = 0, 
+      size = 20,
+      userId,
+      published,
+      status
+    } = req.query;
+
+    if (!q || q.trim().length === 0) {
+      return res.status(400).json({ error: 'Query parameter "q" is required' });
+    }
+
+    // Determine which indices to search
+    let indices;
+    switch (type) {
+      case 'sites':
+        indices = [INDICES.SITES];
+        break;
+      case 'users':
+        indices = [INDICES.USERS];
+        break;
+      case 'leads':
+        indices = [INDICES.CRM_LEADS];
+        break;
+      default:
+        indices = Object.values(INDICES);
+    }
+
+    const results = await searchService.search(q, {
+      indices,
+      from: parseInt(from),
+      size: parseInt(size),
+      filters: {
+        userId,
+        published: published === 'true' ? true : published === 'false' ? false : undefined,
+        status
+      }
+    });
+
+    res.json({
+      success: true,
+      query: q,
+      ...results
+    });
+
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /search/suggest
+ * Autocomplete suggestions
+ */
+router.get('/suggest', async (req, res) => {
+  try {
+    const { q, type = 'sites' } = req.query;
+
+    if (!q || q.length < 2) {
+      return res.json({ suggestions: [] });
+    }
+
+    const index = type === 'sites' ? INDICES.SITES : 
+                  type === 'users' ? INDICES.USERS : 
+                  INDICES.CRM_LEADS;
+
+    const suggestions = await searchService.suggest(q, 'name.autocomplete', index);
+
+    res.json({
+      success: true,
+      suggestions
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /search/aggregations
+ * Search with aggregations/facets
+ */
+router.get('/aggregations', async (req, res) => {
+  try {
+    const { q, type = 'sites' } = req.query;
+
+    if (!q) {
+      return res.status(400).json({ error: 'Query required' });
+    }
+
+    const index = type === 'sites' ? INDICES.SITES : INDICES.CRM_LEADS;
+    const results = await searchService.searchWithAggregations(q, { index });
+
+    res.json({
+      success: true,
+      ...results
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /search/health
+ * Elasticsearch cluster health
+ */
+router.get('/health', async (req, res) => {
+  try {
+    const health = await searchService.healthCheck();
+    res.json({
+      success: true,
+      elasticsearch: health
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /search/index/site/:id
+ * Manually index/reindex a site
+ */
+router.post('/index/site/:id', async (req, res) => {
+  try {
+    const site = await prisma.site.findUnique({
+      where: { id: req.params.id }
+    });
+
+    if (!site) {
+      return res.status(404).json({ error: 'Site not found' });
+    }
+
+    await searchService.indexSite(site);
+
+    res.json({
+      success: true,
+      message: `Site ${site.id} indexed successfully`
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================================
+// PRISMA HOOKS FOR AUTO-INDEXING
+// ============================================================
+
+/**
+ * Auto-index when site is created/updated
+ */
+export async function onSiteChange(site) {
+  await searchService.indexSite(site);
+}
+
+/**
+ * Auto-remove from index when deleted
+ */
+export async function onSiteDelete(siteId) {
+  await searchService.deleteDocument(INDICES.SITES, siteId);
+}
+
+/**
+ * Auto-index when user is created
+ */
+export async function onUserChange(user) {
+  await searchService.indexUser(user);
+}
+
+/**
+ * Auto-index when lead is created/updated
+ */
+export async function onLeadChange(lead) {
+  await searchService.indexLead(lead);
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+
+export { searchService, ElasticsearchService, INDICES };
+export default router;
