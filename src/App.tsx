@@ -43,6 +43,7 @@ import InvoiceView from "./pages/InvoiceView";
 import SitesDashboard from "./features/site-builder/SitesDashboard";
 import ABTestingDashboard from "./features/ai-assistant/components/ABTestingDashboard";
 import TestParallax from "./pages/TestParallax";
+import { NexusShowcasePage } from "./pages/NexusShowcase";
 
 const queryClient = new QueryClient();
 
@@ -93,6 +94,7 @@ function App() {
                       <Route path="/store" element={<Storefront />} />
                       <Route path="/invoice-demo" element={<InvoiceTemplate />} />
                       <Route path="/chat-demo" element={<AIChatInterface />} />
+                      <Route path="/showcase" element={<NexusShowcasePage />} />
 
                       {/* Protected Routes */}
                       <Route element={<AppLayout />}>
